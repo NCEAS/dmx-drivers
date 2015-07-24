@@ -28,7 +28,7 @@ hbwObj <- get(mn, hbwId)
 hbw <- read.csv(text=rawToChar(hbwObj))
 hbw2=hbw %>%
   mutate(Name=as.factor(Year)) %>%
-  mutate(humpbackWhaleBM=hbw[,3]*29000) %>%
+  mutate(humpbackWhaleBM=hbw[,3]*29000*0.001) %>%
   select(Name,humpbackWhaleBM)
 
 pwsEwe=merge(pwsEwe,hbw2,all.x=T) ## x29,000 kg to get BM estimate. NOAA states hbw are 22,000-36,000kg each: http://www.nmfs.noaa.gov/pr/species/mammals/whales/humpback-whale.html
@@ -39,7 +39,7 @@ pwsEwe[2,2]=1
 
 soTab=read.csv('eweData/sea_otter_abundance_estimates_PWS_1994-2014_for_NCEAS_28May2015.csv',stringsAsFactors=F)
 soDtSpl=strsplit(soTab[,1],split=' ')
-soEst=data.frame(Name=sapply(soDtSpl,function(x) x[1]),seaOtterBM=as.numeric(soTab[,2])*30) ## http://www.marinemammalcenter.org/education/marine-mammal-information/sea-otter.html; 23kg (Okey & Pauly 1999)
+soEst=data.frame(Name=sapply(soDtSpl,function(x) x[1]),seaOtterBM=as.numeric(soTab[,2])*30*0.001) ## http://www.marinemammalcenter.org/education/marine-mammal-information/sea-otter.html; 23kg (Okey & Pauly 1999)
 
 new=merge(pwsEwe,soEst,all.x=T)
 new[2,3]=1
@@ -58,7 +58,7 @@ sslPws=ssl %>%
   filter(Long< -146.336512) %>%
   group_by(year) %>%
   summarise(aveSSL=mean(adult.juvenileCount)) %>%
-  mutate(sslBM=3.43*735*aveSSL) ## population estimate equation from Trites & Larkin 1996, ave adult weight = 735 from The Marine Mamma Center: http://www.marinemammalcenter.org/education/marine-mammal-information/pinnipeds/steller-sea-lion/ Same site used for pup weights.
+  mutate(sslBM=3.43*735*aveSSL*0.001) ## population estimate equation from Trites & Larkin 1996, ave adult weight = 735 from The Marine Mamma Center: http://www.marinemammalcenter.org/education/marine-mammal-information/pinnipeds/steller-sea-lion/ Same site used for pup weights.
 
 pupId <- 'df35b.271.1'   # unique identifier for pup SSL data
 pupObj <- get(mn, pupId)
@@ -71,7 +71,7 @@ pupsPws=pups %>%
   filter(Long< -146.336512) %>%
   group_by(year) %>%
   summarise(avePup=mean(pupcount)) %>%
-  mutate(pupBM=4.64*20*avePup) # conversion (4.64) from Trites & Larkin 1996; ave weight ~ 20kg
+  mutate(pupBM=4.64*20*avePup*0.001) # conversion (4.64) from Trites & Larkin 1996; ave weight ~ 20kg
 
 pwsSslPop=merge(sslPws,pupsPws,all.x=T)
 pwsSslPop2=pwsSslPop%>%
@@ -100,7 +100,7 @@ hs2=hs%>%
   filter(longitude< -146.336512) %>%
   group_by(Name) %>%
   summarise(aveHS=mean(seals)) %>%
-  mutate(harborSealBM=2.2*82*aveHS) %>%
+  mutate(harborSealBM=2.2*82*aveHS*0.001) %>%
   select(Name,harborSealBM)
 
 pwsEwe=merge(pwsEwe,hs2,all.x=T)
@@ -114,8 +114,8 @@ herr=read.xls("eweData/PWS_Biomass_Summaries_1974–2014_Updated_9-5-2014.xlsx",
 herr2=herr %>%
   filter(!is.na(Estimate.Year)) %>%
   mutate(Name=Estimate.Year) %>%
-  mutate(pacHerrBM=as.numeric(gsub(',','',X.tons..1))*907.185) %>% #tons to kg conversion
-  mutate(pacHerrCatches=as.numeric(gsub(',','',X.tons.))*907.185) %>%
+  mutate(pacHerrBM=as.numeric(gsub(',','',X.tons..1))) %>% #tons or tonnes?
+  mutate(pacHerrCatches=as.numeric(gsub(',','',X.tons.))) %>%
   select(Name,pacHerrBM,pacHerrCatches)
 pwsEwe=merge(pwsEwe,herr2,all.x=T)
 pwsEwe[2,5:6]=c(1,6)
@@ -125,12 +125,12 @@ pwsEwe[2,5:6]=c(1,6)
 ########## Chum estimates and harvest
 chum=read.xls("eweData/2015_PWS_Wild_Chum forecast-FINAL.xls",sheet=2,pattern='Return Year',blank.lines.skip=T,stringsAsFactors=F)
 
-aveChumWt=(4.4+10.0)/2 ## wikipedia: adults range from 4.4=10.0 kg
+aveChumWt=0.001*(4.4+10.0)/2 ## wikipedia: adults range from 4.4-10.0 kg
 
 chum2=chum %>%
   "["(.,1:45,) %>%
   mutate(Name=Return.Year) %>%
-  mutate(chumBM=as.numeric(gsub(',','',Total.Wild.Run))*aveChumWt) %>%
+  mutate(chumBM=as.numeric(gsub(',','',Escapement))*2+(as.numeric(gsub(',','',Harvest)))*aveChumWt) %>%
   mutate(chumCatches=as.numeric(gsub(',','',Harvest))*aveChumWt) %>%
   select(Name,chumBM,chumCatches)
 
@@ -140,12 +140,12 @@ pwsEwe[2,8:9]=c(1,6)
 ######### Pink estimates - Rich Brenner, ADF&G
 pink=read.xls("eweData/2015_PWS_Pink_Wild_forecast-FINAL.xlsm",sheet=2,pattern='Brood Line',blank.lines.skip=T,stringsAsFactors=F)
 
-avePinkWt=((3.5+5)/2)*0.454 ## NOAA: 3.5- 5lbs
+avePinkWt=((3.5+5)/2)*0.454*0.001 ## NOAA: 3.5- 5lbs
 
 pink2=pink %>%
   "["(.,59:120,) %>% ## have data from 1896 but not sure if that's useful so limiting to 1955, ask Tom
   mutate(Name=Run.Year) %>%
-  mutate(pinkBM=as.numeric(gsub(',','',Total..w..observer.eff.))*avePinkWt) %>%
+  mutate(pinkBM=as.numeric(gsub(',','',Total..w..obs.eff.and.prop.unsurveyed.))*avePinkWt) %>%
   mutate(pinkCatches=as.numeric(gsub(',','',CCP))*avePinkWt) %>%
   select(Name,pinkBM,pinkCatches)
 
