@@ -47,20 +47,22 @@ misc_fish_shallow <- c(10, 21, 20000, 20001, 20002, 20004, 20005, 20006, 20007, 
                        22229, 22231, 22232, 22233, 22234, 22235, 22236, 22238, 22240, 22241, 22243, 22244, 22246, 
                        22249, 22250, 22251, 22255, 22258, 22262, 22265, 22270, 22271, 22274, 22276, 22284, 23791, 
                        23792, 24001)
-dogfish                  
-salmon_shark
-sleeper_shark
-other_skates             
-fish_eggs
-big_skate
-longnose_skates          
-misc_fish_deep
-misc_flatfish
-arrowtooth_flounder
-P_Halibut
-FH_sole
-Dover_sole
-Rex_sole
+dogfish <- c(210, 222, 310)                  
+salmon_shark <- c(232)
+sleeper_shark <- c(320)
+other_skates <- c(400, 404, 405, 410, 435, 450, 455, 460, 471, 472, 475, 480, 483, 485, 495)             
+fish_eggs <- c(1, 401, 402, 403, 421, 436, 441, 456, 461, 473, 474, 484, 711, 21422)
+big_skate <- c(420)
+longnose_skates <- c(440)          
+misc_fish_deep <- c(710, 20110, 20120, 22300, 22310, 22320, 22390, 22701, 22702, 22703, 22704, 22951, 22952, 22955, 
+                    23602, 23603, 23620, 23657, 23710, 23932, 23944, 23958, 23962)
+misc_flatfish <- c(10001, 10010, 10020, 10112, 10115, 10129, 10140, 10150, 10160, 10170, 10190, 10211, 10212, 10220, 
+                   10250, 10270, 10280)
+arrowtooth_flounder <- c(10110)
+P_Halibut <- c(10120)
+FH_sole <- c(10130)
+Dover_sole <- c(10180)
+Rex_sole <- c(10200)
 YF_Sole
 AK_Plaice
 S_rock_sole
@@ -70,7 +72,8 @@ sablefish
 Bathylagidae
 Myctophidae              
 herring
-other_managed_forage_fish_grenadiers
+other_managed_forage_fish
+grenadiers
 other_sculpins
 large_sculpins
 P_Cod
@@ -83,22 +86,53 @@ eulachon
 capelin
 misc_salmonid
 Chinook_salmon           
-[40] coho salmon               pink salmon               chum salmon              
-[43] sockeye salmon            eelpouts                  other Sebastes           
-[46] shortspine thornyheads    rougheye rockfish         POP                      
-[49] dusky rockfish            northern rockfish         sharpchin rockfish       
-[52] shortraker rockfish       hydroids                  jellyfish unidentified   
-[55] sea nettles               egg yolk jelly            Aequoria                 
-[58] Aurelia                   lions mane jellyfish      corals                   
-[61] sea pens                  anemones                  gelatinous filter feeders
-[64] polychaetes               benthic amphipods         misc crustaceans         
-[67] euphausiids               mysids                    NP shrimp                
-[70] Pandalidae                misc crabs                Tanner crab              
-[73] hermit crabs              King crab                 snails                   
-[76] bivalves                  squids                    octopi                   
-[79] sea stars                 urchins-dollars-cucumbers brittle stars            
-[82] sponges                   misc worms                Urochordata   
+coho salmon
+pink salmon
+chum salmon              
+sockeye salmon
+eelpouts
+other Sebastes
+shortspine thornyheads
+rougheye rockfish
+POP          
+dusky rockfish
+northern rockfish
+sharpchin rockfish
+shortraker rockfish
+hydroids        
+jellyfish unidentified   
+sea nettles         
+egg yolk jelly     
+Aequoria         
+Aurelia      
+lions mane jellyfish  
+corals           
+sea pens      
+anemones        
+gelatinous filter feeders
+polychaetes           
+benthic amphipods    
+misc crustaceans         
+euphausiids   
+mysids   
+NP shrimp  
+Pandalidae        
+misc crabs        
+Tanner crab              
+hermit crabs     
+King crab           
+snails                   
+bivalves     
+squids        
+octopi                   
+sea stars   
+urchins-dollars-cucumbers 
+brittle stars            
+sponges  
+misc worms    
+Urochordata   
 
+# Add column with the functional grouping to the dataframe
 
 
 # Aggregate by functional groupings
