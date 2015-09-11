@@ -13,6 +13,10 @@
 library(dataone)
 library(dplyr)
 
+cm <- CertificateManager()
+user <- showClientSubject(cm)
+
+
 pwsEwe=data.frame(
   'Name'=factor(c('poolCode','type',1955:2015),levels=c('poolCode','type',1955:2015),ordered=T))
 
@@ -24,7 +28,7 @@ mn <- MNode(mn_uri)
 ## Type = 1 (absolute abundances) --> What do I do about them being estimates, uncertainty?
 
 hbwId <- "df35d.123.1"   # unique identifier for this data file
-hbwObj <- get(mn, hbwId)
+hbwObj <- get(mn,hbwId)
 hbw <- read.csv(text=rawToChar(hbwObj))
 hbw2=hbw %>%
   mutate(Name=as.factor(Year)) %>%
@@ -140,7 +144,7 @@ pwsEwe[2,8:9]=c(1,6)
 ######### Pink estimates - Rich Brenner, ADF&G
 pink=read.xls("eweData/2015_PWS_Pink_Wild_forecast-FINAL.xlsm",sheet=2,pattern='Brood Line',blank.lines.skip=T,stringsAsFactors=F)
 
-avePinkWt=((3.5+5)/2)*0.454*0.001 ## NOAA: 3.5- 5lbs
+avePinkWt=((3.5+5)/2)*0.454*0.001 ## NOAA: 3.5- 5lbs, ave estimated wt in lbs, convert to kg-->tonnes
 
 pink2=pink %>%
   "["(.,59:120,) %>% ## have data from 1896 but not sure if that's useful so limiting to 1955, ask Tom
@@ -153,4 +157,17 @@ pwsEwe=merge(pwsEwe,pink2,all.x=T)
 pwsEwe[2,10:11]=c(1,6)
 
 
-#########
+######### Zooplankton SEA proj: 94-98 --> OFF SHORE Zooplankton
+## TO calculated these in first model
+
+######### PWS Zooplankton tows - Campbell
+## connect to access db: http://rprogramming.net/connect-to-ms-access-in-r/
+library(Hmisc)
+pwsZoo <- mdb.get("eweData/LTM_PWS_Zooplankton.accdb") ## need mdb-tools?: http://svitsrv25.epfl.ch/R-doc/library/Hmisc/html/mdb.get.html...need mdb-tools, figure out how to make ths work, otherwise just ask RB to convert the files to csv --> request sent to help.nceas
+contents(pwsZoo) # 3 tables, menu, cruise data, tow data
+
+pzM<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='menutblTaxa') # species list
+pzCr<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblCruiseData') # cruise data
+pzTow<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblTowData') # Tow data
+
+## BRING IN SPECIES LIST AND MERGE WITH DATA TO SEPARATE INTO herb/omni
