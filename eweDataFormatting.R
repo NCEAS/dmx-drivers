@@ -13,6 +13,7 @@
 library(dataone)
 library(dplyr)
 library(gdata)
+library(reshape2)
 
 cm <- CertificateManager()
 user <- showClientSubject(cm)
@@ -37,7 +38,7 @@ hbw2=hbw %>%
   select(Name,humpbackWhaleBM)
 
 pwsEwe=merge(pwsEwe,hbw2,all.x=T) ## x29,000 kg to get BM estimate. NOAA states hbw are 22,000-36,000kg each: http://www.nmfs.noaa.gov/pr/species/mammals/whales/humpback-whale.html
-pwsEwe[2,2]=1
+pwsEwe[2,2]=0
 pwsEwe[64,2]='tonnes'
 
 ######### Sea otter abundance estimates
@@ -48,7 +49,7 @@ soDtSpl=strsplit(soTab[,1],split=' ')
 soEst=data.frame(Name=sapply(soDtSpl,function(x) x[1]),seaOtterBM=as.numeric(soTab[,2])*30*0.001) ## http://www.marinemammalcenter.org/education/marine-mammal-information/sea-otter.html; 23kg (Okey & Pauly 1999)
 
 new=merge(pwsEwe,soEst,all.x=T)
-new[2,3]=1
+new[2,3]=0
 pwsEwe[64,3]='tonnes'
 
 ######### Steller sea lions
@@ -86,7 +87,7 @@ pwsSslPop2=pwsSslPop%>%
   select(Name,stellerSlBM)
 
 pwsEwe=merge(new,pwsSslPop2,all=T)
-pwsEwe[2,4]=1
+pwsEwe[2,4]=0
 pwsEwe[64,4]='tonnes'
 
 ######### Harbor seals
@@ -111,7 +112,7 @@ hs2=hs%>%
   select(Name,harborSealBM)
 
 pwsEwe=merge(pwsEwe,hs2,all.x=T)
-pwsEwe[2,5]=1
+pwsEwe[2,5]=0
 pwsEwe[64,5]='tonnes'
 
 ######### Herring data: frm adfg, pulled from pfx covar. git hub page
@@ -124,7 +125,7 @@ herr2=herr %>%
   mutate(pacHerrCatches=as.numeric(gsub(',','',X.tons.))) %>%
   select(Name,pacHerrBM,pacHerrCatches)
 pwsEwe=merge(pwsEwe,herr2,all.x=T)
-pwsEwe[2,5:6]=c(1,6)
+pwsEwe[2,5:6]=c(0,6)
 pwsEwe[64,5:6]='tonnes'
 
 
@@ -141,7 +142,7 @@ chum2=chum %>%
   select(Name,chumBM,chumCatches)
 
 pwsEwe=merge(pwsEwe,chum2,all.x=T)
-pwsEwe[2,8:9]=c(1,6)
+pwsEwe[2,8:9]=c(0,6)
 pwsEwe[64,8:9]='tonnes'
 
 ######### Pink estimates - Rich Brenner, ADF&G
@@ -157,23 +158,9 @@ pink2=pink %>%
   select(Name,pinkBM,pinkCatches)
 
 pwsEwe=merge(pwsEwe,pink2,all.x=T)
-pwsEwe[2,10:11]=c(1,6)
+pwsEwe[2,10:11]=c(0,6)
 pwsEwe[64,10:11]='tonnes'
 
-######### Zooplankton SEA proj: 94-98 --> OFF SHORE Zooplankton
-## TO calculated these in first model
-
-######### PWS Zooplankton tows - Campbell
-## connect to access db: http://rprogramming.net/connect-to-ms-access-in-r/
-library(Hmisc)
-pwsZoo <- mdb.get("eweData/LTM_PWS_Zooplankton.accdb") ## need mdb-tools?: http://svitsrv25.epfl.ch/R-doc/library/Hmisc/html/mdb.get.html...need mdb-tools, figure out how to make ths work, otherwise just ask RB to convert the files to csv --> request sent to help.nceas
-contents(pwsZoo) # 3 tables, menu, cruise data, tow data
-
-pzM<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='menutblTaxa') # species list
-pzCr<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblCruiseData') # cruise data
-pzTow<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblTowData') # Tow data
-
-## BRING IN SPECIES LIST AND MERGE WITH DATA TO SEPARATE INTO herb/omni
 
 ######### Tanner Crab abundances - ADF&G
 ## Post online and link to this 
@@ -234,12 +221,56 @@ tcnh2=tcNH %>%
 tanCr=merge(tcv2,tcnh2,all=T)
 
 pwsEwe=merge(pwsEwe,tanCr,all.x=T)
-pwsEwe[64,12:13]='abundance'
+pwsEwe[64,c('tannerCrabAbundVal','tannerCrabAbundNoHin')]='abundance'
 
 
-######### Forage fish abundance and distribution using aerial surveys from GOA portal
-## Norcross B , Borstad G , Brown E , and Moreland S. doi:10.5063/F15H7D6G
+######### ADF&G Herring BM estimates data from Steve Moffitt/Rich Brenner 1980-2014 (ASA estimates)
+## Replaced Norcross/Brown data since that was a short timeseries
 
-ffId <- "df35d.94.5"   # unique identifier for this data file
-ffObj <- get(mn,ffId)
-ff <- read.csv(text=rawToChar(ffObj))
+#ffId <- "df35d.94.5"   # unique identifier for this data file
+#ffObj <- get(mn,ffId)
+#ff <- read.csv(text=rawToChar(ffObj))
+
+ff=read.xls('eweData/tabulaHerringBMFMR15-34.csv',header=F,stringsAsFactors = T,na.strings=c('NAk','NA','ND','NAj'),strip.white = T)
+colnames(ff)=c('harvMgmtYr','totSpringUseHarvMort','aerialPeakBM','aerialMaxPossBM','aerialMiSpawn','aerialMiDaysSpawn','asaUnexplEsc','asaPreFishEst','obsAcoustPeakBMFall','obsAcoustPeakBMSpr','priorYrForecast')
+
+ff2=ff %>%
+  filter(!is.na(asaPreFishEst)) %>%
+  rename(Name=harvMgmtYr) %>%
+  mutate(preFish=gsub(',','',asaPreFishEst)) %>%
+  mutate(herrBmTonnes=as.numeric(preFish)*0.907185) %>% ##conversion from st to metricT
+  select(Name,herrBmTonnes)
+
+pwsEwe=merge(pwsEwe,ff2,all.x=T)
+pwsEwe[2,"herrBmTonnes"]=0
+pwsEwe[64,"herrBmTonnes"]='relativeBiomass'
+
+
+######### Zooplankton SEA proj: 94-98 --> OFF SHORE Zooplankton
+## TO calculated these in first model
+
+######### PWS Zooplankton tows - Campbell
+## connect to access db: http://rprogramming.net/connect-to-ms-access-in-r/
+library(Hmisc)
+pwsZoo <- mdb.get("eweData/LTM_PWS_Zooplankton.accdb") 
+contents(pwsZoo) # 3 tables, menu, cruise data, tow data
+
+#pzM<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='menutblTaxa') # species list
+#pzCr<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblCruiseData') # cruise data
+pzTow<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblTowData') # Tow data, contains species concetrations per tow and year embeded in the TowID other metadata tables not needed
+
+## Cam says no need to aggregate into omnivore/herbivore
+## Campbell confirmed that the "total"column from pzTow is nIndividuals/m3
+
+yrSpl=strsplit(as.character(pzTow$TowID),'-')
+pzTow2=mutate(pzTow,Name=sapply(yrSpl,function(x) x[1]))
+
+pzGrps=group_by(pzTow2,Name,Species)
+pzt=pzGrps %>%
+  summarise(plktnConc=mean(Total))%>%
+  select(Name,Species,plnktnConc)
+
+pwsPlk=dcast(pzt,Name~Species,value.var = 'plktnConc')
+  
+pwsEwePl=merge(pwsEwe,pwsPlk,all.x=T)
+pwsEwePl[64,15:212]='concentration (indiv/m3)'
