@@ -271,6 +271,18 @@ pzt=pzGrps %>%
   select(Name,Species,plnktnConc)
 
 pwsPlk=dcast(pzt,Name~Species,value.var = 'plktnConc')
-  
-pwsEwePl=merge(pwsEwe,pwsPlk,all.x=T)
-pwsEwePl[64,15:212]='concentration (indiv/m3)'
+pwsPlk[7,1:212]='concentration (indiv/m3)'
+
+
+######### ADF&G Walleye Pollock biomass estimates (mt) from 2003 report (find more recent?)
+
+wpk=read.csv('eweData/tabulaPollockRIR.2A.2002.28.csv',header=T,stringsAsFactors = F,na.strings=c('',' ','NA'))
+yearSp=strsplit(wpk$Estimation.Source,' ')
+wpk2=wpk %>%
+  mutate(Name=sapply(yearSp,function(x) x[1])) %>%
+  filter(!is.na(Biomass..mi.)) %>%
+  filter(!duplicated(Name)) %>%
+  mutate(wPollBm=gsub(',','',Biomass..mi.)) %>%
+  select(Name,wPollBm)
+pwsEwe=merge(pwsEwe,wpk2,all.x=T)
+pwsEwe[64,'wPollBm']='relativeBiomass'
