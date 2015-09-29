@@ -32,7 +32,7 @@ pdo_df$YEAR <- substr(pdo_df$YEAR, 1, 4)  # removes asterisks from years 2002-20
 #
 pdo_annual <- pdo_df %>% 
               rename(Year=YEAR) %>% # rename data columns         
-              filter(Year %in% c(1975:2015)) %>% # selects years 1975 - 2015
+              filter(Year %in% c(2010:2015)) %>% # selects years 
               gather(Month, PDO, -Year) %>% # reshapes data to be column-wise
               group_by(Year) %>%
               summarise(PDO_anul_mn=mean(as.numeric(as.character(PDO)), na.rm = TRUE)) %>% # get annual means

@@ -30,4 +30,9 @@ SatChlGet <- GET(URL_SatChl)
 SatChl1 <- content(SatChlGet, as='text')
 SatChl_df <- read.csv(file=textConnection(SatChl1),stringsAsFactors=FALSE)
 
-
+SatChl <- SatChl_df %>%
+          filter(Year %in% c(2010:2015))
+  
+  
+  
+  
