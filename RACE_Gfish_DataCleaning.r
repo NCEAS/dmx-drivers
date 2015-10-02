@@ -28,10 +28,11 @@ Gfsh1 <- content(GfshGet, as='text')
 Gfsh <- read.csv(file=textConnection(Gfsh1),stringsAsFactors=F)
 
 Gfsh2=Gfsh %>%
-  filter(LATITUDE>52.40) %>%
+  filter(LATITUDE>52.40) %>% ## Limit data to those within the study area: GoA
   filter(LATITUDE<60.35) %>%
   filter(LONGITUDE>-159) %>%
-  filter(LONGITUDE< -147)
+  filter(LONGITUDE< -147) %>%
+  select(SID,LATITUDE,LONGITUDE,DATETIME,WTCPUE,NUMCPUE,BOT_DEPTH)
 
 # Assign Zero values to hauls with no catch
 summary(as.factor(Gfsh$HAUL)) # this looks at the number of rows for each Haul 
@@ -44,22 +45,31 @@ spGp=SpGp %>%
   filter(!model_group %in% c('OMIT','fish eggs','benthic amphipods','euphausiids','mysids'))
 unqSp=unique(spGp$model_group)
 
-gfSpG=merge(Gfsh,spGp,all.x=T,by='SID') # ,all.x=T w/o this argument, table is shortened so the DB must have spp that are not on Jim's group list. confirm Jim that we should omit these
+gfSpG=merge(Gfsh2,spGp,by='SID') # ,all.x=T w/o this argument, table is shortened so the DB must have spp that are not on Jim's group list. confirm Jim that we should omit these
+
+
+# INPUT .CSV FILE:
+# Columns without headers:
+# 1 = TrophicGroup (text) model-group
+# 2 = latitude  lat
+# 3 = longitude lon
+# 4 = date (as MATLAB number code) datetime
+# 5 = biomass density (g/m2) wtcpue
+# 6 = population density (#/m2) numcpue
+# 7 = station depth stdepth
+gfSpG2=select(gfSpG,model_group,LATITUDE:BOT_DEPTH) ## select columns of interest based on above list from JR
+
 
 for(i in 1:length(unqSp)) {
   grp=unqSp[i]
   newDf=gfSpG %>%
     filter(model_group==grp) %>%
     select(model_group,LATITUDE,LONGITUDE,DATETIME,WTCPUE,NUMCPUE,BOT_DEPTH)
-  grpName=gsub(' ','_',grp)
-  write.csv(newDf,file=paste(grp,'CGoA_RACE_delta_19-Aug-2015',sep='_'),row.names=F,col.names = F)
+  grpName=gsub(' ','',grp)
+  fileName=paste('RACE_step4_',grpName,'.csv',sep='')
+  write.csv(newDf,file=fileName,row.names=F,col.names = F)
 } #notrun
 
-
-
-# Aggregate by functional groupings
-Gfsh <- Gfsh %>%
-            
 
 
 # What Jim R. did: 
@@ -68,6 +78,4 @@ Gfsh <- Gfsh %>%
 # 3 some preliminary filtering of data to the selected spatial domain.
 
 
-## Questions for Jim:
-  # should species be omitted if they are not on the RACE_GOA_NameTranslator.xlsx list?
 
