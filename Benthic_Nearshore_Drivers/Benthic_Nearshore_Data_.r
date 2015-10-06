@@ -86,6 +86,18 @@ BenNear <- merge(BenNear,SatChl_df,all.x=T)      # Chla - Satellite annual
 BenNear <- merge(BenNear,SST,all.x=T)            # SST - Seward Line
 BenNear <- merge(BenNear,Wlk_GOA,all.x=T)        # Whelks (Nucella sp.)
 BenNear <- merge(BenNear,SS_GOA,all.x=T)         # Sea Stars
+BenNear <- merge(BenNear,BS_IA,all.x=T)          # Bare Substrate
+BenNear <- merge(BenNear,b_IA,all.x=T)           # Barnacles
+BenNear <- merge(BenNear,ms_IA,all.x=T)          # Mussels
+BenNear <- merge(BenNear,Fd_IA,all.x=T)          # Fucus
+BenNear <- merge(BenNear,Am_IA,all.x=T)          # Alaria
+BenNear <- merge(BenNear,No_IA,all.x=T)          # Odonthalia / Neorhodomela sp.
+BenNear <- merge(BenNear,ephm_IA,all.x=T)        # Ephemeral algae
+
+
+
+
+
 
 
 
