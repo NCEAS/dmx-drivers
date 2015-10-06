@@ -85,7 +85,7 @@ BenNear <- merge(BenNear,Phy,all.x=T)            # Phytoplankton - Seward Line, 
 BenNear <- merge(BenNear,SatChl_df,all.x=T)      # Chla - Satellite annual
 BenNear <- merge(BenNear,SST,all.x=T)            # SST - Seward Line
 BenNear <- merge(BenNear,Wlk_GOA,all.x=T)        # Whelks (Nucella sp.)
-
+BenNear <- merge(BenNear,SS_GOA,all.x=T)         # Sea Stars
 
 
 
