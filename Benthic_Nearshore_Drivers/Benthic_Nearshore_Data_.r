@@ -84,9 +84,12 @@ BenNear <- merge(BenNear,upanom,all.x=T)         # Upwelling anomalies annual
 BenNear <- merge(BenNear,Phy,all.x=T)            # Phytoplankton - Seward Line, spring
 BenNear <- merge(BenNear,SatChl_df,all.x=T)      # Chla - Satellite annual
 BenNear <- merge(BenNear,SST,all.x=T)            # SST - Seward Line
-  
+BenNear <- merge(BenNear,Wlk_GOA,all.x=T)        # Whelks (Nucella sp.)
 
-#arrange(Region,Site_Name,Year,Quadrat)
+
+
+
+BenNear <- arrange(BenNear, Region,Site_Name,Year,Quadrat)
 
 
 # Optional: Write data frame to a CSV
