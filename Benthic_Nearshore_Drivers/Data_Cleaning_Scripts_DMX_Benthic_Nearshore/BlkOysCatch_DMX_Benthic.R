@@ -61,7 +61,8 @@ OyC_GOA <- OysC %>%
                      BLOYEggs_n=sum(Eggs_Num, na.rm = TRUE), 
                      BLOYChicks_live_n=sum(Chicks_Num, na.rm = TRUE)) %>%
            ungroup() %>%
-           arrange(Region, Site_Name, Year)
+           arrange(Region, Site_Name, Year) %>% 
+           select(Region, Site_Name, Year, BLOYAdult_breed_n) # select just breeding Adults
 head(OyC_GOA)
 
 
