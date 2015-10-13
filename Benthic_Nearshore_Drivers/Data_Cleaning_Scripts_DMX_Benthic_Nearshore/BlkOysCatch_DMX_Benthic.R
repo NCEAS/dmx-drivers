@@ -57,9 +57,9 @@ OyC_GOA <- OysC %>%
            filter(STATUS %in% c('A','O'), Site_Name!="") %>%
            mutate_each(funs(as.numeric), Adults_Num,Chicks_Num,Eggs_Num) %>% # change columns to numeric
            group_by(Region, Site_Name, Year) %>%
-           summarise(Adult_breed_n=sum(Adults_Num, na.rm = TRUE), 
-                     Eggs_n=sum(Eggs_Num, na.rm = TRUE), 
-                     Chicks_live_n=sum(Chicks_Num, na.rm = TRUE)) %>%
+           summarise(BLOYAdult_breed_n=sum(Adults_Num, na.rm = TRUE), 
+                     BLOYEggs_n=sum(Eggs_Num, na.rm = TRUE), 
+                     BLOYChicks_live_n=sum(Chicks_Num, na.rm = TRUE)) %>%
            ungroup() %>%
            arrange(Region, Site_Name, Year)
 head(OyC_GOA)
