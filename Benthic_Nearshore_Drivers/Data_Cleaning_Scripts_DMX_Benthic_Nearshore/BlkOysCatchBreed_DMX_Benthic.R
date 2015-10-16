@@ -1,6 +1,6 @@
 ###########################################################
 ##### Data Cleaning Script - DMX Benthic Nearshore
-##### Black Oyster Catchers: 
+##### Black Oyster Catchers Abundance data: 
 ###########################################################
 
 ## load packages (order matters)
@@ -18,17 +18,45 @@ library(stringr)
 ## 2) format to annual estimates (2 column dataframe with cols=Year,spEstimate)
 
 #############
-# Oyster Catchers
+# 2014 data
 URL_OysC <- "https://workspace.aoos.org/published/file/dfa87109-392b-4da4-b083-42f96e27a2ea/NearshoreBenthicSystemsInGOA_SOP07_BLOY_2014NestDensity_Data_20150105.csv"
 OysCGet <- GET(URL_OysC)
 OysC1 <- content(OysCGet, as='text')
 OysC <- read.csv(file=textConnection(OysC1), stringsAsFactors=F)
 head(OysC)
 
-# Cleaning, filtering, etc. 
-OysC[OysC == "."] <- NA  # replace "." with NA in the entire data frame
+# pre 2014 data
+BLOYzipd <- tempfile()
+download.file("https://workspace.aoos.org/published/file/5221340ce4b0f364fbbb226e/Oystercatcher_Package.zip", BLOYzipd, mode="wb")
+BLOYzip1 <- unzip(BLOYzipd, list=TRUE)  # provides a list of all files in zipped file
+BLOYzip <- BLOYzip1[grep(".csv", BLOYzip1$Name),]$Name # subsets all the .csv files
+BLOYzip_nest <- BLOYzip[grep("nest", BLOYzip)]   # subsets the nest data files
 
-OyC_GOA <- OysC %>%
+unzip_read <- function(file_list){
+              # for every .csv file in zipped file list, unzip it & read it, bind all together
+              z <- unzip(BLOYzipd, file_list)
+              rbind.fill(lapply(z, read.csv))  
+              }
+
+BLOY_nest <- unzip_read(BLOYzip_nest)
+unlink(BLOYzipd)
+
+# Cleaning, filtering, etc. 
+# clean first data frame (pre 2014 data)
+
+
+
+
+
+
+
+# bind the two data frames together
+OysC2 <- rbind.fill(OysC, BLOY_nest)
+
+# more cleaning
+OysC2[OysC2 == "."] <- NA  # replace "." with NA in the entire data frame
+
+OyC_GOA <- OysC2 %>%
            select(-X) %>%  # remove weird blank column
            rename(Nest_Site=NEST_SITE.., Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, 
                   Chicks_Num=X._CHICKS, Prey_Collected=PREY_COLL., Region=Block.Name) %>%
