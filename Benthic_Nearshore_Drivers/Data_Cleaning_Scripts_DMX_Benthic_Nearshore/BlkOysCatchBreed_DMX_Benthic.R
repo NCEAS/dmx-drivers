@@ -18,14 +18,14 @@ library(stringr)
 ## 2) format to annual estimates (2 column dataframe with cols=Year,spEstimate)
 
 #############
-# 2014 data
+# 2014 data loading 
 URL_OysC <- "https://workspace.aoos.org/published/file/dfa87109-392b-4da4-b083-42f96e27a2ea/NearshoreBenthicSystemsInGOA_SOP07_BLOY_2014NestDensity_Data_20150105.csv"
 OysCGet <- GET(URL_OysC)
 OysC1 <- content(OysCGet, as='text')
 OysC <- read.csv(file=textConnection(OysC1), stringsAsFactors=F)
 head(OysC)
 
-# pre 2014 data
+# pre 2014 data loading
 BLOYzipd <- tempfile()
 download.file("https://workspace.aoos.org/published/file/5221340ce4b0f364fbbb226e/Oystercatcher_Package.zip", BLOYzipd, mode="wb")
 BLOYzip1 <- unzip(BLOYzipd, list=TRUE)  # provides a list of all files in zipped file
@@ -38,50 +38,79 @@ unzip_read <- function(file_list){
               rbind.fill(lapply(z, read.csv))  
               }
 
-BLOY_nest <- unzip_read(BLOYzip_nest)
+BLOY_nest1 <- unzip_read(BLOYzip_nest)
 unlink(BLOYzipd)
 
 # Cleaning, filtering, etc. 
 # clean first data frame (pre 2014 data)
+BLOY_nest1$NORTH[is.na(BLOY_nest1$NORTH)] <- as.numeric(as.character(
+                                             BLOY_nest1$NORTH_[is.na(BLOY_nest1$NORTH)]))
+BLOY_nest1[BLOY_nest1 == "."] <- NA  # replace "." with NA in the entire data frame
 
+BLOY_nest <- BLOY_nest1 %>% 
+             select(-X,-X.1,-X.2,-NORTH_) %>%
+             rename(BLOCK.NUMBER=BLOCK, Region=REGION, Nest_Site=NEST_SITE.., 
+                    Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, Chicks_Num=X._CHICKS, 
+                    Prey_Collected=PREY_COLL., LAT=NORTH, LON=WEST, Year=YEAR) %>%
+             filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
+             mutate(Region = replace(as.character(Region), Region=="PWS", "WPWS"),  
+                    Site_Name = ifelse((SITE=="RI1" & Region=="KATM"),'Kukak Bay',
+                                ifelse((SITE=="RI1" & Region=="KEFJ"),'Aialik Bay',       
+                                ifelse((SITE=="RI1" & Region=="WPWS"),'Hogan Bay',   
+                                ifelse((SITE=="RI2" & Region=="KATM"),'Kaflia Bay',
+                                ifelse((SITE=="RI2" & Region=="KEFJ"),'McCarty Fjord',
+                                ifelse((SITE=="RI2" & Region=="WPWS"),'Iktua Bay',  
+                                ifelse((SITE=="RI3" & Region=="KATM"),'Kinak Bay',  
+                                ifelse((SITE=="RI3" & Region=="KEFJ"),'Nuka Bay',  
+                                ifelse((SITE=="RI3" & Region=="WPWS"),'Whale Bay',
+                                ifelse((SITE=="RI4" & Region=="KATM"),'Amalik Bay',  
+                                ifelse((SITE=="RI4" & Region=="KEFJ"),'Nuka Passage',       
+                                ifelse((SITE=="RI4" & Region=="WPWS"),'Johnson Bay',    
+                                ifelse((SITE=="RI5" & Region=="KATM"),'Takli Island',  
+                                ifelse((SITE=="RI5" & Region=="KEFJ"),'Harris Bay', 
+                                ifelse((SITE=="RI5" & Region=="WPWS"),'Herring Bay',   
+                                ""))))))))))))))),  
+                    Eggs_Num = replace(Eggs_Num, Eggs_Num %in% c("U","N/A"), NA),
+                    Chicks_Num = replace(Chicks_Num, Chicks_Num %in% c("U","N/A"), NA)
+                    )
 
+# clean second data frame (2014)
+OysC[OysC == "."] <- NA  # replace "." with NA in the entire data frame
 
-
-
-
-
-# bind the two data frames together
+OysC <- OysC %>%
+        select(-X) %>%  # remove weird blank column
+        rename(Nest_Site=NEST_SITE.., Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, 
+               Chicks_Num=X._CHICKS, Prey_Collected=PREY_COLL., Region=Block.Name) %>%
+        mutate(Site_Name = ifelse((SITE=="RI-01" & Region=="KATM"),'Kukak Bay',  # add Site names
+                           ifelse((SITE=="RI-02" & Region=="KATM"),'Kaflia Bay',
+                           ifelse((SITE=="RI-03" & Region=="KATM"),'Kinak Bay',
+                           ifelse((SITE=="RI-04" & Region=="KATM"),'Amalik Bay',
+                           ifelse((SITE=="RI-05" & Region=="KATM"),'Takli Island',
+                           ifelse((SITE=="RI-01" & Region=="KEFJ"),'Aialik Bay',
+                           ifelse((SITE=="RI-02" & Region=="KEFJ"),'McCarty Fjord',
+                           ifelse((SITE=="RI-03" & Region=="KEFJ"),'Nuka Bay',
+                           ifelse((SITE=="RI-04" & Region=="KEFJ"),'Nuka Passage',
+                           ifelse((SITE=="RI-05" & Region=="KEFJ"),'Harris Bay',       
+                           ifelse((SITE=="RI-01" & Region=="WPWS"),'Hogan Bay',
+                           ifelse((SITE=="RI-02" & Region=="WPWS"),'Iktua Bay',
+                           ifelse((SITE=="RI-03" & Region=="WPWS"),'Whale Bay',
+                           ifelse((SITE=="RI-04" & Region=="WPWS"),'Johnson Bay',
+                           ifelse((SITE=="RI-05" & Region=="WPWS"),'Herring Bay',        
+                           ""))))))))))))))),
+               Year = sapply(strsplit(as.character(DATE), split="/") , function(x) x[3]), # create Sample Year column
+               Year = ifelse(Year %in% c("14-6","2014 - 6"), '2014', Year),  # replace weird first date 
+               Adults_Num = replace(Adults_Num, Adults_Num=="U", NA),
+               Eggs_Num = replace(Eggs_Num, Eggs_Num=="U", NA),
+               Chicks_Num = replace(Chicks_Num, Chicks_Num=="U", NA)
+               )
+         
+  
+  
+  # bind the two data frames together
 OysC2 <- rbind.fill(OysC, BLOY_nest)
 
-# more cleaning
-OysC2[OysC2 == "."] <- NA  # replace "." with NA in the entire data frame
-
 OyC_GOA <- OysC2 %>%
-           select(-X) %>%  # remove weird blank column
-           rename(Nest_Site=NEST_SITE.., Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, 
-                  Chicks_Num=X._CHICKS, Prey_Collected=PREY_COLL., Region=Block.Name) %>%
-           mutate(Site_Name = ifelse((SITE=="RI-01" & Region=="KATM"),'Kukak Bay',  # add Site names
-                              ifelse((SITE=="RI-02" & Region=="KATM"),'Kaflia Bay',
-                              ifelse((SITE=="RI-03" & Region=="KATM"),'Kinak Bay',
-                              ifelse((SITE=="RI-04" & Region=="KATM"),'Amalik Bay',
-                              ifelse((SITE=="RI-05" & Region=="KATM"),'Takli Island',
-                              ifelse((SITE=="RI-01" & Region=="KEFJ"),'Aialik Bay',
-                              ifelse((SITE=="RI-02" & Region=="KEFJ"),'McCarty Fjord',
-                              ifelse((SITE=="RI-03" & Region=="KEFJ"),'Nuka Bay',
-                              ifelse((SITE=="RI-04" & Region=="KEFJ"),'Nuka Passage',
-                              ifelse((SITE=="RI-05" & Region=="KEFJ"),'Harris Bay',       
-                              ifelse((SITE=="RI-01" & Region=="WPWS"),'Hogan Bay',
-                              ifelse((SITE=="RI-02" & Region=="WPWS"),'Iktua Bay',
-                              ifelse((SITE=="RI-03" & Region=="WPWS"),'Whale Bay',
-                              ifelse((SITE=="RI-04" & Region=="WPWS"),'Johnson Bay',
-                              ifelse((SITE=="RI-05" & Region=="WPWS"),'Herring Bay',        
-                              ""))))))))))))))),
-                  Year = sapply(strsplit(as.character(DATE), split="/") , function(x) x[3]), # create Sample Year column
-                  Year = ifelse(Year == "14-6", '2014', Year),  # replace weird first date 
-                  Adults_Num = replace(Adults_Num, Adults_Num=="U", NA),
-                  Eggs_Num = replace(Eggs_Num, Eggs_Num=="U", NA),
-                  Chicks_Num = replace(Chicks_Num, Chicks_Num=="U", NA)
-                  ) %>%
+           select(-START.TIME,-END.TIME) %>%
            filter(STATUS %in% c('A','O'), Site_Name!="") %>%
            mutate_each(funs(as.numeric), Adults_Num,Chicks_Num,Eggs_Num) %>% # change columns to numeric
            group_by(Region, Site_Name, Year) %>%
@@ -92,6 +121,12 @@ OyC_GOA <- OysC2 %>%
            arrange(Region, Site_Name, Year) %>% 
            select(Region, Site_Name, Year, BLOYAdult_breed_n) # select just breeding Adults
 head(OyC_GOA)
+
+
+
+
+
+
 
 
 # Status column definitions:

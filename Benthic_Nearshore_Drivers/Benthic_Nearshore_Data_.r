@@ -94,8 +94,8 @@ BenNear <- merge(BenNear,Am_IA,all.x=T)          # Alaria
 BenNear <- merge(BenNear,No_IA,all.x=T)          # Odonthalia / Neorhodomela sp.
 BenNear <- merge(BenNear,ephm_IA,all.x=T)        # Ephemeral algae
 BenNear <- merge(BenNear,ElG,all.x=T)            # Eelgrass
-BenNear <- merge(BenNear,OyC_GOA,all.x=T)        # Black Oyster Catchers
-
+BenNear <- merge(BenNear,OyC_GOA,all.x=T)        # BLOY breeding adults
+BenNear <- merge(BenNear,       ,all.x=T)        # BLOY diet
 
 
 BenNear <- arrange(BenNear, Region,Site_Name,Year,Quadrat)
