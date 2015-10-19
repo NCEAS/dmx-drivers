@@ -110,14 +110,15 @@ PerCovCalc <- function(df, new_column_name) {
               df1 <- left_join(df, x, by=c("Site_Code", "Site_Name", "Year", 
                                            "Elevation_Position", "Quadrat"))
               # calculate percent cover per quadrat
-              df1 %>%
-                  count(Site_Code, Site_Name, Year, Elevation_Position, Quadrat, Point_Count) %>%
-                  mutate(Per_Cov = (n/Point_Count)*100) %>% 
-                  group_by(Site_Name, Year, Quadrat) %>%
-                  summarise_(.dots = setNames(list(~mean(Per_Cov)), new_column_name)) %>%  # mean of elevations together
-                  ungroup() %>% 
-                  select_("Site_Name", "Year", "Quadrat", new_column_name) %>%
-                  arrange(Site_Name, Year, Quadrat)
+              df1 <- df1 %>%
+                     count(Site_Code, Site_Name, Year, Elevation_Position, Quadrat, Point_Count) %>%
+                     mutate(Per_Cov = (n/Point_Count)*100) %>% 
+                     group_by(Site_Name, Year, Quadrat) %>%
+                     summarise_(.dots = setNames(list(~mean(Per_Cov)), new_column_name)) %>%  # mean of elevations together
+                     ungroup() %>% 
+                     select_("Site_Name", "Year", "Quadrat", new_column_name) %>%
+                     arrange(Site_Name, Year, Quadrat)
+              return(df1)
               }
 #####
 #####
