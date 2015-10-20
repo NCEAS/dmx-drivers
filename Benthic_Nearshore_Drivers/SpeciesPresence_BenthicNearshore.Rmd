@@ -1,0 +1,97 @@
+---
+title: "Species Presence for GOA Benthic Nearshore"
+author: "Rachael Blake"
+date: "October 14, 2015"
+output:
+  html_document:
+    theme: united
+  pdf_document: default
+  word_document: default
+---
+
+This looks at the presence of a few species in certain regions, based on what Tom Dean mentioned in the phone call on Oct 12, 2015.  
+
+```{r, include=FALSE}
+# This just loads the appropriate packages needed (order does matter):
+library(httr)
+library(plyr)
+library(dplyr)
+library(XML)
+library(curl)
+library(rvest)
+library(tidyr)
+library(stringr)
+```
+
+This loads the data from the AOOS portal.  This is the raw Intertidal Inverts and Algae file.
+```{r}
+URL_IA <- "https://workspace.aoos.org/published/file/744b4b95-e596-41cc-9419-881165da2864/BenthicNearshoreSystemsInGOA_SOP04_RockyCover_2006to2014_Data_20141015.csv"
+IAGet <- GET(URL_IA)
+IA1 <- content(IAGet, as='text')
+IA <- read.csv(file=textConnection(IA1))
+```
+
+This defines which sites are in which region: 
+```{r}
+PWS_Sites <- c("Galena Bay","Observation Island","Olsen Bay","Port Fidalgo",
+               "Simpson Bay","Bettles Bay","Cedar Bay","Esther Passage",
+               "Perry Island","Unakwik Inlet","Disk Island","Herring Bay",
+               "Herring Bay-Bear Cove","Herring Bay-Southwest","Hogan Bay",
+               "Iktua Bay","Johnson Bay","Northwest Bay","Whale Bay")
+
+KATM <- c("Amalik Bay","Kaflia Bay","Kinak Bay", "Kukak Bay","Ninagiak Island",
+          "Takli Island")
+```
+
+## _Alaria marginata_ presence
+
+This selects records of _Alaria marginata_ at all PWS sites.  
+Result: _Alaria_ occurs at Observation Island in 2012 & 2014.
+```{r}
+A_PWS <- filter(IA, Site_Name %in% PWS_Sites & Species_Name=="Alaria marginata")
+```
+
+Shows the first few rows of the data set:
+```{r}
+head(A_PWS) 
+```
+
+Shows the last few rows of the data set:
+```{r}
+tail(A_PWS)
+```
+
+##  _Odonthalia / Neorhodomela sp._ presence
+
+This selects records of the _Odonthalia / Neorhodomela sp._ species complex at all KATM sites.  
+NOTE: The _Odonthalia / Neorhodomela sp._ species complex includes four Species_Name values.    
+Result: _Odonthalia / Neorhodomela sp._ species complex occurs at least once at all sites during years 2010, 2012, 2013, and 2014.
+```{r}
+Neo_sp <- c("Neorhodomela oregona","Neorhodomela larix",
+            "Odonthalia / Neorhodomela sp.","Odonthalia floccosa")
+O_KATM <- filter(IA, Site_Name %in% KATM & Species_Name %in% Neo_sp & 
+                     Sample_Year %in% c(2010,2011,2012,2013,2014,2015))
+```
+
+Shows the first few rows of the data set: 
+```{r}
+head(O_KATM) 
+```
+
+Shows the last few rows of the data set:
+```{r}
+tail(O_KATM)
+```
+
+Shows which years _Odonthalia / Neorhodomela sp._ occurs.
+```{r}
+unique(O_KATM$Sample_Year)
+```
+
+Shows which sites _Odonthalia / Neorhodomela sp._ occurs. 
+```{r}
+unique(O_KATM$Site_Name)
+```
+
+
+
