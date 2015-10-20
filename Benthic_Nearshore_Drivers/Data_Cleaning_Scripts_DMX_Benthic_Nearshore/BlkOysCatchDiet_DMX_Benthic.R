@@ -43,7 +43,8 @@ BLOY_diet1 <- unzip_read(BLOYzip_diet)  ;  unlink(BLOYzipd)
 
 # Cleaning, filtering, etc. 
 # make common genus-level categories
-Nucella <- c("Nucella spp.","Nucella lima","Nucella canaliculata","N. lima","N. lamellosa")
+Nucella <- c("Nucella spp.","Nucella lima","Nucella canaliculata","N. lima","N. lamellosa",
+             "N. marginata")
 Lottia <- c("Lottia","Lottia persona","Lottia digitalis","Lottia scutum","Lottia pelta",
             "L. pelta","L. digitalis","L. scutum")
 Mopalia <- c("Mopalia","Mopalia sp.","M. lignosa")
@@ -62,7 +63,7 @@ Leukoma <- c("L. staminea")
 Telmessus <- c("T. cheiragonus")                
 Littorina <- c("L. sitkana")
 
-# N. marginata  ??????????????????????????????                             
+# N. marginata = Nucella emarginata                          
 
 # clean first data frame (pre 2014 data)
 BLOY_diet1[BLOY_diet1 == "."] <- NA  # replace "." with NA in the entire data frame
@@ -163,10 +164,10 @@ BLOYD_Size <- BLOYD_GOA %>%
               summarize(BLOYDietItem_meanSzmm = mean(Size_mm, na.rm=TRUE)) %>%
               ungroup()
 
-# still need to add calculation of the proportion of biomass provided by 
-# limpets, mussels, other                      
+# still need to add calculation of the "proportion of biomass provided by 
+# limpets, mussels, other"                      
                       
-                    
+  #### Why are the critters so large??????????????????????????                  
                       
                       
                       
