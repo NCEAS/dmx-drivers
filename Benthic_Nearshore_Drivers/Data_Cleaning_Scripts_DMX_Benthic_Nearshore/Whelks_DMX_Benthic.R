@@ -18,7 +18,7 @@ library(stringr)
 ## 2) format to annual estimates (2 column dataframe with cols=Year,spEstimate)
 
 #############
-URL_NK <- "https://workspace.aoos.org/published/file/52065f52e4b0f364fbbb186e/NearshoreBenthicSystemsinGOA_RockyNucellaKatharinaRawData_2006thru2013.csv"
+URL_NK <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-udnRXQ1hTX3YzMXc"
 NKGet <- GET(URL_NK)
 WCH1 <- content(NKGet, as='text')
 WCH <- read.csv(file=textConnection(WCH1))
@@ -32,7 +32,7 @@ Wlk_GOA <- WCH %>%
            rename(Year=Sample_Year, Quadrat=Quadrat_Num)  %>%  # rename columns
            mutate(Whelk_n_m2 = Density..individuals.per.2.square.m./2) %>% # getting n per m2
            group_by(Site_Name, Year, Quadrat) %>%
-           summarise(Whelk_Mean_n_m2=sum(Whelk_n_m2)) %>%
+           summarise(Whelk_Sum_n_m2=sum(Whelk_n_m2)) %>%
            ungroup() %>%
            arrange(Site_Name, Year, Quadrat)
 
