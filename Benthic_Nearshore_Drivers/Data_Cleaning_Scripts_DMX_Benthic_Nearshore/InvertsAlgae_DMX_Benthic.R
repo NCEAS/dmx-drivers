@@ -25,6 +25,18 @@ IA1 <- content(IAGet, as='text')
 IA <- read.csv(file=textConnection(IA1))
 head(IA)
 
+# 2015 data
+URL_IA15 <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-uRFppOVdDUDdqM1U"
+IAGet15 <- GET(URL_IA15)
+IA115 <- content(IAGet15, as='text')
+IA15 <- read.csv(file=textConnection(IA115))
+head(IA15)
+
+# merge the pre 2015 and 2015 data
+IA2 <- bind_rows(IA,IA15) 
+head(IA15) ; tail(IA15)
+
+
 # Cleaning
 # define common categories of species for larger aggregation of data
 anemone <-  c("Anthopleura elegantissima","Anthopleura xanthogrammica","Epiactis sp.",
@@ -69,7 +81,7 @@ tunicate <- c("unidentified tunicate")
 worm <- c("spirorbidae","unidentified worm")
 
 
-IA_GOA <- IA %>% 
+IA_GOA <- IA2 %>% 
           filter(Sample_Year %in% c(2010, 2011, 2012, 2013, 2014, 2015)) %>% # taking out years before 2010
           rename(Year=Sample_Year, Quadrat=Quadrat_Num) %>%
           mutate(Common_Cat = ifelse((Species_Name %in% anemone),'anemone',

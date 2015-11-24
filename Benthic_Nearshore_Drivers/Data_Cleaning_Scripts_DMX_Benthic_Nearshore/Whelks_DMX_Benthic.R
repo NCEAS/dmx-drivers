@@ -18,7 +18,7 @@ library(stringr)
 ## 2) format to annual estimates (2 column dataframe with cols=Year,spEstimate)
 
 #############
-URL_NK <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-udnRXQ1hTX3YzMXc"
+URL_NK <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-ud3c2Y2xYOFQtdm8"
 NKGet <- GET(URL_NK)
 WCH1 <- content(NKGet, as='text')
 WCH <- read.csv(file=textConnection(WCH1))
