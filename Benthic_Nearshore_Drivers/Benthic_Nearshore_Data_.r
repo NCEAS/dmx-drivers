@@ -63,10 +63,78 @@ BenNear <- BenNearSites %>%
                            ifelse((Site_Name %in% c("Disk Island","Herring Bay",
                                                     "Herring Bay-Bear Cove","Herring Bay-Southwest",
                                                     "Hogan Bay","Iktua Bay","Johnson Bay",
-                                                    "Northwest Bay","Whale Bay")),'WPWS',""))))))
-    
+                                                    "Northwest Bay","Whale Bay")),'WPWS',"")))))),
+                  Lat = ifelse((Site_Name=="Aialik Bay"),'59.876640',
+                        ifelse((Site_Name=="Amalik Bay"),'58.079222',
+                        ifelse((Site_Name=="Bettles Bay"),'60.954960', 
+                        ifelse((Site_Name=="Cedar Bay"),'60.966140',
+                        ifelse((Site_Name=="Chinitna Bay"),'59.875902',
+                        ifelse((Site_Name=="Chisik Island"),'60.174123',
+                        ifelse((Site_Name=="Disk Island"),'60.504330',
+                        ifelse((Site_Name=="Esther Passage"),'60.925700',
+                        ifelse((Site_Name=="Galena Bay"),'60.932510',
+                        ifelse((Site_Name=="Harris Bay"),'59.737660',
+                        ifelse((Site_Name=="Herring Bay"),'60.459890',
+                        ifelse((Site_Name=="Herring Bay-Bear Cove"),'60.469310',
+                        ifelse((Site_Name=="Herring Bay-Southwest"),'',
+                        ifelse((Site_Name=="Hogan Bay"),'60.201970',
+                        ifelse((Site_Name=="Iktua Bay"),'60.130040',
+                        ifelse((Site_Name=="Johnson Bay"),'60.339950',
+                        ifelse((Site_Name=="Johnson Creek"),'60.000127',
+                        ifelse((Site_Name=="Kaflia Bay"),'58.256944',
+                        ifelse((Site_Name=="Kinak Bay"),'58.186556',
+                        ifelse((Site_Name=="Kukak Bay"),'58.316583',
+                        ifelse((Site_Name=="McCarty Fjord"),'59.508530',
+                        ifelse((Site_Name=="Ninagiak Island"),'58.454510',
+                        ifelse((Site_Name=="Northwest Bay"),'60.555430',
+                        ifelse((Site_Name=="Nuka Bay"),'59.537230',
+                        ifelse((Site_Name=="Nuka Passage"),'59.420710',
+                        ifelse((Site_Name=="Observation Island"),'60.602070', 
+                        ifelse((Site_Name=="Olsen Bay"),'60.731190',  
+                        ifelse((Site_Name=="Perry Island"),'60.677100',  
+                        ifelse((Site_Name=="Polly Creek"),'60.291554',  
+                        ifelse((Site_Name=="Port Fidalgo"),'60.862960',  
+                        ifelse((Site_Name=="Simpson Bay"),'60.680820',  
+                        ifelse((Site_Name=="Takli Island"),'58.063500',  
+                        ifelse((Site_Name=="Tukendni Bay"),'60.225920',  
+                        ifelse((Site_Name=="Unakwik Inlet"),'60.949480',  
+                        ifelse((Site_Name=="Whale Bay"),'60.226610', ""))))))))))))))))))))))))))))))))))),
+                  Long = ifelse((Site_Name=="Aialik Bay"),'-149.632890',
+                         ifelse((Site_Name=="Amalik Bay"),'-154.466000',
+                         ifelse((Site_Name=="Bettles Bay"),'-148.299420', 
+                         ifelse((Site_Name=="Cedar Bay"),'-147.394910',
+                         ifelse((Site_Name=="Chinitna Bay"),'-152.927586',
+                         ifelse((Site_Name=="Chisik Island"),'-152.593689',
+                         ifelse((Site_Name=="Disk Island"),'-147.654660',
+                         ifelse((Site_Name=="Esther Passage"),'-148.058720',
+                         ifelse((Site_Name=="Galena Bay"),'-146.665010',
+                         ifelse((Site_Name=="Harris Bay"),'-149.958370',
+                         ifelse((Site_Name=="Herring Bay"),'-147.717530',
+                         ifelse((Site_Name=="Herring Bay-Bear Cove"),'-147.709290',
+                         ifelse((Site_Name=="Herring Bay-Southwest"),'',
+                         ifelse((Site_Name=="Hogan Bay"),'-147.759840',
+                         ifelse((Site_Name=="Iktua Bay"),'-147.998280',
+                         ifelse((Site_Name=="Johnson Bay"),'-147.834820',
+                         ifelse((Site_Name=="Johnson Creek"),'-152.623964',
+                         ifelse((Site_Name=="Kaflia Bay"),'-154.197694',
+                         ifelse((Site_Name=="Kinak Bay"),'-154.465750',
+                         ifelse((Site_Name=="Kukak Bay"),'-154.206583',
+                         ifelse((Site_Name=="McCarty Fjord"),'-150.341780',
+                         ifelse((Site_Name=="Ninagiak Island"),'-154.014360',
+                         ifelse((Site_Name=="Northwest Bay"),'-147.611770',
+                         ifelse((Site_Name=="Nuka Bay"),'-150.607130',
+                         ifelse((Site_Name=="Nuka Passage"),'-150.646960',
+                         ifelse((Site_Name=="Observation Island"),'-145.730620', 
+                         ifelse((Site_Name=="Olsen Bay"),'-146.188310',  
+                         ifelse((Site_Name=="Perry Island"),'-147.916890',  
+                         ifelse((Site_Name=="Polly Creek"),'-152.404880',  
+                         ifelse((Site_Name=="Port Fidalgo"),'-146.230090',  
+                         ifelse((Site_Name=="Simpson Bay"),'-145.878720',  
+                         ifelse((Site_Name=="Takli Island"),'-154.484056',  
+                         ifelse((Site_Name=="Tukendni Bay"),'-152.550853',  
+                         ifelse((Site_Name=="Unakwik Inlet"),'-147.594440',  
+                         ifelse((Site_Name=="Whale Bay"),'-148.251050', "")))))))))))))))))))))))))))))))))))   
                   ) %>%
-           select(Region,Site_Name) %>%
            arrange(Region)
 
 BenNear <- BenNear[rep(seq_len(nrow(BenNear)), each=6),]   # repeats data frame the number of years
@@ -106,7 +174,7 @@ BenNear <- arrange(BenNear, Region,Site_Name,Year,Quadrat)
 head(BenNear)
 
 # Optional: Write data frame to a CSV
-#write.csv(BenNear, file = "BenNear.csv", row.names=FALSE)
+#write.csv(BenNear, file = "BenthicNearshore_AllData.csv", row.names=FALSE)
 
 
 
