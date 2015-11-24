@@ -31,42 +31,39 @@ anemone <-  c("Anthopleura elegantissima","Anthopleura xanthogrammica","Epiactis
               "Metridium senile","unidentified anemone","Urticina crassicornis")
 barnacle <- c("Balanus / Semibalanus sp.","Balanus glandula","barnacle","barnacle spat",
               "Chthamalus dalli","Semibalanus balanoides","Semibalanus cariosus")
-brown_alga <- c("Alaria marginata","Analipus japonicus","Chordaria flagelliformis",
-                "Coilodesme bulligera","Desmarestia aculeata","Dictyosiphon foeniculaceus",
-                "Ectocarpus sp.","Elachista fucicola","Elachista sp.","Eudesme virescens",
-                "Fucus distichus","Leathesia marina","Melanosiphon / Scytosiphon sp.",
-                "Melanosiphon intestinalis","Petalonia fascia","Ralfsia fungiformis",
-                "Ralfsia sp.","Saccharina latissima","Saccharina sessilis",
-                "Scytosiphon lomentaria","Soranthera ulvoidea","unidentified brown algae")
-bryazoan <- c("encrusting bryozoan","Eurystomella bilabiata","foliose bryozoan",
-              "Stomachetosella cruenta")
+brown_alga <- c("Alaria marginata","Analipus japonicus","Desmarestia aculeata",
+                "Fucus distichus","Ralfsia fungiformis","Ralfsia sp.","Saccharina latissima",
+                "Saccharina sessilis","unidentified brown algae")
+brown_alga_annual <- c("Chordaria flagelliformis","Dictyosiphon foeniculaceus","Ectocarpus sp.",
+                       "Elachista sp.","Elachista fucicola","Eudesme virescens","Leathesia marina",
+                       "Melanosiphon / Scytosiphon sp.","Melanosiphon intestinalis","Scytosiphon lomentaria",
+                       "Petalonia fascia","Pylaiella littoralis","Soranthera ulvoidea")
+bryazoan <- c("encrusting bryozoan","Eurystomella bilabiata","foliose bryozoan","Stomachetosella cruenta")
 chiton <- c("Cryptochiton stelleri")
 clam <- c("Hiatella arctica","Mya truncata")
-coralline_alga <- c("Corallina sp.","encrusting coralline algae","foliose coralline algae")
+coralline_alga <- c("Corallina sp.","encrusting coralline algae")
 encrusting_red_alga <- c("Hildenbrandia sp.","non-coralline algal crust")
-#ephemeral_aglae <- (???????????????????????????????????????????)
-filamentous_brown <- c("Pylaiella littoralis")
-filamentous_green <- c("Chaetomorpha melagonium","Chaetomorpha sp.","Cladophora / Chaetomorpha sp.",
-                       "Ulothrix flacca")
-green_alga <- c("Acrosiphonia sp.","Blidingia minima var. minima","Ulva / Monostroma sp.",
-                "Ulva sp.","unidentified green algae")
+green_alga <- c("unidentified green algae")
+green_alga_annual <- c("Acrosiphonia sp.","Blidingia minima var. minima",
+                       "Cladophora / Chaetomorpha sp.","Chaetomorpha sp.","Chaetomorpha melagonium",
+                       "Ulothrix flacca","Ulva / Monostroma sp.","Ulva sp.")
 hydroid <- c("unidentified hydroid")
 jingle_shell <- c("Pododesmus macroschisma")
 mussel <- c("Modiolus modiolus","Musculus sp","Mytilus trossulus")
-red_alga <- c("Ahnfeltia fastigiata","Antithamnionella pacifica",
-              "Boreophyllum / Pyropia / Wildemania sp.","Callithamnion pikeanum",
-              "Ceramium pacificum","Constantinea subulifera","Cryptopleura ruprechtiana",
-              "Cryptosiphonia woodii","Dumontia alaskana","Endocladia muricata",
-              "Gloiopeltis furcata","Gracilaria pacifica","Halosaccion glandiforme",
-              "Mastocarpus sp.","Mazzaella parksii","Mazzaella phyllocarpa","Mazzaella sp.",
-              "Microcladia borealis","Nemalion elminthoides","Neoptilota / Ptilota sp.",
+red_alga <- c("Ceramium pacificum","Gracilaria pacifica",
               "Neorhodomela larix","Neorhodomela oregona","Odonthalia / Neorhodomela sp.",
-              "Odonthalia floccosa","Palmaria callophylloides","Palmaria hecatensis",
-              "Palmaria hecatensis/mollis","Palmaria mollis","Palmaria sp.",
-              "Phycodrys / Tokidadendron sp.","Phycodrys fimbriata","Pleonosporium vancouverianum",
-              "Plocamium pacificum","Polysiphonia sp.","Pterosiphonia / Polysiphonia sp.",
-              "Pterosiphonia bipinnata","Ptilota sp.","Rhodochorton purpureum",
-              "Tokidadendron bullatum","unidentified filamentous red algae")
+              "Odonthalia floccosa","Plocamium pacificum","Ptilota sp.","Rhodochorton purpureum",
+              "unidentified filamentous red algae")
+red_alga_annual <- c("Antithamnionella pacifica","Boreophyllum / Pyropia / Wildemania sp.","Coilodesme bulligera",
+                     "Cryptosiphonia woodii","Dumontia alaskana","Halosaccion glandiforme",
+                     "Mazzaella parksii","Mazzaella phyllocarpa","Mazzaella sp.","Nemalion elminthoides",
+                     "Palmaria callophylloides","Palmaria hecatensis","Palmaria hecatensis/mollis",
+                     "Palmaria mollis","Palmaria sp.","Pleonosporium vancouverianum")
+red_alga_perennial <- c("Callithamnion pikeanum","Ahnfeltia fastigiata","Constantinea subulifera",
+                        "Cryptopleura ruprechtiana","Endocladia muricata","foliose coralline algae",
+                        "Gloiopeltis furcata","Mastocarpus sp.","Microcladia borealis","Neoptilota / Ptilota sp.",
+                        "Phycodrys / Tokidadendron sp.","Phycodrys fimbriata","Tokidadendron bullatum",
+                        "Polysiphonia sp.","Pterosiphonia / Polysiphonia sp.","Pterosiphonia bipinnata")
 sponge <- c("unidentified sponge")
 tunicate <- c("unidentified tunicate")
 worm <- c("spirorbidae","unidentified worm")
@@ -78,22 +75,23 @@ IA_GOA <- IA %>%
           mutate(Common_Cat = ifelse((Species_Name %in% anemone),'anemone',
                               ifelse((Species_Name %in% barnacle),'barnacle',
                               ifelse((Species_Name %in% brown_alga),'brown_alga',
+                              ifelse((Species_Name %in% brown_alga_annual),'brown_alga_annual',       
                               ifelse((Species_Name %in% bryazoan),'bryazoan',
                               ifelse((Species_Name %in% chiton),'chiton',
                               ifelse((Species_Name %in% clam),'clam',
                               ifelse((Species_Name %in% coralline_alga),'coralline_alga',
                               ifelse((Species_Name %in% encrusting_red_alga),'encrusting_red_alga',
-                              #ifelse((Species_Name %in% ephemeral_aglae),'ephemeral_aglae',
-                              ifelse((Species_Name %in% filamentous_brown),'filamentous_brown',
-                              ifelse((Species_Name %in% filamentous_green),'filamentous_green',
                               ifelse((Species_Name %in% green_alga),'green_alga',
+                              ifelse((Species_Name %in% green_alga_annual),'green_alga_annual',
                               ifelse((Species_Name %in% hydroid),'hydroid',
                               ifelse((Species_Name %in% jingle_shell),'jingle_shell',
                               ifelse((Species_Name %in% mussel),'mussel',
                               ifelse((Species_Name %in% red_alga),'red_alga',
+                              ifelse((Species_Name %in% red_alga_annual),'red_alga_annual',
+                              ifelse((Species_Name %in% red_alga_perennial),'red_alga_perennial',
                               ifelse((Species_Name %in% sponge),'sponge',
                               ifelse((Species_Name %in% tunicate),'tunicate',
-                              ifelse((Species_Name %in% worm),'worm',"")))))))))))))))))))
+                              ifelse((Species_Name %in% worm),'worm',""))))))))))))))))))))
                  )     # add new column with common category
 head(IA_GOA) ; IA_GOA[45:90,]
 
@@ -135,26 +133,39 @@ b_IA <- PerCovCalc(b_IA_1, "barnacle_Per_Cov") # call the function
 ms_IA_1 <- filter(IA_GOA, Common_Cat=="mussel")   # Filter out the species/entry of interest
 ms_IA <- PerCovCalc(ms_IA_1, "mussel_Per_Cov")  # call the function
 
-# Fucus distichus
-Fd_IA_1 <- filter(IA_GOA, Species_Name=="Fucus distichus")   # Filter out the species/entry of interest
-Fd_IA <- PerCovCalc(Fd_IA_1, "Fuc_dist_Per_Cov")  # call the function
+# For the algae we will have Alaria, Fucus, Odnthalia/Neorhodomela??, annual browns, 
+# annual greens, annual reds, perennial reds.
 
 # Alaria marginata
 Am_IA_1 <- filter(IA_GOA, Species_Name=="Alaria marginata")   # Filter out the species/entry of interest
 Am_IA <- PerCovCalc(Am_IA_1, "Ala_marg_Per_Cov")  # call the function
 
+# Fucus distichus
+Fd_IA_1 <- filter(IA_GOA, Species_Name=="Fucus distichus")   # Filter out the species/entry of interest
+Fd_IA <- PerCovCalc(Fd_IA_1, "Fuc_dist_Per_Cov")  # call the function
+
 # Neorhodomela sp
 Neo_sp <- c("Neorhodomela oregona","Neorhodomela larix","Odonthalia / Neorhodomela sp.","Odonthalia floccosa")
 No_IA_1 <- filter(IA_GOA, Species_Name %in% Neo_sp)   # Filter out the species/entry of interest
-No_IA <- PerCovCalc(No_IA_1, "Neo_sp_Per_Cov") # call the function
+No_IA <- PerCovCalc(No_IA_1, "Neo_Odon_sp_Per_Cov") # call the function
+
+# Brown Algae Annual
+BAann_IA_1 <- filter(IA_GOA, Common_Cat=="brown_alga_annual")   # Filter out the species/entry of interest
+BAann_IA <- PerCovCalc(BAann_IA_1, "Brwn_alg_ann_Per_Cov")  # call the function
+
+# Green Algae Annual
+GAann_IA_1 <- filter(IA_GOA, Common_Cat=="green_alga_annual")   # Filter out the species/entry of interest
+GAann_IA <- PerCovCalc(GAann_IA_1, "Green_alg_ann_Per_Cov")  # call the function
+
+# Red Algae Annual
+RAann_IA_1 <- filter(IA_GOA, Common_Cat=="red_alga_annual")   # Filter out the species/entry of interest
+RAann_IA <- PerCovCalc(RAann_IA_1, "Red_alg_ann_Per_Cov")  # call the function
+
+# Red Algae Perennial
+RAper_IA_1 <- filter(IA_GOA, Common_Cat=="red_alga_perennial")   # Filter out the species/entry of interest
+RAper_IA <- PerCovCalc(RAper_IA_1, "Red_alg_per_Per_Cov")  # call the function
 
 
-
-## IS THIS WHAT IS MEANT BY EPHEMERAL ALGAE??
-# Ephemeral Algae
-ephem_alg <- c("filamentous_brown", "filamentous_green", "green_alga")
-ephm_IA_1 <- filter(IA_GOA, Common_Cat %in% ephem_alg)   # Filter out the species/entry of interest
-ephm_IA <- PerCovCalc(ephm_IA_1, "ephemeral_algae_Per_Cov")  # call the function
 
 
 
