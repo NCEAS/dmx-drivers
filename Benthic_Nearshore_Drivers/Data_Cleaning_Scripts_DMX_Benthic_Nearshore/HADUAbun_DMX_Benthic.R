@@ -26,46 +26,33 @@ NPPSDzipd <- tempfile()
 download.file("http://alaska.usgs.gov/data/nppsd/nppsd.zip", NPPSDzipd, mode="wb")
 NPPSDzip_L <- unzip(NPPSDzipd, list=TRUE)
 
-NPPSDzip_DB <- NPPSDzip_L[grep(".mdb", NPPSDzip_L$Name),]$Name   # subsets the data files
+NPPSDzip_DB <- NPPSDzip_L[grep(".mdb", NPPSDzip_L$Name),]$Name   # creates list of files I want
+UNz <- unzip(NPPSDzipd, NPPSDzip_DB) # unzip the two mdb files (makes list I think)
 
-unzip_read <- function(file_list){
-              # for every file in zipped file list, do the following 
-              z <- unzip(NPPSDzipd, file_list)
-              rbind.fill(lapply(z, mdb.get))
-              }
+mdb_table_list <- function(file_list){
+                  # for every mdb file in the list, do the following 
+                  conn <- odbcConnectAccess2007(path.expand(file_list)) # establish a connection
+                  table_list <- subset(sqlTables(conn), TABLE_TYPE=="TABLE") # lists tables in DB
+                  return(table_list)
+                  }
 
-NPPSD_HADU <- unzip_read(NPPSDzip_DB)  ;  unlink(NPPSDzipd)
+lapply(UNz, mdb_table_list)  # running the function over the two .mdb files
 
-contents(NPPSD_HADU)
+DATA_OBS <- sqlFetch(conn,"tbl_DATA_OBS")  # read in a table
+LOCATION <- sqlFetch(conn,"tbl_LOCATION") 
+MasterKey <- sqlFetch(conn,"NPPSDv2_Masterkey_Crosswalk_3_19_14")
 
+close(NPPSD_conn) 
+unlink(NPPSDzipd)
 
+# Filter and Sort data       # Density is Number of Birds per km2
+HADUAbun <- DATA_OBS %>%
+            filter(`NPPSD 4-Letter Code`=="HADU", `PI Credit`=="David Irons") %>%
+            merge(LOCATION, by=c("Master Key","Sample Area","Source","PI Credit")) %>%
+            filter(!(`Modified Behavior` %in% c("Land","Boat","Dead")))
 
-z <- unzip(NPPSDzipd, NPPSDzip_DB)
-pzM<-mdb.get('z', tables='NPPSD_Back_v2')
+# NOTE: data for years 1989 1990 1991 1993 1994 1996 1998 2000
+# No recent data from David Irons in this dataset.  Hmmm....
+                
+# filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%                 
 
-
-
-#pzM<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='menutblTaxa') # species list
-#pzCr<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblCruiseData') # cruise data
-#pzTow<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblTowData') # Tow data, contains species concetrations per tow and year embeded in the TowID other metadata tables not needed
-
-
-
-
-
-
-
-
-DAT <- read.csv('tbl_DATA_OBS.csv',header=T) ##  Observations
-head(DAT) ; str(DAT)
-
-STE <- read.csv('tbl_LOCATION.csv',header=T) ## Sample info
-head(STE) ; str(STE)
-
-SOT <- filter(DAT, Common.Name =="Sea Otter")   # select otter observations
-
-SOTT <- SOT %>%
-        merge(STE, by=c("Master.Key"))  %>%   # add in the sample info
-        rename(Sample_Year=Year) %>%         # rename column
-        filter(Sample_Year %in% c(2010,2011,2012,2013,2014))   #  select years of interest
-head(SOTT)
