@@ -38,11 +38,11 @@ mdb_table_list <- function(file_list){
 
 lapply(UNz, mdb_table_list)  # running the function over the two .mdb files
 
+conn <- odbcConnectAccess2007(path.expand("./NPPSD_Back_v2.mdb")) # establish a connection
 DATA_OBS <- sqlFetch(conn,"tbl_DATA_OBS")  # read in a table
 LOCATION <- sqlFetch(conn,"tbl_LOCATION") 
-MasterKey <- sqlFetch(conn,"NPPSDv2_Masterkey_Crosswalk_3_19_14")
 
-close(NPPSD_conn) 
+close(conn) 
 unlink(NPPSDzipd)
 
 # Filter and Sort data       # Density is Number of Birds per km2
@@ -585,11 +585,11 @@ HADUAbun <- DATA_OBS %>%
             merge(LOCATION, by=c("Master Key","Sample Area","Source","PI Credit")) %>%
             filter(!(`Modified Behavior` %in% c("Land","Boat","Dead"))) %>%
             mutate(LatLon = paste(Lat,Lon),
-                   Region = ifelse((LatLon %in% EPWS),'EPWS',
-                            ifelse((LatLon %in% NPWS),'NPWS',
-                            ifelse((LatLon %in% WPWS),'WPWS',
-                            ifelse((LatLon %in% test),'test',
-                                   "??"))))) %>%
+                   Region = ifelse((LatLon %in% EPWS),'test1',
+                            ifelse((LatLon %in% NPWS),'test2',
+                            ifelse((LatLon %in% WPWS),'test3',
+                            ifelse((LatLon %in% test),'test4',
+                                   "this doesn't work!"))))) %>%
             rename(HADU_Density_km2=Density) %>%
             select(HADU_Density_km2,Year)
 
