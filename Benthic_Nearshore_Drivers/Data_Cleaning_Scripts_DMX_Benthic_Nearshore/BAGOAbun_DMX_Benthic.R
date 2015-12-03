@@ -50,7 +50,7 @@ BAGOAbun <- DATA_OBS %>%
             filter(`NPPSD 4-Letter Code`=="BAGO", `PI Credit`=="David Irons") %>%
             merge(LOCATION, by=c("Master Key","Sample Area","Source","PI Credit")) %>%
             filter(!(`Modified Behavior` %in% c("Land","Boat","Dead"))) %>%
-            # Region and Site info needs to be added here
+            # Region info needs to be added here
             rename(BAGO_Density_km2=Density) %>%
             select(BAGO_Density_km2,Year)
 
