@@ -167,13 +167,13 @@ BenNear <- merge(BenNear,RAper_IA,all.x=T)       # Red Algae Perennial
 BenNear <- merge(BenNear,ElG,all.x=T)            # Eelgrass
 BenNear <- merge(BenNear,OyC_GOA,all.x=T)        # BLOY breeding adults
 #BenNear <- merge(BenNear,       ,all.x=T)        # BLOY diet
-#BenNear <- merge(BenNear,  ,all.x=T)             # BLOY abundance
+#BenNear <- merge(BenNear,BLOYAbun  ,all.x=T)     # BLOY abundance
 #BenNear <- merge(BenNear,HADUAbun,all.x=T)       # HADU abundance
-#BenNear <- merge(BenNear,  ,all.x=T)             # BAGO abundance
+#BenNear <- merge(BenNear,BAGOAbun,all.x=T)       # BAGO abundance
 
 
 
-BenNear <- arrange(BenNear, Region,Site_Name,Year,Quadrat)
+BenNear <- arrange(BenNear,Region,Site_Name,Year,Quadrat)
 
 head(BenNear)
 

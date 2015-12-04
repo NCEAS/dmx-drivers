@@ -79,8 +79,9 @@ SOf_A <- SOf %>%
                             ifelse((SITE %in% c("OLSON BAY") & Region=="PWS"),'Olsen Bay',
                             ifelse((SITE %in% c("SIMPSON BAY","MOUTH OF SIMPSON BAY") & Region=="PWS"),'Simpson Bay',       
                             ifelse((SITE %in% c("GALENA BAY") & Region=="PWS"),'Galena Bay',
-                            ifelse((SITE %in% c("BOI","BAY OF ISLES; KIM'S ROCK","Bay of Isles","Bay of Isles S. Bite",
-                                                "BAY OF ISLES","BOI; KIM'S ROCK","Eagles Nest Isl/BOI"
+                            ifelse((SITE %in% c("BOI","BAY OF ISLES; KIM'S ROCK","Bay of Isles",
+                                                "Bay of Isles S. Bite","BAY OF ISLES",
+                                                "BOI; KIM'S ROCK","Eagles Nest Isl/BOI"
                                                 ) & Region=="PWS"),'Herring Bay',
                             ifelse((FOCAL.OTTER.COORD.NORTH.DD %in% c("60.10388","60.11315","60.112",
                                                                       "60.10924","60.11121","60.11513"
