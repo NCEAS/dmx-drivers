@@ -19,11 +19,13 @@ library(stringr)
 
 #############
 # Sea Stars
-URL_SS <-"https://workspace.aoos.org/published/file/5204f963e4b067e4402e6ccd/BenthicNearshoreSystemsInGOA__SeaStars_Data_2006_2012.csv"
+URL_SS <- "https://workspace.aoos.org/published/file/60977396-b707-497a-9f53-609cdb2da2af/BenthicNearhsoreSystemsInGOA_SeastarSwath_2006to2014_Data_20141031.csv"
+#  "https://workspace.aoos.org/published/file/5204f963e4b067e4402e6ccd/BenthicNearshoreSystemsInGOA__SeaStars_Data_2006_2012.csv"
 SSGet <- GET(URL_SS)
 SS1 <- content(SSGet, as='text')
 SS <- read.csv(file=textConnection(SS1))
 head(SS)
+  
 
 # 2015 data
 URL_SS15 <-"https://drive.google.com/uc?export=download&id=0By1iaulIAI-uTFc4Uks3NjgzWVU"
@@ -34,17 +36,11 @@ head(SS15)
 
 
 # Cleaning
-SSm <- SS %>%
-       mutate(SS_n_m2 = Density..individuals_per_100_sq_m./100) %>% # getting n per m2
-       select(-Density..individuals_per_100_sq_m.)
-  
-SS15m <- SS15 %>%
-         mutate(SS_n_m2 = Density..individuals.per.200.square.m./200) %>% # getting n per m2
-         select(-Density..individuals.per.200.square.m.)
-
-SS2 <- bind_rows(SSm, SS15m)
+SS2 <- bind_rows(SS, SS15) # bind dataframes together
 
 SS_GOA <- SS2 %>%
+          mutate(SS_n_m2 = Density..individuals.per.200.square.m./200) %>% # getting n per m2
+          select(-Density..individuals.per.200.square.m.) %>%
           rename(Year=Sample_Year) %>%
           filter(Year %in% c(2010, 2011, 2012, 2013, 2014, 2015)) %>% # taking out years before 2010
           # STOP here if you want species-level data
