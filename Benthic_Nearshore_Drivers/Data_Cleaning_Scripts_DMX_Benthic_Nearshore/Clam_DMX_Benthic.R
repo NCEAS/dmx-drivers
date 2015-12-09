@@ -52,7 +52,7 @@ BiV_Abun_Size <- function(df, abun_column_name, size_column_name) {
                  # calculate the abundance (count number of rows)
                  A <- df %>%
                       count(Region, Site_Name, Year, Quadrat) %>%
-                      mutate_(abun_column_name = paste(as.numeric(~n*4))) %>% 
+                      mutate_(.dots= setNames(list(~n*4), abun_column_name)) %>%
                       select_("Region", "Site_Name", "Year", "Quadrat", abun_column_name)
                  # calculate the mean size (average per quadrat)
                  B <- df %>%
