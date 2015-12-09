@@ -51,16 +51,17 @@ Clam <- C %>%
 BiV_Abun_Size <- function(df, abun_column_name, size_column_name) { 
                  # calculate the abundance (count number of rows)
                  A <- df %>%
-                      count(SiteID, Site_Name, Year, Quadrat) %>%
-                      mutate(abun_column_name = n*4) %>% 
-                      select(Region, Site_Name, Year, Quadrat, abun_column_name)
+                      count(Region, Site_Name, Year, Quadrat) %>%
+                      mutate_(abun_column_name = paste(as.numeric(~n*4))) %>% 
+                      select_("Region", "Site_Name", "Year", "Quadrat", abun_column_name)
                  # calculate the mean size (average per quadrat)
                  B <- df %>%
                       filter(!is.na(Size_mm)) %>%
                       group_by(Region,Site_Name,Year,Quadrat) %>% 
-                      summarise_(.dots = setNames(list(~mean(Size_mm)), size_column_name)) %>%
+       #               summarise(size_column_name=mean(Size_mm)) %>%
+                      summarise_(.dots = setNames(list(~mean(Size_mm)), size_column_name)) %>%  # mean of elevations together
                       ungroup() %>%
-                      select(Region, Site_Name, Year, Quadrat, size_column_name)
+                      select_("Region", "Site_Name", "Year", "Quadrat", size_column_name)
                  # bind the two data frames together
                  merge(A, B, by=c("Region","Site_Name","Year","Quadrat"))
                  }
@@ -68,20 +69,19 @@ BiV_Abun_Size <- function(df, abun_column_name, size_column_name) {
 
 # Leukoma staminea 
 Leuk <- filter(Clam, spp.name=="Leukoma staminea")     
-Leuk_Abun_Size <- BiV_Abun_Size(Leuk, "Leuk_Abun_m2","Leuk_MnSize")    
+Leuk_Abun_Size <- BiV_Abun_Size(Leuk, "Leukoma_Abun_m2","Leukoma_MnSize_mm")    
 
 # Macoma spp.
 Mac <-  filter(Clam, spp.name %in% c("Macoma balthica", "Macoma inquinata","Macoma spp."))          
-Maco_Abun_Size <- BiV_Abun_Size(Mac, "","")
+Maco_Abun_Size <- BiV_Abun_Size(Mac, "Macoma_Abun_m2","Macoma_MnSize_mm")
+  
+#Saxidomus gigantea
+Saxi <- filter(Clam, spp.name=="Saxidomus gigantea")
+Saxi_Abun_Size <- BiV_Abun_Size(Saxi, "Saxidomus_Abun_m2","Saxidomus_MnSize_mm")
+
+
   
 
-
-
-  
-
-  
-Saxi_Abun <- Clam %>%
-"Saxidomus gigantea"
 
 
 
