@@ -27,8 +27,8 @@ SOs1 <- content(SOsGet, as='text')
 SOs <- read.csv(file=textConnection(SOs1),strip.white=TRUE)
 head(SOs)
 
-
-
+# Cleaning the data
+SOs[SOs == "."] <- NA  # replace "." with NA in the entire data frame
 
 SOS <- SOs %>%
        rename(Year=YEAR) %>%
@@ -51,19 +51,21 @@ SOS <- SOs %>%
                        ifelse((LAT_DD=="60.24045" & LON_DD=="147.7567"),'WPWS',
                        ifelse((LAT_DD=="60.52808" & LON_DD=="147.0079"),'WPWS',
                        ifelse((LAT_DD=="60.53012" & LON_DD=="147.6088"),'WPWS',
-                       "this doesn't work"))))))))
-              
-              )
-
-  mutate(Species_Name = revalue(Species_Name, c("Nucella sp."="Nucella sp")))
-  Eggs_Num = replace(Eggs_Num, Eggs_Num %in% c("U","N/A"), NA),
+                       "unknown"))))))))
+              ) %>%
+       filter(!Region=="unknown") %>%
+       
   
-SOs[SOs == "."] <- NA  # replace "." with NA in the entire data frame
+
+#  mutate(Species_Name = revalue(Species_Name, c("Nucella sp."="Nucella sp")))
+#  Eggs_Num = replace(Eggs_Num, Eggs_Num %in% c("U","N/A"), NA),
+  
+
 
 head(SOS)
 
-,
-              !(Year=="2010" & SITE=="NA")
+
+
 
 #  x <- readClipboard()
 
