@@ -23,14 +23,22 @@ library(readxl)
 
 # pre 2002-2012 data
 URL_SOf <- "https://workspace.aoos.org/files/302004/FINAL_2002-2012_all_forage_prepped_for_forage_DB_15july2015.xlsx"
-  #"https://workspace.aoos.org/published/file/52211fd1e4b067e4402e7ca8/GWA_Benthic_Sea_Otter_Foraging_Data_2006-2012_28Aug2013.csv"
+
+#Test 1
+testSOf1 <- read_excel(URL_SOf)
+
+#Test 2
 SOfGet <- GET(URL_SOf)
-SOf1 <- content(SOfGet, as='text')
-SOf <- read.csv(file=textConnection(SOfGet))
+testSOf2 <- read_excel(SOfGet)
 
-testSOf <- read_excel(SOfGet, sheet=1)
+head(testSOf)
 
-head(SOf)
+
+#URL_SOf <- "https://workspace.aoos.org/published/file/52211fd1e4b067e4402e7ca8/GWA_Benthic_Sea_Otter_Foraging_Data_2006-2012_28Aug2013.csv"
+#SOfGet <- GET(URL_SOf)
+#SOf1 <- content(SOfGet, as='text')
+#SOf <- read.csv(file=textConnection(SOf1))
+
 
 # 2014 data
 URL_SOf2 <- "https://workspace.aoos.org/published/file/e6bf00c8-1914-41c5-a5fe-4047ddad2bfb/NearshoreBenthicSystemsInGOA_SOP02_SeaOtterForageObservations2014_Data_29May2015.csv"
