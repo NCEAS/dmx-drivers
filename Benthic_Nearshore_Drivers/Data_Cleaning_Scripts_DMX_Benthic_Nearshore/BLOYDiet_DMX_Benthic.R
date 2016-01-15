@@ -41,6 +41,13 @@ unzip_read <- function(file_list){
 
 BLOY_diet1 <- unzip_read(BLOYzip_diet)  ;  unlink(BLOYzipd)
 
+# biomass conversion from Ben Weitzman based on Oftedal et al. 2007 nutritional analyses
+URL_Bm <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-uN2FrdzIzLS1FZUk"
+BmGet <- GET(URL_Bm)
+Bm1 <- content(BmGet, as='text')
+BmCalc <- read.csv(file=textConnection(Bm1))
+head(BmCalc)
+
 # Cleaning, filtering, etc. 
 # make common genus-level categories
 Nucella <- c("Nucella spp.","Nucella lima","Nucella canaliculata","N. lima","N. lamellosa",
@@ -154,15 +161,27 @@ BLOYD_D <- BLOYD %>%
 # bind the two data frames together
 BLOYD_GOA <- rbind.fill(BLOYD_D, BLOY_diet)
 
-
+# calculate variables of interest
 BLOYD_Abun <- BLOYD_GOA %>%
               count(Region,Year,Site_Name,Genus) %>%
-              rename(BLOYDietItem_Abun=n)
+              rename(BLOYDietItem_Abun = n)
   
 BLOYD_Size <- BLOYD_GOA %>%
               group_by(Region,Year,Site_Name,Genus) %>%
               summarize(BLOYDietItem_meanSzmm = mean(Size_mm, na.rm=TRUE)) %>%
               ungroup()
+
+Prey_Bmss <- function(df, genus, bmss_col_name){
+             BLOYD_GOA %>%
+             mutate_(.dots= setNames(list(~BM[grepl(genus,BM$Latin),6]*
+                                                    df2$Size_mm^BM[grepl(genus,BM$Latin),7]), 
+                                                    "biomass_gWW")) %>%
+              
+             return()
+             }
+  
+BLOYD_Bmss <- 
+
 
 # still need to add calculation of the "proportion of biomass provided by 
 # limpets, mussels, other"                      

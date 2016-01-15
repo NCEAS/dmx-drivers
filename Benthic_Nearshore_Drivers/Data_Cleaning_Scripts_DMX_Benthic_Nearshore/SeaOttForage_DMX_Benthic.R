@@ -12,6 +12,7 @@ library(curl)
 library(rvest)
 library(tidyr)
 library(stringr)
+library(readxl)
 
 ## Steps for data cleaning: 
 ## 1) read in data
@@ -20,11 +21,15 @@ library(stringr)
 #############
 # Sea otter diet (Proportion of biomass provided by clams, mussels, crabs, and other)
 
-# pre 2014 data
-URL_SOf <- "https://workspace.aoos.org/published/file/52211fd1e4b067e4402e7ca8/GWA_Benthic_Sea_Otter_Foraging_Data_2006-2012_28Aug2013.csv"
+# pre 2002-2012 data
+URL_SOf <- "https://workspace.aoos.org/files/302004/FINAL_2002-2012_all_forage_prepped_for_forage_DB_15july2015.xlsx"
+  #"https://workspace.aoos.org/published/file/52211fd1e4b067e4402e7ca8/GWA_Benthic_Sea_Otter_Foraging_Data_2006-2012_28Aug2013.csv"
 SOfGet <- GET(URL_SOf)
 SOf1 <- content(SOfGet, as='text')
-SOf <- read.csv(file=textConnection(SOf1))
+SOf <- read.csv(file=textConnection(SOfGet))
+
+testSOf <- read_excel(SOfGet, sheet=1)
+
 head(SOf)
 
 # 2014 data
@@ -38,8 +43,9 @@ head(SOf2)
 SOf[SOf == "."] <- NA  # replace "." with NA in the entire data frame
 
 SOf_A <- SOf %>%
-         rename(Year=Period, Region=REGION) %>%
+         rename(Year=Period, Region=REGION, bout_id=BOUT, bout_date=DATE ) %>%
          filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
+         select(-Area,-Season) %>%          
          mutate_each(funs(as.character), Year) %>% # change class of column   
          mutate(Site_Name = ifelse((SITE %in% c("KUKAK B-10-01I","KUKAK/DEVILS COVE-10-RI1","Kukak/Yugnat-10-RI1",
                                                 "Kukak/Devil's Cove-10-RI1","Kukak; Devils cove","Devils Cove",
@@ -90,7 +96,7 @@ SOf_A <- SOf %>%
                                                                       ) & Region=="PWS"),'Galena Bay',  
                             ifelse((FOCAL.OTTER.COORD.NORTH.DD %in% c("60.33932","60.34066"
                                                                       ) & Region=="PWS"),'Johnson Bay',   
-                                  ''))))))))))))))))))))
+                                  'OTHER'))))))))))))))))))))
                 )
                 
 # PWS Mystery Sites: 
@@ -115,6 +121,7 @@ SOf_A <- SOf %>%
 # clean 2014 data
 SOf_B <- SOf2 %>%
          rename(Region=area_cd, SITE=specific_location_txt) %>% 
+         select(-region_cd) %>%
          mutate(Year = sapply(strsplit(as.character(bout_date), split="/") , function(x) x[3]),
                 Site_Name = ifelse((SITE %in% c("West End Nuka Pass","Nuka Pass","North Nuka Pass","Yalik Bay",
                                                 "Yalik Beach"
@@ -135,9 +142,9 @@ SOf_B <- SOf2 %>%
                             ifelse((site_name %in% c("Amalik Bay, AKP_B10_RI_04") & Region=="KATM"),'Amalik Bay',       
                             ifelse((site_name %in% c("Kukak Bay, AKP_B10_RI_01") & Region=="KATM"),'Kukak Bay',    
                             ifelse((site_name %in% c("McCarty Fjord, KEP_B05_RI_02") & Region=="KEFJ"),'McCarty Fjord',
-                                   ''))))))))))))))
-                ) 
-       
+                                   'OTHER'))))))))))))))
+                ) %>% 
+         select(-site_name)
              
                 
 # bind the dataframes together

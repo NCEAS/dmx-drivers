@@ -28,10 +28,8 @@ SOs <- read.csv(file=textConnection(SOs1),strip.white=TRUE)
 head(SOs)
 
 # Cleaning the data
-SOs[SOs == "."] <- NA  # replace "." with NA in the entire data frame
-
 SOS <- SOs %>%
-       rename(Year=YEAR) %>%
+       rename(Year=YEAR, ToothAge=TOOTHAGE) %>%
        filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
        mutate(Region = ifelse((AREA=="KATM"),'KATM',
                        ifelse((AREA=="KEFJ"),'KEFJ',
@@ -53,16 +51,31 @@ SOS <- SOs %>%
                        ifelse((LAT_DD=="60.53012" & LON_DD=="147.6088"),'WPWS',
                        "unknown"))))))))
               ) %>%
-       filter(!Region=="unknown") %>%
-       
-  
-
-#  mutate(Species_Name = revalue(Species_Name, c("Nucella sp."="Nucella sp")))
-#  Eggs_Num = replace(Eggs_Num, Eggs_Num %in% c("U","N/A"), NA),
+       filter(!Region=="unknown") %>%  # removing samples with no location information
+       mutate(SITE = revalue(SITE, c("."=NA)),
+              AGECLASS = revalue(AGECLASS, c("."=NA)),
+              ToothAge = revalue(ToothAge, c("."=NA)),
+              SEX = revalue(SEX, c("."=NA)),
+              CARCCOL = revalue(CARCCOL, c("."=NA)),
+              SKULCOL = revalue(SKULCOL, c("."=NA)),
+              MAND_COL = revalue(MAND_COL, c("."=NA)),
+              WHIS_COL = revalue(WHIS_COL, c("."=NA)),
+              BAC_COL = revalue(BAC_COL, c("."=NA)),
+              BAC_LNTH = revalue(BAC_LNTH, c("."=NA)),
+              TOOTHCOL = revalue(TOOTHCOL, c("."=NA)),
+              LAT_DD = revalue(LAT_DD, c("."=NA)),
+              LON_DD = revalue(LON_DD, c("."=NA)),
+              TOOTH = revalue(TOOTH, c("."=NA)),
+              CARCCOND = revalue(CARCCOND, c("."=NA)),
+              CC.From.Matson = revalue(CC.From.Matson, c("."=NA)),
+              Age.Range = revalue(Age.Range, c("."=NA))
+              ) %>%
+       filter(Year, Region, ToothAge)
   
 
 
 head(SOS)
+
 
 
 
