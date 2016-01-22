@@ -21,24 +21,25 @@ library(readxl)
 #############
 # Sea otter diet (Proportion of biomass provided by clams, mussels, crabs, and other)
 
+# prey biomass conversion from Ben Weitzman based on Oftedal et al. 2007 nutritional analyses
+URL_Bm <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-uN2FrdzIzLS1FZUk"
+BmGet <- GET(URL_Bm)
+Bm1 <- content(BmGet, as='text')
+BmCalc <- read.csv(file=textConnection(Bm1))
+head(BmCalc)
+
 # pre 2002-2012 data
-URL_SOf <- "https://workspace.aoos.org/files/302004/FINAL_2002-2012_all_forage_prepped_for_forage_DB_15july2015.xlsx"
-
-#Test 1
-testSOf1 <- read_excel(URL_SOf)
-
-#Test 2
-SOfGet <- GET(URL_SOf)
-testSOf2 <- read_excel(SOfGet)
-
-head(testSOf)
-
-
+#URL_SOf <- "https://workspace.aoos.org/files/302004/FINAL_2002-2012_all_forage_prepped_for_forage_DB_15july2015.xlsx"
+SOf <- read_excel("C://Users//rblake//Documents//NCEAS//GoA Dynamics WG//GW_Nearshore Intertidal Data//Sea_Otter_Stuff//FINAL_2002-2012_all_forage_prepped_for_forage_DB_15july2015.xlsx")
+head(SOf)
 #URL_SOf <- "https://workspace.aoos.org/published/file/52211fd1e4b067e4402e7ca8/GWA_Benthic_Sea_Otter_Foraging_Data_2006-2012_28Aug2013.csv"
 #SOfGet <- GET(URL_SOf)
 #SOf1 <- content(SOfGet, as='text')
 #SOf <- read.csv(file=textConnection(SOf1))
 
+# 2013 data
+SOf1 <- read_excel("C://Users//rblake//Documents//NCEAS//GoA Dynamics WG//GW_Nearshore Intertidal Data//Sea_Otter_Stuff//FINAL_2013_all_forage_prepped_for_forage_db8dec2015.xlsx", sheet="all2013")
+head(SOf1)
 
 # 2014 data
 URL_SOf2 <- "https://workspace.aoos.org/published/file/e6bf00c8-1914-41c5-a5fe-4047ddad2bfb/NearshoreBenthicSystemsInGOA_SOP02_SeaOtterForageObservations2014_Data_29May2015.csv"
@@ -47,67 +48,144 @@ SOf2 <- content(SOf2Get, as='text')
 SOf2 <- read.csv(file=textConnection(SOf2))
 head(SOf2)
 
-# clean first data frame (pre 2014 data)
-SOf[SOf == "."] <- NA  # replace "." with NA in the entire data frame
+# merge 2002-2012 data with 2013 data
+SOf_early <- merge(SOf, SOf1, all=TRUE)  
+# clear up issues with date formatting
+SOf_early <- SOf_early %>%
+             select(-`otter utm_1`,-`otter utm_2`) %>%
+             mutate_each(funs(as.factor), bout_date) %>% # change class of column
+             mutate_each(funs(as.factor), start_time) %>% # change class of column
+             mutate_each(funs(as.factor), end_time) # change class of column
 
-SOf_A <- SOf %>%
-         rename(Year=Period, Region=REGION, bout_id=BOUT, bout_date=DATE ) %>%
-         filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
-         select(-Area,-Season) %>%          
-         mutate_each(funs(as.character), Year) %>% # change class of column   
-         mutate(Site_Name = ifelse((SITE %in% c("KUKAK B-10-01I","KUKAK/DEVILS COVE-10-RI1","Kukak/Yugnat-10-RI1",
-                                                "Kukak/Devil's Cove-10-RI1","Kukak; Devils cove","Devils Cove",
-                                                "Kukak","Devil's Cove","DEVIL'S COVE") & Region=="KATM"),'Kukak Bay',
-                            ifelse((SITE %in% c("TAKLI/MINK-10-RI4/5","TAKLI/LITTLE MINK-10-RI5/RI4",
-                                                "TAKLI/MINK Is.-10-RI5","Takli/Ilktugitak-10-RI5","Takli/Mink-10-RI5",
-                                                "Takli-10-RI5","Takli Island","MINK IS.-10-05I","Little Mink","Little MInk",
-                                                "MINK ISLAND","ILKTUGIDAK") & Region=="KATM"),'Takli Island',
-                            ifelse((SITE %in% c("Amalik Bay-10-RI4","Amalik; .","Amalik; Ilktigadak","Amalik; Mink",
-                                                "Amalik; Little Mink","AMALIK/MINK ISL-10-RI5/RI4"
-                                                ) & Region=="KATM"),'Amalik Bay',
-                            ifelse((SITE %in% c("KAFLIA/CAPE GULL-10-RI2") & Region=="KATM"),'Kaflia Bay',
-                            ifelse((SITE %in% c("Aialik-5-RI1","Aialik/Squab Isl-5-RI1","Pederson/Aialik",
-                                                "Pederson/ Aialik","Pedersen","Aialik","AIALIK","Pederson-5-RI1"
-                                                ) & Region=="KEFJ"),'Aialik Bay',
-                            ifelse((SITE %in% c("MCCARTY LAGOON-5-RI2","McCarty-5-RI2","McCarty","McCarty Lagoon",
-                                                "McCarty; James Lagoon","entrance mccarthy","James Lagoon; Outside",
-                                                "McCarty-outside beach","JAMES LAGOON","MCCARTY LAGOON",
-                                                "James Lagoon","Outside James Lagoon"
-                                                ) & Region=="KEFJ"),'McCarty Fjord',
-                            ifelse((SITE %in% c("Harris; near mussel site","Harris","Sea Otter Cove-5-RI5",
-                                                "Otter cove-5-RI5","OTTER COVE","Otter  Cove","Otter Cove",
-                                                "Outside Otter Cove") & Region=="KEFJ"),'Harris Bay',   
-                            ifelse((SITE %in% c("TONSINA-5-RI4","Nuka-5-RI4","Tonsina-5-RI4","inside Tonsina",
-                                                "Tonsina","Tonsina; tip of L Island","Tonsina; L Island","TONSINA"
-                                                ) & Region=="KEFJ"),'Nuka Passage',
-                            ifelse((SITE %in% c("NUKA BAY","BEAUTIFUL-5-RI3","Surprise Bay-5-RI3/RI4",
-                                                "Beautiful Island","beauty bay") & Region=="KEFJ"),'Nuka Bay',
-                            ifelse((SITE %in% c("IKTUA","Iktua Bay","Iktua Passage","IKTUA BAY"
-                                                ) & Region=="PWS"),'Iktua Bay',
-                            ifelse((SITE %in% c("JOHNSON","Johnson Bay","MOUTH OF JOHNSON BAY","JOHNSON BAY",
-                                                "JOHNSON BAY; KNIGHT ISL","N. SQUIRREL BAY","SQUIRREL","S. SQUIRREL"
-                                                ) & Region=="PWS"),'Johnson Bay',  
-                            ifelse((SITE %in% c("HERRING BAY","Herring Bay") & Region=="PWS"),'Herring Bay',
-                            ifelse((SITE %in% c("Whale Bay","ELESHANSKY COVE; WHALE BAY","WHALE BAY"
-                                                ) & Region=="PWS"),'Whale Bay',
-                            ifelse((SITE %in% c("OLSON BAY") & Region=="PWS"),'Olsen Bay',
-                            ifelse((SITE %in% c("SIMPSON BAY","MOUTH OF SIMPSON BAY") & Region=="PWS"),'Simpson Bay',       
-                            ifelse((SITE %in% c("GALENA BAY") & Region=="PWS"),'Galena Bay',
-                            ifelse((SITE %in% c("BOI","BAY OF ISLES; KIM'S ROCK","Bay of Isles",
-                                                "Bay of Isles S. Bite","BAY OF ISLES",
-                                                "BOI; KIM'S ROCK","Eagles Nest Isl/BOI"
-                                                ) & Region=="PWS"),'Herring Bay',
-                            ifelse((FOCAL.OTTER.COORD.NORTH.DD %in% c("60.10388","60.11315","60.112",
-                                                                      "60.10924","60.11121","60.11513"
-                                                                      ) & Region=="PWS"),'Iktua Bay',  
-                            ifelse((FOCAL.OTTER.COORD.NORTH.DD %in% c("60.92948","60.92477"
-                                                                      ) & Region=="PWS"),'Galena Bay',  
-                            ifelse((FOCAL.OTTER.COORD.NORTH.DD %in% c("60.33932","60.34066"
-                                                                      ) & Region=="PWS"),'Johnson Bay',   
-                                  'OTHER'))))))))))))))))))))
-                )
+
+# merge in the 2014 data with the rest
+SOf_all <- merge(SOf_early, SOf2, all=TRUE)  
+SOf_all$start_time <- substr(SOf_all$start_time, 12, 19)  # removes weird year digits added by read_excel()
+SOf_all$end_time <- substr(SOf_all$end_time, 12, 19)  # removes weird year digits added by read_excel()
+
+
+# cleaning all the data
+SOf_A <- SOf_all %>% 
+         rename(Region=area_cd) %>%
+         mutate(preytype_cd = toupper(preytype_cd),
+                YearSlash = sapply(strsplit(as.character(bout_date), split="/") , function(x) x[3]),
+                YearDash = sapply(strsplit(as.character(bout_date), split="-") , function(x) x[1])) %>%
+         rename(Year=YearSlash) %>%
+         mutate(Year = ifelse((is.na(Year)),YearDash,Year),
+                Region = revalue(Region, c(wpws="WPWS",npws="NPWS",kefj="KEFJ",katm="KATM")),
+                Region = ifelse((specific_location_txt=="Surprise Bay-5-RI3/RI4" & Region=="KEFJ"),'WPWS',Region),
                 
-# PWS Mystery Sites: 
+                Site_Name = ifelse((site_name %in% c("Iktua Bay, PWS_B08_RI_02") & Region=="WPWS"),'Iktua Bay',  
+                            ifelse((site_name %in% c("Harris Bay, KEP_B05_RI_05") & Region=="KEFJ"),'Harris Bay',
+                            ifelse((site_name %in% c("Nuka Passage, KEP_B05_RI_04") & Region=="KEFJ"),'Nuka Passage',
+                            ifelse((site_name %in% c("Johnson Bay, PWS_B08_RI_04") & Region=="WPWS"),'Johnson Bay',
+                            ifelse((site_name %in% c("Herring Bay, PWS_B08_RI_05") & Region=="WPWS"),'Herring Bay',
+                            ifelse((site_name %in% c("Takli Island, AKP_B10_RI_05") & Region=="KATM"),'Takli Island', 
+                            ifelse((site_name %in% c("Amalik Bay, AKP_B10_RI_04") & Region=="KATM"),'Amalik Bay',
+                            ifelse((site_name %in% c("Nuka Bay, KEP_B05_RI_03") & Region=="KEFJ"),'Nuka Bay',
+                            ifelse((site_name %in% c("McCarty Fjord, KEP_B05_RI_02") & Region=="KEFJ"),'McCarty Fjord',       
+                                   
+                            ifelse((specific_location_txt %in% c("Aialik Bay","Amalik Bay","Bettles Bay","Cedar Bay",
+                                                                 "Chinitna Bay","Chisik Island","Disk Island",
+                                                                 "Esther Passage","Galena Bay","Harris Bay","Herring Bay",
+                                                                 "Herring Bay-Bear Cove","Herring Bay-Southwest",
+                                                                 "Hogan Bay","Iktua Bay","Johnson Bay","Johnson Creek",
+                                                                 "Kaflia Bay","Kinak Bay","Kukak Bay","McCarty Fjord",
+                                                                 "Ninagiak Island","Northwest Bay","Nuka Bay","Nuka Passage",
+                                                                 "Observation Island","Olsen Bay","Perry Island",
+                                                                 "Polly Creek","Port Fidalgo","Simpson Bay","Takli Island",
+                                                                 "Tukendni Bay","Unakwik Inlet","Whale Bay")),
+                                                                  specific_location_txt,  
+                             
+                            ifelse((specific_location_txt %in% c("Nuka Island West","Nuka Island","Nuka","Beautiful Island",
+                                                                 "islands west of Nuka", "Islands west of Nuka Island",
+                                                                 "BEAUTIFUL-5-RI3","West Nuka","Nuka West Islands","nuka island",
+                                                                 "nuka","NUKA BAY","beauty bay"
+                                                                 ) & Region=="KEFJ"),'Nuka Bay', 
+                                   
+                            ifelse((specific_location_txt %in% c("West End Nuka Pass","Yalik Bay","Yalik Beach","North Nuka Pass",
+                                                                 "Nuka Pass","Nuka-5-RI4","TONSINA-5-RI4","TONSINA","Tonsina",
+                                                                 "Tonsina; L Island","Tonsina; tip of L Island","inside Tonsina",
+                                                                 "Tonsina-5-RI4","Berger Bay Rocks"
+                                                                 ) & Region=="KEFJ"),'Nuka Passage',
+                                   
+                            ifelse((specific_location_txt %in% c("James Lagoon","james lagoon","MCCARTY LAGOON-5-RI2","MCCARTY LAGOON",
+                                                                 "McCarty-5-RI2","McCarty Lagoon","McCarty","Outside James Lagoon",
+                                                                 "McCarty; James Lagoon","entrance mccarthy","James Lagoon; Outside",
+                                                                 "McCarty-outside beach","mccarty","JAMES LAGOON"  
+                                                                 ) & Region=="KEFJ"),'McCarty Fjord',
+                                   
+                            ifelse((specific_location_txt %in% c("Little Mink","Takli/Mink-10-RI5","little mink island","TAKLI/MINK Is.-10-RI5",
+                                                                 "TAKLI/LITTLE MINK-10-RI5/RI4","TAKLI/MINK-10-RI4/5","Takli Island",
+                                                                 "Takli-10-RI5","Takli/Ilktugitak-10-RI5","MINK IS.-10-05I","Little MInk",
+                                                                 "takli","mink island","MINK ISLAND"
+                                                                 ) & Region=="KATM"),'Takli Island', 
+                            
+                            ifelse((specific_location_txt %in% c("Amalik Bay-10-RI4","Amalik; .","Amalik; Little Mink","Amalik; Mink",
+                                                                 "Amalik Bay, AKP_B10_RI_04 in Amalik Bay, obs done from deck of charter vessel",
+                                                                 "Amalik; Ilktigadak","AMALIK/MINK ISL-10-RI5/RI4","ILKTUGIDAK"
+                                                                 ) & Region=="KATM"),'Amalik Bay',
+                                   
+                            ifelse((specific_location_txt %in% c("KUKAK B-10-01I","KUKAK/DEVILS COVE-10-RI1","DEVIL'S COVE","Devils Cove",
+                                                                 "Kukak/Yugnat-10-RI1","Kukak/Devil's Cove-10-RI1","Kukak; Devils cove",
+                                                                 "Kukak"
+                                                                 ) & Region=="KATM"),'Kukak Bay',
+                                   
+                            ifelse((specific_location_txt %in% c("Harris Bay Surf Beach","Harris Bay Spit","Otter Cove","Northwestern Lagoon",
+                                                                 "NW Lagoon","Otter Cove Moraine","Harris Lagoon","Northwestern",
+                                                                 "Sea Otter Cove-5-RI5","Otter cove-5-RI5","Outside Otter Cove",
+                                                                 "Harris; near mussel site","Harris","OTTER COVE","Otter  Cove" 
+                                                                 ) & Region=="KEFJ"),'Harris Bay', 
+                                   
+                            ifelse((specific_location_txt %in% c("N. Squirrel Island","South Squirrel","Clam Island","East Squirrel Passage",
+                                                                 "North Squirrel Island/Johnson Bay","North Squirrel Is.","N. Squirrel Is.",
+                                                                 "North Squirrel Island","SOUTH SQUIRREL","JOHNSON COVE","SQUIRREL",
+                                                                 "JOHNSON BAY","S. SQUIRREL","JOHNSON","MOUTH OF JOHNSON BAY","N. SQUIRREL BAY",
+                                                                 "n. squirrel","s. squirrel","JOHNSON BAY; KNIGHT ISL","N SQUIRREL" 
+                                                                 ) & Region=="WPWS"),'Johnson Bay',
+                                   
+                            ifelse((specific_location_txt %in% c("Aialik-5-RI1","Pederson-5-RI1","Aialik/Squab Isl-5-RI1","Pederson/Aialik",
+                                                                 "Pederson/ Aialik","Pedersen","AIALIK","Aialik"    
+                                                                 ) & Region=="KEFJ"),'Aialik Bay',     
+                                   
+                            ifelse((specific_location_txt %in% c("IKTUA","Iktua Passage","iktua bay","IKTUA BAY","Surprise Bay-5-RI3/RI4"
+                                                                 ) & Region=="WPWS"),'Iktua Bay',      
+                                   
+                            ifelse((specific_location_txt %in% c("KAFLIA/CAPE GULL-10-RI2"
+                                                                 ) & Region=="KATM"),'Kaflia Bay',   
+                                   
+                            ifelse((specific_location_txt %in% c("HERRING BAY","bay of isles","BOI; KIM'S ROCK","BAY OF ISLES; KIM'S ROCK",
+                                                                 "Bay of Isles S. Bite","Bay of Isles","Eagles Nest Isl/BOI","BOI","kims rock",
+                                                                 "boi","BAY OF ISLES","KIMS RK ","EAGLE NEST IS/","EAGLE NEST ISLAND","OUTSIDE BOI",
+                                                                 "KIM'S ROCK","EAGLE'S NEST"  
+                                                                 ) & Region=="WPWS"),'Herring Bay',       
+                            
+                            ifelse((specific_location_txt %in% c("WHALE BAY","whale bay","ELESHANSKY COVE; WHALE BAY"
+                                                                 ) & Region=="WPWS"),'Whale Bay',  
+                                   
+                            ifelse((specific_location_txt %in% c("devil's cove","KUKAK/DEVILS COVE-10-RI1","Devil's Cove"
+                                                                 ) & Region=="KATM"),'Kukak Bay',   
+                                   
+                            ifelse((specific_location_txt %in% c("GALENA BAY") & Region=="EPWS"),'Galena Bay',    
+                                   
+                            ifelse((specific_location_txt %in% c("OLSON BAY") & Region=="EPWS"),'Olsen Bay',       
+                                   
+                            ifelse((specific_location_txt %in% c("bettles") & Region=="NPWS"),'Bettles Bay',     
+                                   
+                            ifelse((specific_location_txt %in% c("SIMPSON BAY","MOUTH OF SIMPSON BAY"
+                                                                 ) & Region=="EPWS"),'Simpson Bay',           
+                            
+                            ifelse((specific_location_txt %in% c("DISKWEST","NDISK") & Region=="WPWS"),'Disk Island',       
+                                   
+                                   "Unknown")))))))))))))))))))))))))))))
+                 ) %>%
+        filter(Year %in% c(2010,2011,2012,2013,2014,2015),
+               Site_Name != "Unknown") %>%    # removes observations not matched to a Gulf Watch Site
+        select(Region,Site_Name,Year,obs_lat,obs_long,otter_lat,otter_long,preytype_cd,prey_qty,
+               preysize_cd,prey_size_cm,not_eaten_reason_cd,not_eaten_pct,prey_name,Latin_name,
+               `prey kg`)
+        
+# PWS Mystery locations (removed from the dataset because not matched to a Gulf Watch Site): 
 #     NASTY BITE                 FOUL PASS                  PASS IS                    PUKUK              
 #     NASTY BIGHT                LOWER PASS                 AGULIAK                    POWP                
 #     Lower Pass                 Danger Island              Ismailov Island            GUGNAK BAY                   
@@ -121,43 +199,57 @@ SOf_A <- SOf %>%
 # KEFJ Mystery Sites:    near BLOY x2-08      Near BLOY x2-08                 
 # KATM Mystery Sites:   Ugyak; Ugyak                                              
                 
-                
-#write.csv(SOf_A, file = "SeaOttForage_older2.csv", row.names=FALSE)
-                
-                
+# Calculate proportion of biomass provided by clams, mussels, crabs, and other  
+# paste in prey name info 
+BmCalc_sub <- BmCalc[,c(1:3,5:7)]
+BmCalc_sub <- rename(BmCalc_sub, preytype_cd=Prey)
+BmCalc_sub$preytype_cd <- as.character(BmCalc_sub$preytype_cd)
+SOf_bm <- merge(SOf_A, BmCalc_sub, by="preytype_cd", all=TRUE) # merge prey name info into dataset
 
-# clean 2014 data
-SOf_B <- SOf2 %>%
-         rename(Region=area_cd, SITE=specific_location_txt) %>% 
-         select(-region_cd) %>%
-         mutate(Year = sapply(strsplit(as.character(bout_date), split="/") , function(x) x[3]),
-                Site_Name = ifelse((SITE %in% c("West End Nuka Pass","Nuka Pass","North Nuka Pass","Yalik Bay",
-                                                "Yalik Beach"
-                                                ) & Region=="KEFJ"),'Nuka Passage',
-                            ifelse((SITE %in% c("Nuka Island","Nuka","Beautiful Island","islands west of Nuka",
-                                                "West Nuka","Islands west of Nuka Island","islands west of Nuka",
-                                                "Nuka Island West") & Region=="KEFJ"),'Nuka Bay',
-                            ifelse((SITE %in% c("Harris Bay","Harris Bay Surf Beach","Harris Bay Spit"
-                                                ) & Region=="KEFJ"),'Harris Bay',
-                            ifelse((SITE %in% c("James Lagoon") & Region=="KEFJ"),'McCarty Fjord',       
-                            ifelse((site_name %in% c("Nuka Passage, KEP_B05_RI_04") & Region=="KEFJ"),'Nuka Passage',
-                            ifelse((site_name %in% c("Nuka Bay, KEP_B05_RI_03") & Region=="KEFJ"),'Nuka Bay', 
-                            ifelse((site_name %in% c("Harris Bay, KEP_B05_RI_05") & Region=="KEFJ"),'Harris Bay',       
-                            ifelse((site_name %in% c("Johnson Bay, PWS_B08_RI_04") & Region=="WPWS"),'Johnson Bay', 
-                            ifelse((site_name %in% c("Herring Bay, PWS_B08_RI_05") & Region=="WPWS"),'Herring Bay',
-                            ifelse((site_name %in% c("Iktua Bay, PWS_B08_RI_02") & Region=="WPWS"),'Iktua Bay',
-                            ifelse((site_name %in% c("Takli Island, AKP_B10_RI_05") & Region=="KATM"),'Takli Island',
-                            ifelse((site_name %in% c("Amalik Bay, AKP_B10_RI_04") & Region=="KATM"),'Amalik Bay',       
-                            ifelse((site_name %in% c("Kukak Bay, AKP_B10_RI_01") & Region=="KATM"),'Kukak Bay',    
-                            ifelse((site_name %in% c("McCarty Fjord, KEP_B05_RI_02") & Region=="KEFJ"),'McCarty Fjord',
-                                   'OTHER'))))))))))))))
-                ) %>% 
-         select(-site_name)
+#######################
+### NEED PREY SIZE IN ORDER TO CALCULATE PREY BIOMASS!!!!
+#######################
+
+
+Prey_PBmss <- function(df, prey, biom_column_name){
+              # subset df based on prey type
+              df2 <- df[grepl(prey, df$Type),] 
+              # calculate total biomass per site per year
+              # from size (mm) to biomass (grams wet wt.): Biomass = fxna * size ^ fxnb
+              A <- df2 %>%
+                   mutate_(.dots = setNames(list(~df2[grepl(prey,df2$Type),20]*
+                                                    df2$Size_mm^df2[grepl(prey,df2$Type),21]), 
+                                                    "biomass_gWW")) %>%
+                   group_by(Region,Site_Name,Year) %>%
+                   summarise_(.dots = setNames(list(~mean(biomass_gWW)), biom_column_name)) %>%
+                   ungroup() %>%
+                   select_("Region", "Site_Name", "Year", biom_column_name)
+              # calculate proportion of total for each "Type" per site per year
+              B <- df2 %>%
+                   biom_column_name
              
+              C <- merge(A,B, by=c("Region","Site_Name","Year"))
                 
-# bind the dataframes together
+              return(C)
+              }
+  
 
-SOF <- bind_rows(SOf_A, SOf_B)  ### THIS HAS MAJOR ISSUES!!!!!!!!!!!!!!!!!!!!
+
+
+            
+
+
+# calculate proportion of total for each "preytype_cd" per site per year 
+
+
+
+
+
+
+
+
+
+
 
 
 
