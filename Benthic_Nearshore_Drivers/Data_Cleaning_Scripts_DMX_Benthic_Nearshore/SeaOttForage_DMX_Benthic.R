@@ -204,33 +204,50 @@ SOf_A <- SOf_all %>%
 BmCalc_sub <- BmCalc[,c(1:3,5:7)]
 BmCalc_sub <- rename(BmCalc_sub, preytype_cd=Prey)
 BmCalc_sub$preytype_cd <- as.character(BmCalc_sub$preytype_cd)
-SOf_bm <- merge(SOf_A, BmCalc_sub, by="preytype_cd", all=TRUE) # merge prey name info into dataset
+SOf_bm1 <- merge(SOf_A, BmCalc_sub, by="preytype_cd", all=TRUE) # merge prey name info into dataset
 
-#######################
-### NEED PREY SIZE IN ORDER TO CALCULATE PREY BIOMASS!!!!
-#######################
+# paw size code definitions (from Dan Monson via e-mail)
+PawSize <- data.frame(preysize_cd=c("1a","1b","1c","2a","2b","2c","3a","3b","3c","4z","9z"), 
+                      prey_size_cm=c(1.3,2.6,3.9,6.5,7.8,9.1,11.7,13,14.3,15.6,35)) #9z is estimated at 35cm
 
+SOf_bm <- merge(SOf_bm1, PawSize, by=c("preysize_cd"), all.y=TRUE)  # merge in paw sizes
+SOf_bm <- SOf_bm %>%
+          select(-prey_size_cm.x) %>%
+          rename(prey_size_cm = prey_size_cm.y) %>%
+          mutate(PreySize_mm = prey_size_cm/0.1) %>%
+          select(Region,Site_Name,Year,obs_lat,obs_long,otter_lat,otter_long,preytype_cd,
+                 prey_qty,preysize_cd,prey_size_cm,PreySize_mm,everything()) %>%
+          filter(!is.na(Region),!is.na(Type),!is.na(prey_qty))
 
-Prey_PBmss <- function(df, prey, biom_column_name){
+Prey_PBmss <- function(df, prey, biom_column_name, prop_bmss_column_name){
               # subset df based on prey type
               df2 <- df[grepl(prey, df$Type),] 
-              # calculate total biomass per site per year
+              # calculate total biomass per prey type per site per year
               # from size (mm) to biomass (grams wet wt.): Biomass = fxna * size ^ fxnb
               A <- df2 %>%
-                   mutate_(.dots = setNames(list(~df2[grepl(prey,df2$Type),20]*
-                                                    df2$Size_mm^df2[grepl(prey,df2$Type),21]), 
+                   mutate_(.dots = setNames(list(~df2[grepl(prey,df2$Type),21]*
+                                                    df2$PreySize_mm^df2[grepl(prey,df2$Type),22]), 
                                                     "biomass_gWW")) %>%
-                   group_by(Region,Site_Name,Year) %>%
-                   summarise_(.dots = setNames(list(~mean(biomass_gWW)), biom_column_name)) %>%
+                   mutate(Ttlbiomass_gWW = biomass_gWW*prey_qty) %>%
+                   group_by(Region,Site_Name,Year,Type) %>%
+                   summarise_(.dots = setNames(list(~mean(Ttlbiomass_gWW),na.rm=TRUE), biom_column_name)) %>%
                    ungroup() %>%
-                   select_("Region", "Site_Name", "Year", biom_column_name)
+                   select_("Region", "Site_Name", "Year", "Type", biom_column_name)
               # calculate proportion of total for each "Type" per site per year
-              B <- df2 %>%
-                   biom_column_name
+              B <- df %>%
+                   mutate_(.dots = setNames(list(~df[grepl(prey,df$Type),21]*
+                                                    df$PreySize_mm^df[grepl(prey,df$Type),22]), 
+                                                    "biomass_gWW")) %>%
+                   group_by(Region,Site_Name,Year,Type) %>%
+                   summarise_(.dots = setNames(list(~sum(biom_column_name)), "SumBmss_gWW")) %>%
+                   summarise_(.dots = setNames(list(~biom_column_name/"SumBmss_gWW"),
+                                               prop_bmss_column_name)) %>%
+                   ungroup() %>%
+                   select()
              
-              C <- merge(A,B, by=c("Region","Site_Name","Year"))
+   
                 
-              return(C)
+              return()
               }
   
 
