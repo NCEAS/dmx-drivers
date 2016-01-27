@@ -13,6 +13,7 @@ library(rvest)
 library(tidyr)
 library(stringr)
 library(readxl)
+library(lazyeval)
 
 ## Steps for data cleaning: 
 ## 1) read in data
@@ -221,7 +222,7 @@ SOf_bm <- SOf_bm %>%
 
 #write.csv(SOf_bm, file = "OtterForage_ForBryce.csv", row.names=FALSE)
 
-Prey_PBmss <- function(df, prey){
+Prey_PBmss <- function(df, prey, preytypebmss_colname, propbmss_colname){
               # sum of all biomass per site per year
               B <- df %>%
                    rename(PreyType=Type) %>%
@@ -244,9 +245,9 @@ Prey_PBmss <- function(df, prey){
                    filter(PreyType != "Unknown") %>%
                    group_by(Region,Site_Name,Year,PreyType) %>%
                    summarise_(.dots = setNames(list(~sum(Ttlbiomass_gWW)), 
-                                               "TypeSumBmss_gWW")) %>%
+                                               preytypebmss_colname)) %>%
                    ungroup() %>%
-                   select_("Region", "Site_Name", "Year", "PreyType", "TypeSumBmss_gWW") %>%
+                   select_("Region", "Site_Name", "Year", "PreyType", preytypebmss_colname) %>%
                    arrange(Region,Site_Name,Year)
                 
               # proportion of biomass for each prey type per site per year
@@ -259,40 +260,47 @@ Prey_PBmss <- function(df, prey){
               E <- D %>%    
                    full_join(B, by=c("Region","Site_Name","Year")) %>%
                    group_by(Region,Site_Name,Year,PreyType) %>%  
-                   mutate_(.dots = setNames(list(~TypeSumBmss_gWW/SiteSumBmss_gWW),
-                                               "PropBmss")) %>%
+               #    mutate_(.dots = setNames(list(~preytypebmss_colname/SiteSumBmss_gWW),
+               #                             propbmss_colname)) %>%
+                  
+               #    mutate_(.dots = setNames(list(interp(~preytypebmss_colname/SiteSumBmss_gWW)),
+              #                              propbmss_colname)) %>%
+                  
+               
                    ungroup() %>%
-                   select_("Region", "Site_Name", "Year", "PreyType", "TypeSumBmss_gWW",
-                           "SiteSumBmss_gWW","PropBmss") %>%
+                   select_("Region", "Site_Name", "Year", "PreyType", preytypebmss_colname,
+                           "SiteSumBmss_gWW", propbmss_colname) %>%
                    arrange(Region,Site_Name,Year)
               
               # subset on prey type
               G <- E %>%
-                   filter_(.dots=list(~PreyType == prey))
+                   filter_(.dots=list(~PreyType == prey)) %>%
+                   select(-SiteSumBmss_gWW,-PreyType)
+                   distinct()
          
               return(G)
               }
   
 # calculate for each prey type
-SOf_Crab_Bmss <- Prey_PBmss(SOf_bm, Crab)
+SOf_Crab_Bmss <- Prey_PBmss(SOf_bm, "Crab", "SOf_CrabSumBmss_gWW", "SOf_CrabPropBmss")
 
-SOf_Clam_Bmss <- Prey_PBmss(SOf_bm, Clam)
+SOf_Clam_Bmss <- Prey_PBmss(SOf_bm, "Clam", "SOf_ClamSumBmss_gWW", "SOf_ClamPropBmss")
   
-SOf_Urch_Bmss <- Prey_PBmss(SOf_bm,  Urchin)
+SOf_Urch_Bmss <- Prey_PBmss(SOf_bm,  "Urchin", "SOf_UrchinSumBmss_gWW", "SOf_UrchinPropBmss")
   
-SOf_Muss_Bmss <- Prey_PBmss(SOf_bm, Mussel)
+SOf_Muss_Bmss <- Prey_PBmss(SOf_bm, "Mussel", "SOf_MusselSumBmss_gWW", "SOf_MusselPropBmss")
   
-SOf_Star_Bmss <- Prey_PBmss(SOf_bm, Star)
+SOf_Star_Bmss <- Prey_PBmss(SOf_bm, "Star", "SOf_StarSumBmss_gWW", "SOf_StarPropBmss")
   
-SOf_Snail_Bmss <- Prey_PBmss(SOf_bm, Snail)
+SOf_Snail_Bmss <- Prey_PBmss(SOf_bm, "Snail", "SOf_SnailSumBmss_gWW", "SOf_SnailPropBmss")
   
-SOf_Chi_Bmss <- Prey_PBmss(SOf_bm, Chiton)
+SOf_Chi_Bmss <- Prey_PBmss(SOf_bm, "Chiton", "SOf_ChitonSumBmss_gWW", "SOf_ChitonPropBmss")
   
-SOf_Octo_Bmss <- Prey_PBmss(SOf_bm, Octopus)
+SOf_Octo_Bmss <- Prey_PBmss(SOf_bm, "Octopus", "SOf_OctopusSumBmss_gWW", "SOf_OctopusPropBmss")
   
-SOf_Worm_Bmss <- Prey_PBmss(SOf_bm, Worm)
+SOf_Worm_Bmss <- Prey_PBmss(SOf_bm, "Worm", "SOf_WormSumBmss_gWW", "SOf_WormPropBmss")
   
-SOf_Other_Bmss <- Prey_PBmss(SOf_bm, Other)
+SOf_Other_Bmss <- Prey_PBmss(SOf_bm, "Other", "SOf_OtherSumBmss_gWW", "SOf_OtherPropBmss")
   
   
   
