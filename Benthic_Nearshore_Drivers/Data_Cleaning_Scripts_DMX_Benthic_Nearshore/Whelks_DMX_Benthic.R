@@ -28,7 +28,7 @@ head(WCH)
 Wlk_GOA <- WCH %>%
            mutate(Species_Name = revalue(Species_Name, c("Nucella sp."="Nucella sp"))) %>% # remove "." from Nucella
            filter(Species_Name == "Nucella sp") %>% # extract only the Nucella rows
-           filter(Sample_Year %in% c(2010, 2011, 2012, 2013, 2014, 2015))  %>% # taking out years before 2010
+   #        filter(Sample_Year %in% c(2010, 2011, 2012, 2013, 2014, 2015))  %>% # taking out years before 2010
            rename(Year=Sample_Year, Quadrat=Quadrat_Num)  %>%  # rename columns
            mutate(Whelk_n_m2 = Density..individuals.per.2.square.m./2) %>% # getting n per m2
            group_by(Site_Name, Year, Quadrat) %>%
@@ -36,7 +36,7 @@ Wlk_GOA <- WCH %>%
            ungroup() %>%
            arrange(Site_Name, Year, Quadrat)
 
-Wlk_GOA
+#Wlk_GOA
 
 
 

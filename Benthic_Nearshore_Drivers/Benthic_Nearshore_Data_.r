@@ -137,8 +137,8 @@ BenNear <- BenNearSites %>%
                   ) %>%
            arrange(Region)
 
-BenNear <- BenNear[rep(seq_len(nrow(BenNear)), each=6),]   # repeats data frame the number of years
-BenNear$Year=rep(c(2010:2015))   # adds the year column with the years filled in
+BenNear <- BenNear[rep(seq_len(nrow(BenNear)), each=16),]   # repeats data frame the number of years
+BenNear$Year=rep(c(2000:2015))   # adds the year column with the years filled in
                       
 BenNear <- BenNear[rep(seq_len(nrow(BenNear)), each=12),]   # repeats data frame the number of quadrats
 BenNear$Quadrat=rep(c(1:12))   # adds the quadrat column with the quad # filled in
@@ -166,18 +166,33 @@ BenNear <- merge(BenNear,RAann_IA,all.x=T)        # Red Algae Annual percent cov
 BenNear <- merge(BenNear,RAper_IA,all.x=T)        # Red Algae Perennial percent cover
 BenNear <- merge(BenNear,ElG,all.x=T)             # Eelgrass percent cover
 BenNear <- merge(BenNear,OyC_GOA,all.x=T)         # BLOY breeding adults abundance
-#BenNear <- merge(BenNear,       ,all.x=T)         # BLOY diet
-#BenNear <- merge(BenNear,BLOYAbun  ,all.x=T)      # BLOY abundance
-#BenNear <- merge(BenNear,HADUAbun,all.x=T)        # HADU abundance
-#BenNear <- merge(BenNear,BAGOAbun,all.x=T)        # BAGO abundance
+#BenNear <- merge(BenNear,,all.x=T)      # BLOY diet prey size
+#BenNear <- merge(BenNear,,all.x=T)      # BLOY diet prey abundance
+#BenNear <- merge(BenNear,,all.x=T)      # BLOY diet proportion biomass
+BenNear <- merge(BenNear,BLOYAbun  ,all.x=T)      # BLOY abundance
+BenNear <- merge(BenNear,HADUAbun,all.x=T)        # HADU abundance
+BenNear <- merge(BenNear,BAGOAbun,all.x=T)        # BAGO abundance
 BenNear <- merge(BenNear,Leuk_Abun_Size,all.x=T)  # Leukoma abundance, mean size, mean bimoass
 BenNear <- merge(BenNear,Maco_Abun_Size,all.x=T)  # Macoma abundance, mean size, mean biomass
 BenNear <- merge(BenNear,Saxi_Abun_Size,all.x=T)  # Saxidomus abundance and mean size
+BenNear <- merge(BenNear,SOf_Crab_Bmss,all.x=T)   # Sea Otter forage crab biomass
+BenNear <- merge(BenNear,SOf_Clam_Bmss,all.x=T)   # Sea Otter forage clam biomass
+BenNear <- merge(BenNear,SOf_Urch_Bmss,all.x=T)   # Sea Otter forage urchin biomass
+BenNear <- merge(BenNear,SOf_Muss_Bmss,all.x=T)   # Sea Otter forage mussel biomass
+BenNear <- merge(BenNear,SOf_Star_Bmss,all.x=T)   # Sea Otter forage sea star biomass
+BenNear <- merge(BenNear,SOf_Snail_Bmss,all.x=T)  # Sea Otter forage snail biomass
+BenNear <- merge(BenNear,SOf_Chi_Bmss,all.x=T)    # Sea Otter forage chiton biomass
+BenNear <- merge(BenNear,SOf_Octo_Bmss,all.x=T)   # Sea Otter forage octopus biomass
+BenNear <- merge(BenNear,SOf_Worm_Bmss,all.x=T)   # Sea Otter forage worm biomass
+BenNear <- merge(BenNear,SOf_Other_Bmss,all.x=T)  # Sea Otter forage "other" biomass
+BenNear <- merge(BenNear,SOS,all.x=T)             # Sea Otter carcass tooth age
+
+
 
 
 BenNear <- arrange(BenNear,Region,Site_Name,Year,Quadrat)
 
-head(BenNear)
+# head(BenNear)
 
 # Optional: Write data frame to a CSV
 #write.csv(BenNear, file = "BenthicNearshore_AllData.csv", row.names=FALSE)

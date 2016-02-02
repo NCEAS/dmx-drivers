@@ -34,8 +34,8 @@ Phy <- Chl_df %>%
        arrange(dateTime) %>%     
        mutate(Year=substring(dateTime,1,4),
               Month=substring(dateTime,6,7)) %>%  
-       filter(Month %in% c("05"),     # selects just the May samples for all years
-              Year %in% c(2010:2015)) %>%  # selects years
+       filter(Month %in% c("05")) %>%    # selects just the May samples for all years
+  #     filter(Year %in% c(2010:2015)) %>%  # selects years
        group_by(Year) %>%
        summarise(ChlA_micgL_AnnSpMn=mean(chloropyllA),
                  TotChl_micgL_AnnSpMn=mean(totalChl)) %>% # get annual means

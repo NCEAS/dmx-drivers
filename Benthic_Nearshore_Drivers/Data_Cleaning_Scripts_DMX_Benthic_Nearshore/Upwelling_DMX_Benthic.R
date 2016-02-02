@@ -20,7 +20,7 @@ library(stringr)
 #############
 ### Upwelling Anomalies: 
 URL_upanom <- "http://www.pfeg.noaa.gov/products/PFELData/upwell/monthly/upanoms.mon"
-upanom_raw <- html(URL_upanom)
+upanom_raw <- read_html(URL_upanom)
 upanom_pre <- upanom_raw %>% 
               html_node("p") %>%
               html_text()
@@ -31,7 +31,7 @@ upanom_df <- read.csv(file=textConnection(upanom_pre), skip=4, stringsAsFactors=
 #
 upanom <- upanom_df %>% 
           rename(Year=YEAR) %>% # rename data columns   
-          filter(Year %in% c(2010:2015)) %>% # selects years 
+  #        filter(Year %in% c(2010:2015)) %>% # selects years 
           gather(Month, UpwelAnom,-Year,-Lat,-Long) %>% # reshapes data to be column-wise
           group_by(Year) %>%
           summarise(UpWelAnom_anul_mn=mean(UpwelAnom, na.rm = TRUE)) %>% # get annual means

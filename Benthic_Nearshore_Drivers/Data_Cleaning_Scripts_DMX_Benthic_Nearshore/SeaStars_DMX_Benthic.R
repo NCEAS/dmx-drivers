@@ -42,13 +42,13 @@ SS_GOA <- SS2 %>%
           mutate(SS_n_m2 = Density..individuals.per.200.square.m./200) %>% # getting n per m2
           select(-Density..individuals.per.200.square.m.) %>%
           rename(Year=Sample_Year) %>%
-          filter(Year %in% c(2010, 2011, 2012, 2013, 2014, 2015)) %>% # taking out years before 2010
+ #         filter(Year %in% c(2010, 2011, 2012, 2013, 2014, 2015)) %>% # taking out years before 2010
           # STOP here if you want species-level data
           group_by(Site_Name, Year) %>%
           summarise(SS_sum_n_m2=sum(SS_n_m2)) %>%
           ungroup() %>%
           arrange(Site_Name, Year)
-SS_GOA
+#SS_GOA
 
 
 

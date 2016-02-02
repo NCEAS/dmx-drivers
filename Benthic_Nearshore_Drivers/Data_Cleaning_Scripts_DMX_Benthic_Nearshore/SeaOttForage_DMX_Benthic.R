@@ -180,8 +180,8 @@ SOf_A <- SOf_all %>%
                                    
                                    "Unknown")))))))))))))))))))))))))))))
                  ) %>%
-        filter(Year %in% c(2010,2011,2012,2013,2014,2015),
-               Site_Name != "Unknown") %>%    # removes observations not matched to a Gulf Watch Site
+#        filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>% 
+        filter(Site_Name != "Unknown") %>%    # removes observations not matched to a Gulf Watch Site
         select(Region,Site_Name,Year,obs_lat,obs_long,otter_lat,otter_long,preytype_cd,prey_qty,
                preysize_cd,prey_size_cm,not_eaten_reason_cd,not_eaten_pct,prey_name,Latin_name,
                `prey kg`)
@@ -259,15 +259,10 @@ Prey_PBmss <- function(df, prey, preytypebmss_colname, propbmss_colname){
               
               E <- D %>%    
                    full_join(B, by=c("Region","Site_Name","Year")) %>%
-                   group_by(Region,Site_Name,Year,PreyType) %>%  
-               #    mutate_(.dots = setNames(list(~preytypebmss_colname/SiteSumBmss_gWW),
-               #                             propbmss_colname)) %>%
-                  
-               #    mutate_(.dots = setNames(list(interp(~preytypebmss_colname/SiteSumBmss_gWW)),
-              #                              propbmss_colname)) %>%
-                  
-               
-                   ungroup() %>%
+                   mutate_(.dots = setNames(list(interp(~a/b, 
+                                                        a = as.name(preytypebmss_colname), 
+                                                        b = as.name("SiteSumBmss_gWW"))), 
+                                            propbmss_colname)) %>%
                    select_("Region", "Site_Name", "Year", "PreyType", preytypebmss_colname,
                            "SiteSumBmss_gWW", propbmss_colname) %>%
                    arrange(Region,Site_Name,Year)
@@ -275,7 +270,7 @@ Prey_PBmss <- function(df, prey, preytypebmss_colname, propbmss_colname){
               # subset on prey type
               G <- E %>%
                    filter_(.dots=list(~PreyType == prey)) %>%
-                   select(-SiteSumBmss_gWW,-PreyType)
+                   select(-SiteSumBmss_gWW,-PreyType) %>%
                    distinct()
          
               return(G)
@@ -305,7 +300,7 @@ SOf_Other_Bmss <- Prey_PBmss(SOf_bm, "Other", "SOf_OtherSumBmss_gWW", "SOf_Other
   
   
   
-# browser() function for debugging functions (hehe)
+# use browser() function for debugging functions 
 
 
 

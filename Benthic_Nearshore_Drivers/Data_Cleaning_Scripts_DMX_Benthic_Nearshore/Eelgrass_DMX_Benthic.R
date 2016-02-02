@@ -22,5 +22,6 @@ URL_ElG <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-uY2s4ZUFo
 ElGGet <- GET(URL_ElG)
 ElG1 <- content(ElGGet, as='text')
 ElG <- read.csv(file=textConnection(ElG1))
-head(ElG)
+ElG <- rename(ElG, Year=Sample_Year)
+#head(ElG)
 

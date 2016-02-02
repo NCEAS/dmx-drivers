@@ -34,7 +34,7 @@ head(IA15)
 
 # merge the pre 2015 and 2015 data
 IA2 <- bind_rows(IA,IA15) 
-head(IA15) ; tail(IA15)
+head(IA2) ; tail(IA2)
 
 
 # Cleaning
@@ -82,7 +82,7 @@ worm <- c("spirorbidae","unidentified worm")
 
 
 IA_GOA <- IA2 %>% 
-          filter(Sample_Year %in% c(2010, 2011, 2012, 2013, 2014, 2015)) %>% # taking out years before 2010
+   #       filter(Sample_Year %in% c(2010, 2011, 2012, 2013, 2014, 2015)) %>% # taking out years before 2010
           rename(Year=Sample_Year, Quadrat=Quadrat_Num) %>%
           mutate(Common_Cat = ifelse((Species_Name %in% anemone),'anemone',
                               ifelse((Species_Name %in% barnacle),'barnacle',

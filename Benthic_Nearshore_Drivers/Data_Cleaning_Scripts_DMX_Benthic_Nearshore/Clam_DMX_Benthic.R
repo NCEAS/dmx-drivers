@@ -52,8 +52,8 @@ Clam <- C %>%
                         ifelse((Site_Name %in% c("Disk Island","Herring Bay",
                                                  "Herring Bay-Bear Cove","Herring Bay-Southwest",
                                                  "Hogan Bay","Iktua Bay","Johnson Bay",
-                                                 "Northwest Bay","Whale Bay")),'WPWS',""))))))) %>%
-        filter(Year %in% c(2010,2011,2012,2013,2014,2015))
+                                                 "Northwest Bay","Whale Bay")),'WPWS',""))))))) #%>%
+   #     filter(Year %in% c(2010,2011,2012,2013,2014,2015))
 
 # pull out biomass conversion info for species of interest
 BM <- BmCalc[grepl("(Macoma|Saxidomus|Leukoma)", BmCalc$Latin),]

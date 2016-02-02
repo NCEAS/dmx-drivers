@@ -30,7 +30,7 @@ head(SOs)
 # Cleaning the data
 SOS <- SOs %>%
        rename(Year=YEAR, ToothAge=TOOTHAGE) %>%
-       filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
+  #     filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
        mutate(Region = ifelse((AREA=="KATM"),'KATM',
                        ifelse((AREA=="KEFJ"),'KEFJ',
                        ifelse((AREA=="PWS" & SITE %in% c("Cedar Bay","Esther Passage","Bettles Bay",
@@ -70,11 +70,12 @@ SOS <- SOs %>%
               CC.From.Matson = revalue(CC.From.Matson, c("."=NA)),
               Age.Range = revalue(Age.Range, c("."=NA))
               ) %>%
-       filter(Year, Region, ToothAge)
+       rename(SeaOtt_CarcToothAge=ToothAge) %>%
+       select(Year, Region, SeaOtt_CarcToothAge)
   
 
 
-head(SOS)
+#head(SOS)
 
 
 

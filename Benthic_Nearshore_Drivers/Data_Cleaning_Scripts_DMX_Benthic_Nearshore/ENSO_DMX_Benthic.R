@@ -29,7 +29,7 @@ enso_df <- enso[1:66,]  # removes the text at bottom of file
 #
 ENSO_annual <- enso_df %>%
                     rename(Year=YEAR) %>% # rename data columns
-                    filter(Year %in% c(2010:2015)) %>% # selects years 2010 - 2015
+        #            filter(Year %in% c(2010:2015)) %>% # selects years 2010 - 2015
                     gather(Months, ENSO, -Year) %>% # reshapes data to be column-wise
                     filter(!is.na(ENSO)) %>% # remove NA values
                     group_by(Year) %>%

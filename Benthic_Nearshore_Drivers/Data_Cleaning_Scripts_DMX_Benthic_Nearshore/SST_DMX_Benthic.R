@@ -45,7 +45,7 @@ head(Temps)
 SST <- Temps %>%
              mutate(Year=sapply((strsplit(as.character(Date), split="/")), 
                                 function(x) x[3])) %>%   # creates Year column
-             filter(Year %in% c(2010:2015)) %>%
+  #           filter(Year %in% c(2010:2015)) %>%
              arrange(dateTime) %>%
              rename(WTemp_C=temp) %>%
              group_by(Year) %>%

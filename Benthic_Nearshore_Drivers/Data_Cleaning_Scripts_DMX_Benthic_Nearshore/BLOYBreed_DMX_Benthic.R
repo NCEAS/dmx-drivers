@@ -52,7 +52,7 @@ BLOY_nest <- BLOY_nest1 %>%
              rename(BLOCK.NUMBER=BLOCK, Region=REGION, Nest_Site=NEST_SITE.., 
                     Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, Chicks_Num=X._CHICKS, 
                     Prey_Collected=PREY_COLL., LAT=NORTH, LON=WEST, Year=YEAR) %>%
-             filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
+      #       filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
              mutate(Region = replace(as.character(Region), Region=="PWS", "WPWS"),  
                     Site_Name = ifelse((SITE=="RI1" & Region=="KATM"),'Kukak Bay',
                                 ifelse((SITE=="RI1" & Region=="KEFJ"),'Aialik Bay',       
@@ -120,7 +120,8 @@ OyC_GOA <- OysC2 %>%
            ungroup() %>%
            arrange(Region, Site_Name, Year) %>% 
            select(Region, Site_Name, Year, BLOYAdult_breed_n) # select just breeding Adults
-head(OyC_GOA)
+
+#head(OyC_GOA)
 
 
 

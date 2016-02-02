@@ -38,10 +38,11 @@ mdb_table_list <- function(file_list){
 
 lapply(UNz, mdb_table_list)  # running the function over the two .mdb files
 
+conn <- odbcConnectAccess2007(path.expand("./NPPSD_Back_v2.mdb")) # establish a connection
 DATA_OBS <- sqlFetch(conn,"tbl_DATA_OBS")  # read in a table
 LOCATION <- sqlFetch(conn,"tbl_LOCATION") 
 
-close(NPPSD_conn) 
+close(conn) 
 unlink(NPPSDzipd)
 
 # Filter and Sort data       # Density is Number of Birds per km2
