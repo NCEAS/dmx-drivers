@@ -21,7 +21,7 @@ library(stringr)
 ###  Multivariate ENSO Index (MEI): 
 
 URL_enso <- "http://www.esrl.noaa.gov/psd/enso/mei/table.html"
-enso_pre <- xpathSApply(content(GET(URL_enso)),"/html/body/pre", xmlValue)
+enso_pre <- xpathSApply(xmlParse(content(GET(URL_enso))),"//html/body/pre", xmlValue)
 enso_cols <- scan(textConnection(enso_pre), skip=10, nlines=1, what=character()) # get header row
 enso <- read.csv(file=textConnection(enso_pre), skip=11, stringsAsFactors=F, sep="\t", 
                  header=FALSE, col.names=enso_cols)

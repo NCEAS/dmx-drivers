@@ -21,7 +21,7 @@ library(stringr)
 ### North Pacific Gyre Oscillation Index (NPGO): 
 
 URL_npgo <- "http://www.o3d.org/npgo/npgo.php"
-npgo_pre <- xpathSApply(content(GET(URL_npgo)),"/html/body/pre", xmlValue)
+npgo_pre <- xpathSApply(xmlParse(content(GET(URL_npgo))),"/html/body/pre", xmlValue)
 npgo_cols <- scan(textConnection(npgo_pre), skip=25, nlines=1, what=character())# Get header row
 npgo_cols <- npgo_cols[2:4] # select column names
 npgo_df <- read.csv(file=textConnection(npgo_pre), skip=26, stringsAsFactors=F, sep="", 
