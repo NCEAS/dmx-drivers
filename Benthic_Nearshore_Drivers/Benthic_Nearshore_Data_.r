@@ -15,6 +15,11 @@ library(tidyr)
 library(stringr)
 
 
+ dir_dmx_d = c('rblake'='C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers'
+             # collobrators enter your Sys.info()["user"] and local filepaths to our dmx-drivers repo
+             )[Sys.info()["user"]]
+
+
 ## Steps for adding data columns:
 ## 1) run each data cleaning script to generate data frames
 ## 2) create empty data frame
@@ -31,7 +36,15 @@ sourceDir <- function(path, trace=TRUE) {
     }
 }
 
-sourceDir("Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore")
+
+ifelse((Sys.info()["user"]!='rblake'),
+       sourceDir("Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore"),
+       sourceDir(file.path(dir_dmx_d, 
+                 "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore"))
+       )
+
+#sourceDir(file.path(dir_dmx_d, 
+#                    "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore"))
 
 
 # Create empty data frame with Year, Region, Site, and Quadrat columns
