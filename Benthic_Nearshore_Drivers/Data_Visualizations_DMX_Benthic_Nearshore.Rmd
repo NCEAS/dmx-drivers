@@ -1,12 +1,9 @@
 ---
-title: "Untitled"
+title: " Data Visualizations for DMX Benthic Nearshore Drivers"
 author: "Rachael Blake"
 date: "January 28, 2016"
-output: html_document
+output: pdf_document
 ---
-
-# Data Visualizations for DMX Benthic Nearshore Drivers
-
 
 
 ```{r, echo=FALSE, include=FALSE}
@@ -21,13 +18,17 @@ library(rvest)
 library(tidyr)
 library(stringr)
 
+ dir_dmx_d = c('rblake'='C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers'
+              # collobrators enter your Sys.info()["user"] and local filepaths to our dmx-drivers repo
+              )[Sys.info()["user"]]
+
+
 ```
 
-##Assemble the data frame by calling the data assembly script: 
-```{r}
-opts_knit$set(root.dir=normalizePath('../'))
-source("./Benthic_Nearshore_Drivers/Benthic_Nearshore_Data_.R")
 
+```{r, echo=FALSE, include=FALSE}
+source(file.path(dir_dmx_d, 
+                 "Benthic_Nearshore_Drivers/Benthic_Nearshore_Data_.R"))
 ```
  
 ```{r, echo=FALSE, include=FALSE}
@@ -113,12 +114,14 @@ BenNear11 <- BenNear10 %>%
              mutate(Bin_Value = as.numeric(Bin_Value),
                     BinValue2 = as.numeric(BinValue2),
                     BinValue3 = ifelse(is.na(Bin_Value), BinValue2, Bin_Value),
-                    BinValue3 = ifelse(BinValue3 > 0, 1, BinValue3))
+                    BinValue3 = ifelse(BinValue3 > 0, 1, BinValue3),
+                    Region_Site = paste(Region, Site_Name, sep=":")) %>%
+             arrange(Region_Site, Year)
 
 ```
 
 ##Plot 1: Data presence for all Regions, all Sites we have in hand to date
-```{r, include=FALSE, fig.height=12, fig.width=12}
+```{r,echo=FALSE, fig.height=12, fig.width=14}
 p <- ggplot(data=BenNear11, aes(x=Site_Name, y=Year)) + 
             geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
             scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
@@ -131,8 +134,8 @@ p
 
 ```
 
-##Plot2: Data presence for only Regions WPWS, KEFJ, KATM
-```{r, include=FALSE, fig.height=12, fig.width=12}
+###Plot 2: Data presence for only Regions WPWS, KEFJ, KATM
+```{r, echo=FALSE, fig.height=12, fig.width=12}
 # Only include Regions WPWS, KEFJ, KATM
 BenNear12 <- BenNear11 %>%
              filter(Region %in% c("WPWS","KEFJ","KATM")) %>%
@@ -151,8 +154,8 @@ p15
 
 ```
 
-##Plot3: Data presence for WPWS, KEFJ, KATM presented another way
-```{r, include=FALSE, fig.height=12, fig.width=12}
+###Plot 3: Data presence for WPWS, KEFJ, KATM presented another way
+```{r, echo=FALSE, fig.height=12, fig.width=12}
 
 p16 <- ggplot(data=BenNear12, aes(x=DataSet, y=Year)) + 
               geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
@@ -165,15 +168,15 @@ p16
 
 ```
 
-##Correlation pair plots of raw data: 
-```{r, fig.height=10, fig.width=10}
+###Correlation pair plots of raw data: 
+```{r, echo=FALSE, fig.height=10, fig.width=10}
 BenNear2 <- as.data.frame(BenNear2)
 
 pairs.panels(BenNear2[,c(4:10)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) #
 pairs.panels(BenNear2[,c(37,39,41,43,45,47,49,51,53,55)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
 pairs.panels(BenNear2[,c(8:10,15)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
 pairs.panels(BenNear2[,c(8,57)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
-
+pairs.panels(BenNear2[,c(8,10,11)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
 
 
 ```
