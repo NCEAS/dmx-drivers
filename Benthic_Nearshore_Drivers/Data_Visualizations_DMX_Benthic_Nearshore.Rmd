@@ -7,7 +7,7 @@ output: html_document
 
 # Data Visualizations for DMX Benthic Nearshore Drivers
 
-##Plot 1: Heatmap of all datasets we have in hand to date
+
 
 ```{r, echo=FALSE, include=FALSE}
 
@@ -23,13 +23,14 @@ library(stringr)
 
 ```
 
-Assemble the data frame by calling the data assembly script: 
+##Assemble the data frame by calling the data assembly script: 
 ```{r}
+opts_knit$set(root.dir=normalizePath('../'))
 source("./Benthic_Nearshore_Drivers/Benthic_Nearshore_Data_.R")
 
 ```
-  Summarize data to Site - 
-```{r, echo=FALSE}
+ 
+```{r, echo=FALSE, include=FALSE}
 BenNear2 <- BenNear %>%
             select(-Quadrat, -Lat,-Long) %>%
             mutate_each(funs(as.numeric), SeaOtt_CarcToothAge) %>%
@@ -116,7 +117,7 @@ BenNear11 <- BenNear10 %>%
 
 ```
 
-Plot data presence for all Regions, all Sites: 
+##Plot 1: Data presence for all Regions, all Sites we have in hand to date
 ```{r, include=FALSE, fig.height=12, fig.width=12}
 p <- ggplot(data=BenNear11, aes(x=Site_Name, y=Year)) + 
             geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
@@ -130,7 +131,7 @@ p
 
 ```
 
-Plot data presence only Regions WPWS, KEFJ, KATM:
+##Plot2: Data presence for only Regions WPWS, KEFJ, KATM
 ```{r, include=FALSE, fig.height=12, fig.width=12}
 # Only include Regions WPWS, KEFJ, KATM
 BenNear12 <- BenNear11 %>%
@@ -150,6 +151,7 @@ p15
 
 ```
 
+##Plot3: Data presence for WPWS, KEFJ, KATM presented another way
 ```{r, include=FALSE, fig.height=12, fig.width=12}
 
 p16 <- ggplot(data=BenNear12, aes(x=DataSet, y=Year)) + 
@@ -163,7 +165,16 @@ p16
 
 ```
 
+##Correlation pair plots of raw data: 
 ```{r, fig.height=10, fig.width=10}
+BenNear2 <- as.data.frame(BenNear2)
+
+pairs.panels(BenNear2[,c(4:10)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) #
+pairs.panels(BenNear2[,c(37,39,41,43,45,47,49,51,53,55)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+pairs.panels(BenNear2[,c(8:10,15)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+pairs.panels(BenNear2[,c(8,57)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
+
+
 
 ```
 

@@ -153,14 +153,7 @@ BenNear2 <- as.data.frame(BenNear2)
 
 pairs.panels(BenNear2[,c(4:10)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) #
 pairs.panels(BenNear2[,c(37,39,41,43,45,47,49,51,53,55)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
-
-ggcorplot(data=BenNear2[,4:10],var_text_size=5,cor_text_limits=c(5,10))
-
-library(GGally)
-ggpairs(BenNear2, columns=4:10)
-
-library(ez)
-ezCor(data=BenNear2)
-
+pairs.panels(BenNear2[,c(8,57)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
+pairs.panels(BenNear2[,c(8:10,15)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
 
 
