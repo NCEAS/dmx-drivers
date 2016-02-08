@@ -37,11 +37,14 @@ sourceDir <- function(path, trace=TRUE) {
 }
 
 
-ifelse((Sys.info()["user"]!='rblake'),
-       sourceDir("Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore"),
-       sourceDir(file.path(dir_dmx_d, 
-                 "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore"))
-       )
+if(Sys.info()["user"]!='rblake'){
+   sourceDir("Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore")
+}else{sourceDir(file.path(dir_dmx_d, 
+               "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore"))
+}
+
+
+  
 
 #sourceDir(file.path(dir_dmx_d, 
 #                    "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore"))
