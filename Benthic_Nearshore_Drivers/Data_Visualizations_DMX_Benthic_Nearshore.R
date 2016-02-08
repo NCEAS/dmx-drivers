@@ -27,6 +27,43 @@ library(reshape2)
 library(ggplot2)
 library(scales)
 library(psych)
+library(rworldmap)
+library(rworldxtra)
+library(rgdal)
+
+
+# Make Site Map
+BenNear1 <- BenNear %>%
+            mutate(Region_Site = paste(Region, Site_Name, sep=":"))
+# state:
+state <- readOGR(dsn="Benthic_Nearshore_Drivers",layer="statep010")
+stateDf <- fortify(state)
+  
+# palette:
+colMap <- c("dimgrey","black")
+
+colors <- c("blue3","turquoise2","deepskyblue","royalblue1","violet","thistle1",
+            "darkseagreen","greenyellow","olivedrab3",
+            "coral","tomato3","orangered4","rosybrown1","hotpink1",
+            "yellow","goldenrod1","tan2")
+
+# plot:
+ ggplot(data=stateDf, aes(y=lat, x=long)) +
+   geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
+   coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
+   scale_fill_manual(values=colMap) +
+   geom_point(data=BenNear1, aes(x=as.numeric(Long), y=as.numeric(Lat),
+                                 colour=Region_Site), size=5, shape=18) + 
+   facet_wrap(~Region) +
+   theme(axis.line=element_line('black'),
+         panel.grid.major=element_blank(),
+         panel.grid.minor=element_blank(),
+         panel.border=element_blank(),
+         panel.background=element_blank(),
+         legend.key = element_blank(),
+         axis.text=element_text(size=14),
+         title=element_text(size=16,face="bold")) 
+  
 
 
 # make Yes/No for sample presence
