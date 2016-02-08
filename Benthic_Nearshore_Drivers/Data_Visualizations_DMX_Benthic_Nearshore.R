@@ -53,7 +53,7 @@ colors <- c("blue3","turquoise2","deepskyblue","royalblue1","violet","thistle1",
    coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
    scale_fill_manual(values=colMap) +
    geom_point(data=BenNear1, aes(x=as.numeric(Long), y=as.numeric(Lat),
-                                 colour=Region_Site), size=5, shape=18) + 
+                                 colour=Region_Site), size=3, shape=18) + 
    facet_wrap(~Region) +
    theme(axis.line=element_line('black'),
          panel.grid.major=element_blank(),
@@ -62,7 +62,8 @@ colors <- c("blue3","turquoise2","deepskyblue","royalblue1","violet","thistle1",
          panel.background=element_blank(),
          legend.key = element_blank(),
          axis.text=element_text(size=14),
-         title=element_text(size=16,face="bold")) 
+         title=element_text(size=16,face="bold"),
+         legend.position="bottom") 
   
 
 
