@@ -44,11 +44,6 @@ if(Sys.info()["user"]!='rblake'){
 }
 
 
-  
-
-#sourceDir(file.path(dir_dmx_d, 
-#                    "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore"))
-
 
 # Create empty data frame with Year, Region, Site, and Quadrat columns
 BenNearSites <- data.frame('Site_Name'=c("Aialik Bay","Amalik Bay","Bettles Bay","Cedar Bay",
@@ -168,7 +163,7 @@ BenNear <- merge(BenNear,upanom,all.x=T)          # Upwelling anomalies annual
 BenNear <- merge(BenNear,Phy,all.x=T)             # Phytoplankton - Seward Line, spring
 BenNear <- merge(BenNear,SatChl_df,all.x=T)       # Chla - Satellite annual
 BenNear <- merge(BenNear,SST,all.x=T)             # SST - Seward Line
-BenNear <- merge(BenNear,Wlk_GOA,all.x=T)         # Whelks (Nucella sp.) abundance
+BenNear <- merge(BenNear,Wlk_GOA,all.x=T)         # Whelks (Nucella sp.) abundance (n/m2)
 BenNear <- merge(BenNear,SS_GOA,all.x=T)          # Sea Stars abundance
 BenNear <- merge(BenNear,BS_IA,all.x=T)           # Bare Substrate percent cover
 BenNear <- merge(BenNear,b_IA,all.x=T)            # Barnacles percent cover

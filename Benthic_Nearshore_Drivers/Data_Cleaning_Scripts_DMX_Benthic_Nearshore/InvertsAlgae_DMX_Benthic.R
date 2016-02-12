@@ -12,6 +12,7 @@ library(curl)
 library(rvest)
 library(tidyr)
 library(stringr)
+library(data.table)
 
 ## Steps for data cleaning: 
 ## 1) read in data
@@ -33,8 +34,22 @@ IA15 <- read.csv(file=textConnection(IA115))
 head(IA15)
 
 # merge the pre 2015 and 2015 data
-IA2 <- bind_rows(IA,IA15) 
-head(IA2) ; tail(IA2)
+IA_ <- IA %>%
+       bind_rows(IA15) %>%
+       mutate(Lump_Name = ifelse((Lump_Name == ""), Species_Name, Lump_Name))
+
+# add zeros for samples where species were not observed
+# Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
+DT <-  as.data.table(as.data.frame(IA_))
+setkey(DT, Site_Code, Site_Name, Sample_Year, Elevation_Position, Quadrat_Num, Layer_Num, Lump_Name)
+DT2 <- CJ(unique(DT$Site_Code), unique(DT$Site_Name), unique(DT$Sample_Year), unique(DT$Elevation_Position),
+          unique(DT$Quadrat_Num), unique(DT$Layer_Num), unique(DT$Lump_Name))
+colnames(DT2) <- c("Site_Code","Site_Name","Sample_Year","Elevation_Position","Quadrat_Num",
+                   "Layer_Num","Lump_Name")
+
+#IA2 <- full_join(IA_, DT2)
+
+#head(IA2) ; tail(IA2)
 
 
 # Cleaning
@@ -124,7 +139,7 @@ PerCovCalc <- function(df, new_column_name) {
                      count(Site_Code, Site_Name, Year, Elevation_Position, Quadrat, Point_Count) %>%
                      mutate(Per_Cov = (n/Point_Count)*100) %>% 
                      group_by(Site_Name, Year, Quadrat) %>%
-                     summarise_(.dots = setNames(list(~mean(Per_Cov)), new_column_name)) %>%  # mean of elevations together
+                     mutate_(.dots = setNames(list(~mean(Per_Cov)), new_column_name)) %>%  # mean of elevations together
                      ungroup() %>% 
                      select_("Site_Name", "Year", "Quadrat", new_column_name) %>%
                      arrange(Site_Name, Year, Quadrat)

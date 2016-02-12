@@ -167,7 +167,7 @@ p <- ggplot(data=BenNear11, aes(x=Site_Name, y=Year)) +
             geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
             scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
             scale_y_reverse() + facet_wrap(~DataSet) +
-            theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=10),
+            theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=8),
                   axis.text.y = element_text(color="black", size=15),
                   axis.title  = element_text(face="bold", size=20))
 p
@@ -187,7 +187,7 @@ p15 <- ggplot(data=BenNear12, aes(x=Region_Site, y=Year)) +
               geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
               scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
               scale_y_reverse() + facet_wrap(~DataSet) +
-              theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=12),
+              theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=10),
                     axis.text.y = element_text(color="black", size=15),
                     axis.title  = element_text(face="bold", size=20))
 p15
@@ -202,7 +202,7 @@ p16 <- ggplot(data=BenNear12, aes(x=DataSet, y=Year)) +
               geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
               scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
               scale_y_reverse() + facet_wrap(~Region_Site) +
-              theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=12),
+              theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=10),
                     axis.text.y = element_text(color="black", size=15),
                     axis.title  = element_text(face="bold", size=20))
 p16
