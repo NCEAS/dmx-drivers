@@ -34,19 +34,17 @@ IA15 <- read.csv(file=textConnection(IA115))
 head(IA15)
 
 # merge the pre 2015 and 2015 data
-IA_ <- IA %>%
+IA2 <- IA %>%
        bind_rows(IA15) %>%
        mutate(Lump_Name = ifelse((Lump_Name == ""), Species_Name, Lump_Name))
 
 # add zeros for samples where species were not observed
 # Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
-DT <-  as.data.table(as.data.frame(IA_))
-setkey(DT, Site_Code, Site_Name, Sample_Year, Elevation_Position, Quadrat_Num, Layer_Num, Lump_Name)
-DT2 <- CJ(unique(DT$Site_Code), unique(DT$Site_Name), unique(DT$Sample_Year), unique(DT$Elevation_Position),
-          unique(DT$Quadrat_Num), unique(DT$Layer_Num), unique(DT$Lump_Name))
-colnames(DT2) <- c("Site_Code","Site_Name","Sample_Year","Elevation_Position","Quadrat_Num",
-                   "Layer_Num","Lump_Name")
-
+#DT <-  as.data.table(as.data.frame(IA_))
+#setkey(DT, Site_Name, Sample_Year, Quadrat_Num, Species_Name)
+#DT2 <- CJ(unique(DT$Site_Name), unique(DT$Sample_Year), unique(DT$Quadrat_Num),
+#          unique(DT$Species_Name))
+#colnames(DT2) <- c("Site_Name","Sample_Year","Quadrat_Num","Species_Name")
 #IA2 <- full_join(IA_, DT2)
 
 #head(IA2) ; tail(IA2)
@@ -139,7 +137,7 @@ PerCovCalc <- function(df, new_column_name) {
                      count(Site_Code, Site_Name, Year, Elevation_Position, Quadrat, Point_Count) %>%
                      mutate(Per_Cov = (n/Point_Count)*100) %>% 
                      group_by(Site_Name, Year, Quadrat) %>%
-                     mutate_(.dots = setNames(list(~mean(Per_Cov)), new_column_name)) %>%  # mean of elevations together
+                     summarise_(.dots = setNames(list(~mean(Per_Cov)), new_column_name)) %>%  # mean of elevations together
                      ungroup() %>% 
                      select_("Site_Name", "Year", "Quadrat", new_column_name) %>%
                      arrange(Site_Name, Year, Quadrat)
@@ -147,6 +145,37 @@ PerCovCalc <- function(df, new_column_name) {
               }
 #####
 #####
+# FUNCTION for adding zeros for samples where species were not observed
+# Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
+
+AddZeros <- function(){
+            df2 <- df1 %>%
+                   # for every unique combination of Site_Name and Year, 
+                   mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%
+                   group_by(Site_Year) %>%
+                   # if Quadrat values are missing,ie, not found in c(1:12), 
+                   # then insert rows for missing quadrat values
+                   mutate(Quadrat = ifelse(!(Quadrat %in% c(1:12)), paste("missing values")as rows), 
+                                    Quadrat) %>%
+                   # and paste zero in "new_column_name" column
+                   mutate(new_column_name = ifelse((new_column_name == ""), 0, new_column_name),
+                          # and copy and paste Site_Name and Year
+                          Site_Name = ifelse((Site_Name == ""), Site_Name, Site_Name),
+                          Year = ifelse((Year == ""), Year, Year)
+                          ) %>%
+                   ungroup() 
+                   
+            
+             
+            
+            
+            
+            
+            return(df3)
+            }
+#####
+#####
+
 
 # Bare Substrate 
 BS_IA_1 <- filter(IA_GOA, Species_Name=="Bare Substrate", Layer_Num=="1") # only in layer 1 according to Tom Dean
