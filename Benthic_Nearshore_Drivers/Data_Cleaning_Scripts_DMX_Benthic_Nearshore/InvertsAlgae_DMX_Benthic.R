@@ -120,6 +120,32 @@ IA_GOA <- IA2 %>%
                  )     # add new column with common category
 head(IA_GOA) ; IA_GOA[45:90,]
 
+# Read in data frame of list of all possible species (regional species pool)
+Lump <- c("Acrosiphonia sp.","Ahnfeltia fastigiata","Alaria marginata","Analipus japonicus",
+          "Anthopleura elegantissima","Anthopleura xanthogrammica","Antithamnionella pacifica",
+          "bare substrate","barnacle","Blidingia minima var. minima",
+          "Boreophyllum / Pyropia / Wildemania sp.","Callithamnion pikeanum","Ceramium pacificum",
+          "Chordaria flagelliformis","Cladophora / Chaetomorpha sp.","Coilodesme bulligera",
+          "Constantinea subulifera","Cryptochiton stelleri","Cryptopleura ruprechtiana",
+          "Cryptosiphonia woodii","Desmarestia aculeata","Dictyosiphon foeniculaceus",
+          "Dumontia alaskana","Ectocarpus sp.","Elachista sp.","encrusitng bryozoan",
+          "encrusting coralline algae","Endocladia muricata","Epiactis sp.","Eudesme virescens",
+          "foliose bryozoan","foliose coralline algae","Fucus distichus","Gloiopeltis furcata",
+          "Gracilaria pacifica","Halosaccion glandiforme","Hiatella arctica","Laminaria saccharina",
+          "Leathesia marina","Mastocarpus sp.","Mazzaella sp.","Melanosiphon / Scytosiphon sp.",
+          "Membranoptera spinulosa","Metridium senile","Microcladia borealis","Modiolus modiolus",
+          "Musculus sp","Mya truncata","Mytilus trossulus","Nemalion elminthoides",
+          "Neoptilota / Ptilota sp.","non-coralline algal crust","Odonthalia / Neorhodomela sp.",
+          "Palmaria sp.","Petalonia fascia","Phycodrys / Tokidadendron sp.","Pleonosporium vancouverianum",
+          "Plocamium pacificum","Pododesmus macroschisma","Pterosiphonia / Polysiphonia sp.",
+          "Pylaiella littoralis","Saccharina latissima","Saccharina sessilis","Soranthera ulvoidea",
+          "spirorbidae","Ulothrix flacca","Ulva / Monostroma sp.","unidentified anemone",
+          "unidentified brown algae","unidentified filamentous red algae","unidentified green algae",
+          "unidentified hydroid","unidentified sponge","unidentified tunicate","unidentified worm",
+          "Urticina crassicornis")
+Lump <- data.frame(Lump)
+
+
 ##### 
 ##### 
 # FUNCTION for getting Percent Cover for all intertidal inverts and algae
@@ -130,11 +156,12 @@ PerCovCalc <- function(df, new_column_name) {
                    count(Site_Code, Site_Name, Year, Elevation_Position, Quadrat) %>%
                    rename(Point_Count=n)
               # join calculated points df to referenced df
-              df1 <- left_join(df, x, by=c("Site_Code", "Site_Name", "Year", 
-                                           "Elevation_Position", "Quadrat"))
-              # calculate percent cover per quadrat
-              df1 <- df1 %>%
+              y <- left_join(df, x, by=c("Site_Code", "Site_Name", "Year", 
+                                         "Elevation_Position", "Quadrat"))
+              # count number of rows (observations) for each species
+              df1 <- y %>%
                      count(Site_Code, Site_Name, Year, Elevation_Position, Quadrat, Point_Count) %>%
+              # calculate percent cover per quadrat  
                      mutate(Per_Cov = (n/Point_Count)*100) %>% 
                      group_by(Site_Name, Year, Quadrat) %>%
                      summarise_(.dots = setNames(list(~mean(Per_Cov)), new_column_name)) %>%  # mean of elevations together
@@ -149,12 +176,17 @@ PerCovCalc <- function(df, new_column_name) {
 # Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
 
 AddZeros <- function(){
+  
+  
+  
+            Quadrat <- c(1:12); Quadrat <- data.frame(Quadrat)
+  
             df2 <- df1 %>%
                    # for every unique combination of Site_Name and Year, 
                    mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%
                    group_by(Site_Year) %>%
-                   # if Quadrat values are missing,ie, not found in c(1:12), 
-                   # then insert rows for missing quadrat values
+                   full_join(Quadrat, by="Quadrat") # insert rows for missing quadrat values, ie, not found in c(1:12),
+                   
                    mutate(Quadrat = ifelse(!(Quadrat %in% c(1:12)), paste("missing values")as rows), 
                                     Quadrat) %>%
                    # and paste zero in "new_column_name" column
