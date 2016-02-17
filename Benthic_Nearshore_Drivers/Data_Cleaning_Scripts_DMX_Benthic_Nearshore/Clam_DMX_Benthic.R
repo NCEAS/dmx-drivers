@@ -18,8 +18,8 @@ library(stringr)
 ## 2) format to annual estimates (2 column dataframe with cols=Year,spEstimate)
 
 #############
-# Clam data           # note quadrats are 0.25m squared in size
-URL_C <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-udGZlTTF6MVJjR1U"
+# Clam data   2007 - 2015        # note quadrats are 0.25m squared in size
+URL_C <- "https://workspace.aoos.org/published/file/ddc1f9bc-23c3-4c88-aa71-181001138171/NearshoreBenthicSystemsInGOA_SOP06_InvertsGravelSandBeaches_2007-2015SpeciesSize_Data_11Feb2016.csv"
 CGet <- GET(URL_C)
 C1 <- content(CGet, as='text')
 C <- read.csv(file=textConnection(C1))
@@ -32,11 +32,16 @@ Bm1 <- content(BmGet, as='text')
 BmCalc <- read.csv(file=textConnection(Bm1))
 head(BmCalc)
 
-# clean the data
+# clean the data          
 Clam <- C %>%
         rename(Site_Name=site.name, Quadrat=quad.,Size_mm=size..mm.) %>%
-        mutate(Year = sapply(strsplit(as.character(date), split="-") , function(x) x[3]),
-               Year = paste("20",Year,sep=""),
+        mutate(Year = sapply(strsplit(as.character(date), split="/") , function(x) x[3]),
+               Year = revalue(Year, c("3013"="2013")),
+               Site_Name = revalue(Site_Name,c("Ninagiak"="Ninagiak Island",
+                                               "Herring Bay- Southwest"="Herring Bay-Southwest",
+                                               "Galena"="Galena Bay", "Fidalgo"="Port Fidalgo",
+                                               "Olsen"="Olsen Bay", "Simpson"="Simpson Bay",
+                                               "Observation"="Observation Island")),
                Region = ifelse((Site_Name %in% c("Galena Bay","Observation Island",
                                                  "Olsen Bay","Port Fidalgo",
                                                  "Simpson Bay")),'EPWS',
@@ -52,7 +57,8 @@ Clam <- C %>%
                         ifelse((Site_Name %in% c("Disk Island","Herring Bay",
                                                  "Herring Bay-Bear Cove","Herring Bay-Southwest",
                                                  "Hogan Bay","Iktua Bay","Johnson Bay",
-                                                 "Northwest Bay","Whale Bay")),'WPWS',""))))))) #%>%
+                                                 "Northwest Bay","Whale Bay")),'WPWS',""))))))) %>%
+         arrange(Site_Name, Year, Quadrat) #%>%
    #     filter(Year %in% c(2010,2011,2012,2013,2014,2015))
 
 # pull out biomass conversion info for species of interest
@@ -69,7 +75,7 @@ BiV_Abun_Size <- function(df, genus, abun_column_name, size_column_name, biom_co
                       select_("Region", "Site_Name", "Year", "Quadrat", abun_column_name)
                  # calculate the mean size (average per quadrat)
                  B <- df2 %>%
-                      filter(!is.na(Size_mm)) %>%
+                      filter(!is.na(Size_mm), Size_mm != 999) %>%
                       group_by(Region,Site_Name,Year,Quadrat) %>% 
                       summarise_(.dots = setNames(list(~mean(Size_mm)), size_column_name)) %>%  # mean of elevations together
                       ungroup() %>%
@@ -79,6 +85,7 @@ BiV_Abun_Size <- function(df, genus, abun_column_name, size_column_name, biom_co
                  # calculate biomass 
                  # from size (mm) to biomass (grams wet wt.): Biomass = fxna * size ^ fxnb
                  D <- df2 %>%
+                      filter(!is.na(Size_mm), Size_mm != 999) %>%
                       mutate_(.dots= setNames(list(~BM[grepl(genus,BM$Latin),6]*
                                                     df2$Size_mm^BM[grepl(genus,BM$Latin),7]), 
                                                     "biomass_gWW")) %>%
