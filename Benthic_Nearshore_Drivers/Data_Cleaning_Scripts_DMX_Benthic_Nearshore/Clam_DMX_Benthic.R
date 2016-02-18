@@ -22,8 +22,8 @@ library(stringr)
 URL_C <- "https://workspace.aoos.org/published/file/ddc1f9bc-23c3-4c88-aa71-181001138171/NearshoreBenthicSystemsInGOA_SOP06_InvertsGravelSandBeaches_2007-2015SpeciesSize_Data_11Feb2016.csv"
 CGet <- GET(URL_C)
 C1 <- content(CGet, as='text')
-C <- read.csv(file=textConnection(C1))
-head(C)
+Cl <- read.csv(file=textConnection(C1))
+head(Cl)
 
 # biomass conversion from Ben Weitzman based on Oftedal et al. 2007 nutritional analyses
 URL_Bm <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-uN2FrdzIzLS1FZUk"
@@ -33,7 +33,7 @@ BmCalc <- read.csv(file=textConnection(Bm1))
 head(BmCalc)
 
 # clean the data          
-Clam <- C %>%
+Clam <- Cl %>%
         rename(Site_Name=site.name, Quadrat=quad.,Size_mm=size..mm.) %>%
         mutate(Year = sapply(strsplit(as.character(date), split="/") , function(x) x[3]),
                Year = revalue(Year, c("3013"="2013")),
@@ -84,10 +84,12 @@ BiV_Abun_Size <- function(df, genus, abun_column_name, size_column_name, biom_co
                  C <- merge(A, B, by=c("Region","Site_Name","Year","Quadrat"))
                  # calculate biomass 
                  # from size (mm) to biomass (grams wet wt.): Biomass = fxna * size ^ fxnb
-                 D <- df2 %>%
-                      filter(!is.na(Size_mm), Size_mm != 999) %>%
+                 d <- df2 %>%
+                      filter(!is.na(Size_mm), Size_mm != 999) 
+                 
+                 D <- d %>%
                       mutate_(.dots= setNames(list(~BM[grepl(genus,BM$Latin),6]*
-                                                    df2$Size_mm^BM[grepl(genus,BM$Latin),7]), 
+                                                    d$Size_mm^BM[grepl(genus,BM$Latin),7]), 
                                                     "biomass_gWW")) %>%
                       group_by(Region,Site_Name,Year,Quadrat) %>%
                       summarise_(.dots = setNames(list(~mean(biomass_gWW)), biom_column_name)) %>%
