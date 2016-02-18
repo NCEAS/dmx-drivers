@@ -13,6 +13,7 @@ library(rvest)
 library(tidyr)
 library(stringr)
 library(data.table)
+library(lazyeval)
 
 ## Steps for data cleaning: 
 ## 1) read in data
@@ -121,29 +122,29 @@ IA_GOA <- IA2 %>%
 head(IA_GOA) ; IA_GOA[45:90,]
 
 # Read in data frame of list of all possible species (regional species pool)
-Lump <- c("Acrosiphonia sp.","Ahnfeltia fastigiata","Alaria marginata","Analipus japonicus",
-          "Anthopleura elegantissima","Anthopleura xanthogrammica","Antithamnionella pacifica",
-          "bare substrate","barnacle","Blidingia minima var. minima",
-          "Boreophyllum / Pyropia / Wildemania sp.","Callithamnion pikeanum","Ceramium pacificum",
-          "Chordaria flagelliformis","Cladophora / Chaetomorpha sp.","Coilodesme bulligera",
-          "Constantinea subulifera","Cryptochiton stelleri","Cryptopleura ruprechtiana",
-          "Cryptosiphonia woodii","Desmarestia aculeata","Dictyosiphon foeniculaceus",
-          "Dumontia alaskana","Ectocarpus sp.","Elachista sp.","encrusitng bryozoan",
-          "encrusting coralline algae","Endocladia muricata","Epiactis sp.","Eudesme virescens",
-          "foliose bryozoan","foliose coralline algae","Fucus distichus","Gloiopeltis furcata",
-          "Gracilaria pacifica","Halosaccion glandiforme","Hiatella arctica","Laminaria saccharina",
-          "Leathesia marina","Mastocarpus sp.","Mazzaella sp.","Melanosiphon / Scytosiphon sp.",
-          "Membranoptera spinulosa","Metridium senile","Microcladia borealis","Modiolus modiolus",
-          "Musculus sp","Mya truncata","Mytilus trossulus","Nemalion elminthoides",
-          "Neoptilota / Ptilota sp.","non-coralline algal crust","Odonthalia / Neorhodomela sp.",
-          "Palmaria sp.","Petalonia fascia","Phycodrys / Tokidadendron sp.","Pleonosporium vancouverianum",
-          "Plocamium pacificum","Pododesmus macroschisma","Pterosiphonia / Polysiphonia sp.",
-          "Pylaiella littoralis","Saccharina latissima","Saccharina sessilis","Soranthera ulvoidea",
-          "spirorbidae","Ulothrix flacca","Ulva / Monostroma sp.","unidentified anemone",
-          "unidentified brown algae","unidentified filamentous red algae","unidentified green algae",
-          "unidentified hydroid","unidentified sponge","unidentified tunicate","unidentified worm",
-          "Urticina crassicornis")
-Lump <- data.frame(Lump)
+#Lump <- c("Acrosiphonia sp.","Ahnfeltia fastigiata","Alaria marginata","Analipus japonicus",
+#          "Anthopleura elegantissima","Anthopleura xanthogrammica","Antithamnionella pacifica",
+#          "bare substrate","barnacle","Blidingia minima var. minima",
+#          "Boreophyllum / Pyropia / Wildemania sp.","Callithamnion pikeanum","Ceramium pacificum",
+#          "Chordaria flagelliformis","Cladophora / Chaetomorpha sp.","Coilodesme bulligera",
+#          "Constantinea subulifera","Cryptochiton stelleri","Cryptopleura ruprechtiana",
+#          "Cryptosiphonia woodii","Desmarestia aculeata","Dictyosiphon foeniculaceus",
+#          "Dumontia alaskana","Ectocarpus sp.","Elachista sp.","encrusitng bryozoan",
+#          "encrusting coralline algae","Endocladia muricata","Epiactis sp.","Eudesme virescens",
+#          "foliose bryozoan","foliose coralline algae","Fucus distichus","Gloiopeltis furcata",
+#          "Gracilaria pacifica","Halosaccion glandiforme","Hiatella arctica","Laminaria saccharina",
+#          "Leathesia marina","Mastocarpus sp.","Mazzaella sp.","Melanosiphon / Scytosiphon sp.",
+#          "Membranoptera spinulosa","Metridium senile","Microcladia borealis","Modiolus modiolus",
+#          "Musculus sp","Mya truncata","Mytilus trossulus","Nemalion elminthoides",
+#          "Neoptilota / Ptilota sp.","non-coralline algal crust","Odonthalia / Neorhodomela sp.",
+#          "Palmaria sp.","Petalonia fascia","Phycodrys / Tokidadendron sp.","Pleonosporium vancouverianum",
+#          "Plocamium pacificum","Pododesmus macroschisma","Pterosiphonia / Polysiphonia sp.",
+#          "Pylaiella littoralis","Saccharina latissima","Saccharina sessilis","Soranthera ulvoidea",
+#          "spirorbidae","Ulothrix flacca","Ulva / Monostroma sp.","unidentified anemone",
+#          "unidentified brown algae","unidentified filamentous red algae","unidentified green algae",
+#          "unidentified hydroid","unidentified sponge","unidentified tunicate","unidentified worm",
+#          "Urticina crassicornis")
+#Lump <- data.frame(Lump)
 
 
 ##### 
@@ -175,22 +176,54 @@ PerCovCalc <- function(df, new_column_name) {
 # FUNCTION for adding zeros for samples where species were not observed
 # Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
 
-AddZeros <- function(){
+AddZeros <- function(df1){
+            # run function PerCovCalc here and make the output (df1) available to the pipe below
   
-  
-  
-            Quadrat <- c(1:12); Quadrat <- data.frame(Quadrat)
-  
-            df2 <- df1 %>%
-                   # for every unique combination of Site_Name and Year, 
-                   mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%
-                   group_by(Site_Year) %>%
-                   full_join(Quadrat, by="Quadrat") # insert rows for missing quadrat values, ie, not found in c(1:12),
+            # create data frame with one column with 12 quadrats for each unique combination of Site_Name and Year
+            z <- df1 %>%
+                 mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%
+                 expand(Site_Year, Quadrat)  
+            # insert rows for missing quadrat values, ie, not found in c(1:12),     
+            u <- df1 %>%
+                 mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%
+                 full_join(z, by=c("Site_Year","Quadrat")) %>% 
+                 arrange(Site_Year, Quadrat) %>%
+            # and copy and paste Site_Name and Year  
+              
+              
+              
+              
+            # and paste zero in "new_column_name" column
+            #     mutate_(.dots = setNames(list(~revalue(new_column_name, c(NA=0))), new_column_name)) 
+                 mutate_(.dots = setNames(list(interp(~ f(is.na(as.name(new_column_name)), 0), f=quote(`if`))), 
+                                          new_column_name))   
+    
+            
+                 mutate_(.dots = setNames(list(interp(~if(is.na(as.name(new_column_name))){0})), 
+                                           new_column_name))
+                 
+                 
+                 
+            
+                mutate_(.dots = setNames(list(interp(~a/b, 
+                                                        a = as.name(preytypebmss_colname), 
+                                                        b = as.name("SiteSumBmss_gWW"))), 
+                                            propbmss_colname)) 
+            
+                
+                interp(~ f(a, b), f = quote(`if`))
+                
+                 mutate_(.dots= setNames(list(~BM[grepl(genus,BM$Latin),6]*
+                                              d$Size_mm^BM[grepl(genus,BM$Latin),7]), 
+                                              "biomass_gWW")) %>%
+             
+            
+        
+                 new_column_name = ifelse(is.na(new_column_name),0,new_column_name)
+                 new_column_name = revalue(new_column_name, c(NA=0))),
+            
+
                    
-                   mutate(Quadrat = ifelse(!(Quadrat %in% c(1:12)), paste("missing values")as rows), 
-                                    Quadrat) %>%
-                   # and paste zero in "new_column_name" column
-                   mutate(new_column_name = ifelse((new_column_name == ""), 0, new_column_name),
                           # and copy and paste Site_Name and Year
                           Site_Name = ifelse((Site_Name == ""), Site_Name, Site_Name),
                           Year = ifelse((Year == ""), Year, Year)
