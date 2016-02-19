@@ -176,9 +176,9 @@ PerCovCalc <- function(df, new_column_name) {
 # FUNCTION for adding zeros for samples where species were not observed
 # Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
 
-AddZeros <- function(df1){
+AddZeros <- function(df, new_column_name){
             # run function PerCovCalc here and make the output (df1) available to the pipe below
-  
+            PerCovCalc(df, new_column_name)
             # create data frame with one column with 12 quadrats for each unique combination of Site_Name and Year
             z <- df1 %>%
                  mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%
@@ -189,21 +189,54 @@ AddZeros <- function(df1){
                  full_join(z, by=c("Site_Year","Quadrat")) %>% 
                  arrange(Site_Year, Quadrat) %>%
             # and copy and paste Site_Name and Year  
-              
-              
-              
-              
-            # and paste zero in "new_column_name" column
-            #     mutate_(.dots = setNames(list(~revalue(new_column_name, c(NA=0))), new_column_name)) 
-                 mutate_(.dots = setNames(list(interp(~ f(is.na(as.name(new_column_name)), 0), f=quote(`if`))), 
+                 mutate(Site_Name = sapply(strsplit(as.character(Site_Year), split="/"), function(x) x[1]),
+                        Year = sapply(strsplit(as.character(Site_Year), split="/"), function(x) x[2])) 
+            # and replace NA with zero in "new_column_name" column
+          
+         
+            
+            
+            
+            
+                  
+           
+            # THESE DON"T WORK!!!!!!!!!!!
+              u$new_column_name[is.na(new_column_name)] <- 0 # Doesn't work either!!
+            
+            
+                 mutate_(.dots = setNames(list(~revalue(new_column_name, c(NA=0))), new_column_name)) 
+               
+                   mutate_(.dots = setNames(list(interp(~ f(is.na(as.name(new_column_name)), 0), f=quote(`if`))), 
                                           new_column_name))   
     
             
                  mutate_(.dots = setNames(list(interp(~if(is.na(as.name(new_column_name))){0})), 
                                            new_column_name))
                  
+                 mutate_(.dots = setNames(list(interp(~if(a){b}, 
+                                                      .values=list(a=is.na(as.name(new_column_name)),
+                                                                   b=0))), 
+                                           new_column_name))
+               
+                 
+                 mutate_(new_column_name = interp(~if(is.na(new_column_name)) 0, 
+                                           new_column_name=as.name(new_column_name)))
+                   
                  
                  
+                 
+                 
+              # examples of standard eval to try copying... 
+                mutate_(v3=interp(~sum(x), x = as.name(varname))) 
+                 
+                 
+                mutate_(val= interp(~ifelse(fac=='cat',1*val,
+                                     ifelse(fac=='dog',2*val,0)), val=as.name(val)))
+                   
+          
+                 
+              setNames(list(lazyeval::interp(~x / y, x = quote(disp), y=61.0237)), "displ_l")
+                        
             
                 mutate_(.dots = setNames(list(interp(~a/b, 
                                                         a = as.name(preytypebmss_colname), 
@@ -218,25 +251,17 @@ AddZeros <- function(df1){
                                               "biomass_gWW")) %>%
              
             
-        
-                 new_column_name = ifelse(is.na(new_column_name),0,new_column_name)
-                 new_column_name = revalue(new_column_name, c(NA=0))),
+             # what I want to do in Non Standard Eval
+             mutate(new_column_name = ifelse(is.na(new_column_name),0,new_column_name))
+             mutate(new_column_name = revalue(new_column_name, c(NA=0)))
             
 
                    
-                          # and copy and paste Site_Name and Year
-                          Site_Name = ifelse((Site_Name == ""), Site_Name, Site_Name),
-                          Year = ifelse((Year == ""), Year, Year)
-                          ) %>%
+                      
                    ungroup() 
                    
             
-             
-            
-            
-            
-            
-            return(df3)
+            return(u)
             }
 #####
 #####
