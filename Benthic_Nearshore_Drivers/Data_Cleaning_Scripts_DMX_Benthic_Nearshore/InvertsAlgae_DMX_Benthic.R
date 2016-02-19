@@ -178,7 +178,7 @@ PerCovCalc <- function(df, new_column_name) {
 
 AddZeros <- function(df, new_column_name){
             # run function PerCovCalc here and make the output (df1) available to the pipe below
-            PerCovCalc(df, new_column_name)
+            df1 <- PerCovCalc(df, new_column_name)  
             # create data frame with one column with 12 quadrats for each unique combination of Site_Name and Year
             z <- df1 %>%
                  mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%
@@ -192,75 +192,9 @@ AddZeros <- function(df, new_column_name){
                  mutate(Site_Name = sapply(strsplit(as.character(Site_Year), split="/"), function(x) x[1]),
                         Year = sapply(strsplit(as.character(Site_Year), split="/"), function(x) x[2])) 
             # and replace NA with zero in "new_column_name" column
-          
-         
-            
-            
-            
-            
-                  
-           
-            # THESE DON"T WORK!!!!!!!!!!!
-              u$new_column_name[is.na(new_column_name)] <- 0 # Doesn't work either!!
-            
-            
-                 mutate_(.dots = setNames(list(~revalue(new_column_name, c(NA=0))), new_column_name)) 
-               
-                   mutate_(.dots = setNames(list(interp(~ f(is.na(as.name(new_column_name)), 0), f=quote(`if`))), 
-                                          new_column_name))   
-    
-            
-                 mutate_(.dots = setNames(list(interp(~if(is.na(as.name(new_column_name))){0})), 
-                                           new_column_name))
-                 
-                 mutate_(.dots = setNames(list(interp(~if(a){b}, 
-                                                      .values=list(a=is.na(as.name(new_column_name)),
-                                                                   b=0))), 
-                                           new_column_name))
-               
-                 
-                 mutate_(new_column_name = interp(~if(is.na(new_column_name)) 0, 
-                                           new_column_name=as.name(new_column_name)))
-                   
-                 
-                 
-                 
-                 
-              # examples of standard eval to try copying... 
-                mutate_(v3=interp(~sum(x), x = as.name(varname))) 
-                 
-                 
-                mutate_(val= interp(~ifelse(fac=='cat',1*val,
-                                     ifelse(fac=='dog',2*val,0)), val=as.name(val)))
-                   
-          
-                 
-              setNames(list(lazyeval::interp(~x / y, x = quote(disp), y=61.0237)), "displ_l")
-                        
-            
-                mutate_(.dots = setNames(list(interp(~a/b, 
-                                                        a = as.name(preytypebmss_colname), 
-                                                        b = as.name("SiteSumBmss_gWW"))), 
-                                            propbmss_colname)) 
-            
-                
-                interp(~ f(a, b), f = quote(`if`))
-                
-                 mutate_(.dots= setNames(list(~BM[grepl(genus,BM$Latin),6]*
-                                              d$Size_mm^BM[grepl(genus,BM$Latin),7]), 
-                                              "biomass_gWW")) %>%
-             
-            
-             # what I want to do in Non Standard Eval
-             mutate(new_column_name = ifelse(is.na(new_column_name),0,new_column_name))
-             mutate(new_column_name = revalue(new_column_name, c(NA=0)))
-            
-
-                   
-                      
-                   ungroup() 
-                   
-            
+            u[is.na(u[,new_column_name]), new_column_name] <- 0
+            # get ride of Site_Year column
+            u <- select(u,-Site_Year)
             return(u)
             }
 #####
@@ -269,47 +203,47 @@ AddZeros <- function(df, new_column_name){
 
 # Bare Substrate 
 BS_IA_1 <- filter(IA_GOA, Species_Name=="Bare Substrate", Layer_Num=="1") # only in layer 1 according to Tom Dean
-BS_IA <- PerCovCalc(BS_IA_1, "Bare_Sub_Per_Cov")    
+BS_IA <- AddZeros(BS_IA_1, "Bare_Sub_Per_Cov")    
 
 # Barnacles
 b_IA_1 <- filter(IA_GOA, Common_Cat=="barnacle")   # Filter out the species/entry of interest
-b_IA <- PerCovCalc(b_IA_1, "barnacle_Per_Cov") # call the function
+b_IA <- AddZeros(b_IA_1, "barnacle_Per_Cov") # call the function
 
 # Mussels
 ms_IA_1 <- filter(IA_GOA, Common_Cat=="mussel")   # Filter out the species/entry of interest
-ms_IA <- PerCovCalc(ms_IA_1, "mussel_Per_Cov")  # call the function
+ms_IA <- AddZeros(ms_IA_1, "mussel_Per_Cov")  # call the function
 
 # For the algae we will have Alaria, Fucus, Odnthalia/Neorhodomela??, annual browns, 
 # annual greens, annual reds, perennial reds.
 
 # Alaria marginata
 Am_IA_1 <- filter(IA_GOA, Species_Name=="Alaria marginata")   # Filter out the species/entry of interest
-Am_IA <- PerCovCalc(Am_IA_1, "Ala_marg_Per_Cov")  # call the function
+Am_IA <- AddZeros(Am_IA_1, "Ala_marg_Per_Cov")  # call the function
 
 # Fucus distichus
 Fd_IA_1 <- filter(IA_GOA, Species_Name=="Fucus distichus")   # Filter out the species/entry of interest
-Fd_IA <- PerCovCalc(Fd_IA_1, "Fuc_dist_Per_Cov")  # call the function
+Fd_IA <- AddZeros(Fd_IA_1, "Fuc_dist_Per_Cov") # call the function
 
 # Neorhodomela sp
 Neo_sp <- c("Neorhodomela oregona","Neorhodomela larix","Odonthalia / Neorhodomela sp.","Odonthalia floccosa")
 No_IA_1 <- filter(IA_GOA, Species_Name %in% Neo_sp)   # Filter out the species/entry of interest
-No_IA <- PerCovCalc(No_IA_1, "Neo_Odon_sp_Per_Cov") # call the function
+No_IA <- AddZeros(No_IA_1, "Neo_Odon_sp_Per_Cov") # call the function
 
 # Brown Algae Annual
 BAann_IA_1 <- filter(IA_GOA, Common_Cat=="brown_alga_annual")   # Filter out the species/entry of interest
-BAann_IA <- PerCovCalc(BAann_IA_1, "Brwn_alg_ann_Per_Cov")  # call the function
+BAann_IA <- AddZeros(BAann_IA_1, "Brwn_alg_ann_Per_Cov")  # call the function
 
 # Green Algae Annual
 GAann_IA_1 <- filter(IA_GOA, Common_Cat=="green_alga_annual")   # Filter out the species/entry of interest
-GAann_IA <- PerCovCalc(GAann_IA_1, "Green_alg_ann_Per_Cov")  # call the function
+GAann_IA <- AddZeros(GAann_IA_1, "Green_alg_ann_Per_Cov")  # call the function
 
 # Red Algae Annual
 RAann_IA_1 <- filter(IA_GOA, Common_Cat=="red_alga_annual")   # Filter out the species/entry of interest
-RAann_IA <- PerCovCalc(RAann_IA_1, "Red_alg_ann_Per_Cov")  # call the function
+RAann_IA <- AddZeros(RAann_IA_1, "Red_alg_ann_Per_Cov")  # call the function
 
 # Red Algae Perennial
 RAper_IA_1 <- filter(IA_GOA, Common_Cat=="red_alga_perennial")   # Filter out the species/entry of interest
-RAper_IA <- PerCovCalc(RAper_IA_1, "Red_alg_per_Per_Cov")  # call the function
+RAper_IA <- AddZeros(RAper_IA_1, "Red_alg_per_Per_Cov")  # call the function
 
 
 
