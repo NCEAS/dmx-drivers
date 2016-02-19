@@ -74,11 +74,44 @@ SOS <- SOs %>%
        select(Year, Region, SeaOtt_CarcToothAge)
   
 
+####
+# FUNCTION to calculate mean carcass tooth age per site and
+# proportion of prime age (defined as 2-8 years old)
+####
+MnPrimAge <- function(df){
+             MnAge <- df %>%
+                      filter(!is.na(SeaOtt_CarcToothAge)) %>%
+                      mutate_each(funs(as.numeric), SeaOtt_CarcToothAge) %>% # change class of column 
+                      group_by(Year, Region) %>%
+                      summarize(SOtt_MnCarcToothAge = mean(SeaOtt_CarcToothAge)) %>%
+                      ungroup()
+             
+             u <- df %>%
+                  filter(!is.na(SeaOtt_CarcToothAge)) %>%
+                  # count total number per region
+                  count(Year, Region) %>%
+                  rename(Total_Count=n)
+             v <- df %>%
+                  filter(!is.na(SeaOtt_CarcToothAge)) %>%
+                  # subset those 2-8 years old and count how many
+                  filter(SeaOtt_CarcToothAge %in% c(2:8)) %>%
+                  count(Year,Region) %>%
+                  rename(Prime_Count=n)
+             w <- full_join(u,v, by=c("Year","Region")) %>%
+                  replace(is.na(.), 0)
+             
+             PropPrime <- w %>%  
+                          # calculate proportion
+                          mutate(SOtt_PropPrimeCarcTthAge = (Prime_Count/Total_Count)*100) %>%
+                          select(-Total_Count, -Prime_Count)
+             
+             SOC <- full_join(MnAge,PropPrime, by=c("Year","Region"))
+             return(SOC)
+             }
 
-#head(SOS)
 
 
-
+SOAD <- MnPrimAge(SOS)
 
 
 #  x <- readClipboard()
