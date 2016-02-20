@@ -190,14 +190,15 @@ BenNear <- merge(BenNear,SOf_Crab_Bmss,all.x=T)   # Sea Otter forage crab biomas
 BenNear <- merge(BenNear,SOf_Clam_Bmss,all.x=T)   # Sea Otter forage clam biomass
 BenNear <- merge(BenNear,SOf_Urch_Bmss,all.x=T)   # Sea Otter forage urchin biomass
 BenNear <- merge(BenNear,SOf_Muss_Bmss,all.x=T)   # Sea Otter forage mussel biomass
-BenNear <- merge(BenNear,SOf_Star_Bmss,all.x=T)   # Sea Otter forage sea star biomass
-BenNear <- merge(BenNear,SOf_Snail_Bmss,all.x=T)  # Sea Otter forage snail biomass
-BenNear <- merge(BenNear,SOf_Chi_Bmss,all.x=T)    # Sea Otter forage chiton biomass
-BenNear <- merge(BenNear,SOf_Octo_Bmss,all.x=T)   # Sea Otter forage octopus biomass
-BenNear <- merge(BenNear,SOf_Worm_Bmss,all.x=T)   # Sea Otter forage worm biomass
-BenNear <- merge(BenNear,SOf_Other_Bmss,all.x=T)  # Sea Otter forage "other" biomass
-BenNear <- merge(BenNear,SOS,all.x=T)             # Sea Otter carcass tooth age
-
+#BenNear <- merge(BenNear,SOf_Star_Bmss,all.x=T)   # Sea Otter forage sea star biomass
+#BenNear <- merge(BenNear,SOf_Snail_Bmss,all.x=T)  # Sea Otter forage snail biomass
+#BenNear <- merge(BenNear,SOf_Chi_Bmss,all.x=T)    # Sea Otter forage chiton biomass
+#BenNear <- merge(BenNear,SOf_Octo_Bmss,all.x=T)   # Sea Otter forage octopus biomass
+#BenNear <- merge(BenNear,SOf_Worm_Bmss,all.x=T)   # Sea Otter forage worm biomass
+#BenNear <- merge(BenNear,SOf_Other_Bmss,all.x=T)  # Sea Otter forage "other" biomass
+BenNear <- merge(BenNear,SOAD,all.x=T)             # Sea Otter mean carcass tooth age; proportion of prime age
+BenNear <- merge(BenNear, SOPop,all.x=T)           # Sea Otter population estimates
+BenNear <- merge(BenNear, REG,all.x=T)             # Sea Otter energy recovery (kcal/min)
 
 
 
