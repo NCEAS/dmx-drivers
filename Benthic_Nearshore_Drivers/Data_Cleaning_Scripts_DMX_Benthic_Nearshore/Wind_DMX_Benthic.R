@@ -45,7 +45,7 @@ BuoyData <- function(data_url){
                               df <- read.table(file=textConnection(data1),fill=TRUE,
                                                stringsAsFactors=FALSE,header=TRUE)
                               df <- rename(df, YYYY=YY)
-                              df$YYYY <- paste(rep(19),df$YYYY,sep="")
+                              df$YYYY <- as.integer(paste(rep(19),df$YYYY,sep=""))
                               df$BuoyID <- rep(buoynum,nrow(df))
             # and if year is 1999 to 2006 do this...                  
             } else if (year %in% c(1999:2006)) {
