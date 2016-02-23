@@ -83,7 +83,7 @@ MnPrimAge <- function(df){
                       filter(!is.na(SeaOtt_CarcToothAge)) %>%
                       mutate_each(funs(as.numeric), SeaOtt_CarcToothAge) %>% # change class of column 
                       group_by(Year, Region) %>%
-                      summarize(SOtt_MnCarcToothAge = mean(SeaOtt_CarcToothAge)) %>%
+                      summarise(SOtt_MnCarcToothAge = mean(SeaOtt_CarcToothAge)) %>%
                       ungroup()
              
              u <- df %>%
