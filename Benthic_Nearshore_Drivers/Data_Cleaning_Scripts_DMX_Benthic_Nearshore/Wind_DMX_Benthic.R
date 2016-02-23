@@ -47,10 +47,11 @@ BuoyData <- function(data_url){
                               df <- rename(df, YYYY=YY)
                               df$YYYY <- paste(rep(19),df$YYYY,sep="")
                               df$BuoyID <- rep(buoynum,nrow(df))
-            } else if (year %in% c(1999:2007)) {
+            } else if (year %in% c(1999:2006)) {
                                                 df <- read.table(file=textConnection(data1),
                                                                  stringsAsFactors=FALSE,header=TRUE)
                                                 df$BuoyID <- rep(buoynum,nrow(df))
+                                                df <- select(df, -TIDE)
             # and if year >/= 2007 do this...
             } else {
                     data_h <- scan(textConnection(data1), nlines=1, what=character())  # reads first header line
@@ -119,5 +120,16 @@ Buoy_df_list <- lapply(B_URLs, FUN=BuoyData) # for every element of the list of 
 Buoys_all <- bind_rows(Buoy_df_list) # bind the list of dataframes output by lapply() into one large dataframe
 }
 
+#
+Wind_Ann <- Buoys_all %>%
+            filter(WD!=99, WD!=999, WSPD!=99, WSPD!=999) %>%  # remove missing data
+            rename(Year = YYYY) %>%       # rename column for uniformity
+            mutate(Region = ifelse((BuoyID =="46060"), "WPWS"))   # add Region column
+  
+  
 
+Wind_Winter <- Buoys_all %>%
+               filter(WD!=99, WD!=999, WSPD!=99, WSPD!=999) %>%  # remove missing data
+               rename(Year=YYYY) %>%       # rename column for uniformity
+  
 
