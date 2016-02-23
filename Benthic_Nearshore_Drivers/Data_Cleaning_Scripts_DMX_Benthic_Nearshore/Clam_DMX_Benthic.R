@@ -64,6 +64,7 @@ Clam <- Cl %>%
 # pull out biomass conversion info for species of interest
 BM <- BmCalc[grepl("(Macoma|Saxidomus|Leukoma)", BmCalc$Latin),]
 
+#####
 # Function to calculate metrics of interest        
 BiV_Abun_Size <- function(df, genus, abun_column_name, size_column_name, biom_column_name) { 
                  # subset df based on genus
@@ -100,17 +101,56 @@ BiV_Abun_Size <- function(df, genus, abun_column_name, size_column_name, biom_co
                  return(E)
                  }
 
+#####
+#####
+#####
+# FUNCTION for adding zeros for samples where species were not observed
+# Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
+
+AddZeros2 <- function(df, genus, abun_column_name, size_column_name, biom_column_name){
+             # run function PerCovCalc here and make the output (df1) available to the pipe below
+             df1 <- BiV_Abun_Size(df, genus, abun_column_name, size_column_name, biom_column_name)  
+             # create data frame with one column with 12 quadrats for each unique combination of Site_Name and Year
+             z <- df1 %>%
+                  mutate(Site_Year = paste(Site_Name, Year, Region, sep="/")) %>%
+                  expand(Site_Year, Quadrat)  
+             # insert rows for missing quadrat values, ie, not found in c(1:12),     
+             u <- df1 %>%
+                  mutate(Site_Year = paste(Site_Name, Year, Region, sep="/")) %>%
+                  full_join(z, by=c("Site_Year","Quadrat")) %>% 
+                  arrange(Site_Year, Quadrat) %>%
+             # and copy and paste Site_Name and Year  
+                  mutate(Site_Name = sapply(strsplit(as.character(Site_Year), split="/"), function(x) x[1]),
+                         Year = sapply(strsplit(as.character(Site_Year), split="/"), function(x) x[2]),
+                         Region = sapply(strsplit(as.character(Site_Year), split="/"), function(x) x[3])) 
+             # and replace NA with zero in "new_column_name" column
+             u[is.na(u[,abun_column_name]), abun_column_name] <- 0
+             u[is.na(u[,size_column_name]), size_column_name] <- 0
+             u[is.na(u[,biom_column_name]), biom_column_name] <- 0
+             # get rid of Site_Year column
+             u <- select(u,-Site_Year)
+             return(u)
+             }
+#####
+#####
+
+
+
+
+
+
+
 # Leukoma staminea abundance
-Leuk_Abun_Size <- BiV_Abun_Size(Clam,"Leukoma",
-                                "Leukoma_Abun_m2","Leukoma_MnSize_mm","Leukoma_MnBmss_gWW")    
+Leuk_Abun_Size <- AddZeros2(Clam,"Leukoma",
+                            "Leukoma_Abun_m2","Leukoma_MnSize_mm","Leukoma_MnBmss_gWW")    
 
 # Macoma spp.
-Maco_Abun_Size <- BiV_Abun_Size(Clam,"Macoma",
-                                "Macoma_Abun_m2","Macoma_MnSize_mm","Macoma_MnBmss_gWW")
+Maco_Abun_Size <- AddZeros2(Clam,"Macoma",
+                            "Macoma_Abun_m2","Macoma_MnSize_mm","Macoma_MnBmss_gWW")
   
 #Saxidomus gigantea
-Saxi_Abun_Size <- BiV_Abun_Size(Clam,"Saxidomus",
-                                "Saxidomus_Abun_m2","Saxidomus_MnSize_mm","Saxidomus_MnBmss_gWW")
+Saxi_Abun_Size <- AddZeros2(Clam,"Saxidomus",
+                            "Saxidomus_Abun_m2","Saxidomus_MnSize_mm","Saxidomus_MnBmss_gWW")
 
 
   
