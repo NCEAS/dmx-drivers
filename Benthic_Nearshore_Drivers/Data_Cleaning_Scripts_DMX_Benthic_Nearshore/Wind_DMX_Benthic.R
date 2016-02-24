@@ -121,15 +121,54 @@ Buoys_all <- bind_rows(Buoy_df_list) # bind the list of dataframes output by lap
 }
 
 #
-Wind_Ann <- Buoys_all %>%
-            filter(WD!=99, WD!=999, WSPD!=99, WSPD!=999) %>%  # remove missing data
-            rename(Year = YYYY) %>%       # rename column for uniformity
-            mutate(Region = ifelse((BuoyID =="46060"), "WPWS")) %>%  # add Region column
-  
-  
+Wind_3regA <- Buoys_all %>%
+              select(YYYY,MM,DD,hh,WD,WSPD,BuoyID) %>%
+              filter(WD!=99, WD!=999, WSPD!=99, WSPD!=999) %>%  # remove missing data
+              rename(Year = YYYY) %>%       # rename column for uniformity
+              mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
+                              ifelse((BuoyID == "46077"), "KATM",       
+                              ifelse((BuoyID == "46076"), "KEFJ","")))) %>%  
+              group_by(Year,Region) %>%
+              summarise(WndDir_degT_AnnMn=mean(WD),WndSp_m_s_AnnMn=mean(WSPD)) %>%  # get means
+              ungroup() %>%
+              select(Year, Region, WndDir_degT_AnnMn, WndSp_m_s_AnnMn) # select wind direction and speed
+# copy the WPWS data for EPWS and NPWS  
+WPWS <- filter(Wind_3regA, Region=="WPWS") 
+all_reg <- WPWS[rep(seq_len(nrow(WPWS)), each=2),] 
+uni <- unique(all_reg)
+EPWS <- uni
+EPWS$Region <- revalue(EPWS$Region, c("WPWS"="EPWS"))
+NPWS <- uni
+NPWS$Region <- revalue(NPWS$Region, c("WPWS"="NPWS"))
+NEPWS <- bind_rows(EPWS,NPWS)
+# bind rows together
+Wind_Ann <- bind_rows(Wind_3regA,NEPWS)
 
-Wind_Winter <- Buoys_all %>%
-               filter(WD!=99, WD!=999, WSPD!=99, WSPD!=999) %>%  # remove missing data
-               rename(Year=YYYY) #%>%       # rename column for uniformity
-  
 
+
+  
+Wind_3regW <- Buoys_all %>%
+              select(YYYY,MM,DD,hh,WD,WSPD,BuoyID) %>%
+              filter(WD!=99, WD!=999, WSPD!=99, WSPD!=999) %>%  # remove missing data
+              rename(Year=YYYY) %>%       # rename column for uniformity
+              mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
+                              ifelse((BuoyID == "46077"), "KATM",       
+                              ifelse((BuoyID == "46076"), "KEFJ","")))) %>% 
+              filter(MM %in% c(12,1,2)) %>%
+              group_by(Year, Region) %>%
+              summarise(WndDir_degT_Winter=mean(WD),WndSp_m_s_Winter=mean(WSPD)) %>%  # get means
+              ungroup() %>%
+              select(Year, Region, WndDir_degT_Winter, WndSp_m_s_Winter)  # select wind direction and speed
+# copy the WPWS data for EPWS and NPWS  
+WPWSW <- filter(Wind_3regW, Region=="WPWS") 
+all_reg <- WPWSW[rep(seq_len(nrow(WPWSW)), each=2),] 
+uni <- unique(all_reg)
+EPWSW <- uni
+EPWSW$Region <- revalue(EPWSW$Region, c("WPWS"="EPWS"))
+NPWSW <- uni
+NPWSW$Region <- revalue(NPWSW$Region, c("WPWS"="NPWS"))
+NEPWSW <- bind_rows(EPWSW,NPWSW)
+# bind rows together
+Wind_Winter <- bind_rows(Wind_3regW,NEPWSW)
+
+ 
