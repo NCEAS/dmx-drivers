@@ -12,6 +12,7 @@ library(curl)
 library(rvest)
 library(tidyr)
 library(stringr)
+library(R.utils)
 
 ## Steps for data cleaning: 
 ## 1) read in data
@@ -35,7 +36,8 @@ head(BmCalc)
 # clean the data          
 Clam <- Cl %>%
         rename(Site_Name=site.name, Quadrat=quad.,Size_mm=size..mm.) %>%
-        mutate(Year = sapply(strsplit(as.character(date), split="/") , function(x) x[3]),
+        mutate(spp.name = capitalize(spp.name),
+               Year = sapply(strsplit(as.character(date), split="/") , function(x) x[3]),
                Year = revalue(Year, c("3013"="2013")),
                Site_Name = revalue(Site_Name,c("Ninagiak"="Ninagiak Island",
                                                "Herring Bay- Southwest"="Herring Bay-Southwest",
@@ -136,24 +138,30 @@ AddZeros2 <- function(df, genus, abun_column_name, size_column_name, biom_column
 
 
 
-
-
-
-
 # Leukoma staminea abundance
-Leuk_Abun_Size <- AddZeros2(Clam,"Leukoma",
-                            "Leukoma_Abun_m2","Leukoma_MnSize_mm","Leukoma_MnBmss_gWW")    
+Leuk_AS <- AddZeros2(Clam,"Leukoma",
+                     "Leukoma_Abun_m2","Leukoma_MnSize_mm","Leukoma_MnBmss_gWW")    
 
 # Macoma spp.
-Maco_Abun_Size <- AddZeros2(Clam,"Macoma",
-                            "Macoma_Abun_m2","Macoma_MnSize_mm","Macoma_MnBmss_gWW")
+Maco_AS <- AddZeros2(Clam,"Macoma",
+                     "Macoma_Abun_m2","Macoma_MnSize_mm","Macoma_MnBmss_gWW")
   
 #Saxidomus gigantea
-Saxi_Abun_Size <- AddZeros2(Clam,"Saxidomus",
-                            "Saxidomus_Abun_m2","Saxidomus_MnSize_mm","Saxidomus_MnBmss_gWW")
+Saxi_AS <- AddZeros2(Clam,"Saxidomus",
+                     "Saxidomus_Abun_m2","Saxidomus_MnSize_mm","Saxidomus_MnBmss_gWW")
 
 
-  
+# add more zeros
+UYS <- unique(Clam[,c('Region','Site_Name','Year')])  # get all unique site / year / quadrat combos from big df
+UYSQ <- UYS[rep(seq_len(nrow(UYS)), each=12),]  ; UYSQ$Quadrat=rep(c(1:12))  
+
+Leuk_Abun_Size <- merge(UYSQ,Leuk_AS, all=T)  ;  Leuk_Abun_Size[is.na(Leuk_Abun_Size)] <- 0  # merge with each species df
+Maco_Abun_Size <- merge(UYSQ,Maco_AS, all=T)  ;  Maco_Abun_Size[is.na(Maco_Abun_Size)] <- 0
+Saxi_Abun_Size <- merge(UYSQ,Saxi_AS, all=T)  ;  Saxi_Abun_Size[is.na(Saxi_Abun_Size)] <- 0
+
+
+
+
 
 
 
