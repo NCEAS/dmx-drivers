@@ -202,7 +202,7 @@ AddZeros <- function(df, new_column_name){
 
 
 # Bare Substrate 
-BS_IA_1 <- filter(IA_GOA, Species_Name=="Bare Substrate", Layer_Num=="1") # only in layer 1 according to Tom Dean
+BS_IA_1 <- filter(IA_GOA, Species_Name %in% c("Bare Substrate","bare substrate"), Layer_Num=="1") # only in layer 1 according to Tom Dean
 BS_IA <- AddZeros(BS_IA_1, "Bare_Sub_Per_Cov")    
 
 # Barnacles
