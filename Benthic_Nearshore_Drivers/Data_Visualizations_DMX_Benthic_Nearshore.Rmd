@@ -1,8 +1,8 @@
 ---
-title: " Data Visualizations for DMX Benthic Nearshore Drivers"
+title: ' Data Visualizations for DMX Benthic Nearshore Drivers'
 author: "Rachael Blake"
 date: "January 28, 2016"
-output: pdf_document
+output: html_document
 ---
 
 
@@ -34,7 +34,7 @@ source(file.path(dir_dmx_d,
 ```{r, echo=FALSE, include=FALSE}
 BenNear2 <- BenNear %>%
             select(-Quadrat, -Lat,-Long) %>%
-            mutate_each(funs(as.numeric), SeaOtt_CarcToothAge) %>%
+            mutate_each(funs(as.numeric), Otter_Abun_est) %>%
             group_by(Year, Region, Site_Name) %>%
             summarize_each(funs(sum)) %>%
             ungroup()  
@@ -73,21 +73,21 @@ colors <- c("blue3","turquoise2","deepskyblue","royalblue1","violet","thistle1",
 
 # plot:
  ggplot(data=stateDf, aes(y=lat, x=long)) +
-   geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
-   coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
-   scale_fill_manual(values=colMap) +
-   geom_point(data=BenNear1, aes(x=as.numeric(Long), y=as.numeric(Lat),
-                                 colour=Region_Site), size=3, shape=18) + 
-   facet_wrap(~Region) +
-   theme(axis.line=element_line('black'),
-         panel.grid.major=element_blank(),
-         panel.grid.minor=element_blank(),
-         panel.border=element_blank(),
-         panel.background=element_blank(),
-         legend.key = element_blank(),
-         axis.text=element_text(size=14),
-         title=element_text(size=16,face="bold"),
-         legend.position="bottom") 
+        geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
+        coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
+        scale_fill_manual(values=colMap) +
+        geom_point(data=BenNear1, aes(x=as.numeric(Long), y=as.numeric(Lat),
+                                      colour=Region_Site), size=3, shape=18) + 
+        facet_wrap(~Region) +
+        theme(axis.line=element_line('black'),
+              panel.grid.major=element_blank(),
+              panel.grid.minor=element_blank(),
+              panel.border=element_blank(),
+              panel.background=element_blank(),
+              legend.key = element_blank(),
+              axis.text=element_text(size=14),
+              title=element_text(size=16,face="bold"),
+              legend.position="bottom") 
 
 ```
 
@@ -104,7 +104,9 @@ BenNear3 <- melt_BenNear2 %>%
             mutate_each(funs(as.character), DataSet)
 
 BenNear4 <- BenNear3 %>%
-            filter(DataSet %in% c("Leukoma_MnBmss_gWW","Macoma_MnBmss_gWW","Saxidomus_MnBmss_gWW")) %>%
+            filter(DataSet %in%
+                     c("Leukoma_MnBmss_gWW","Macoma_MnBmss_gWW",
+                       "Saxidomus_MnBmss_gWW")) %>%
             mutate_each(funs(as.numeric), Bin_Value) %>%
             group_by(Year, Region, Site_Name) %>%
             summarise(BinValue2 = sum(Bin_Value)) %>%
@@ -112,10 +114,9 @@ BenNear4 <- BenNear3 %>%
             mutate(DataSet = "Clam_Bmss_gWW")
 
 BenNear5 <- BenNear3 %>%
-            filter(DataSet %in% c("SOf_CrabSumBmss_gWW","SOf_ClamSumBmss_gWW","SOf_UrchinSumBmss_gWW",
-                                  "SOf_MusselSumBmss_gWW","SOf_StarSumBmss_gWW","SOf_SnailSumBmss_gWW",
-                                  "SOf_ChitonSumBmss_gWW","SOf_OctopusSumBmss_gWW","SOf_WormSumBmss_gWW",
-                                  "SOf_OtherSumBmss_gWW")) %>%
+            filter(DataSet %in%
+                     c("SOf_CrabSumBmss_gWW","SOf_ClamSumBmss_gWW","SOf_UrchinSumBmss_gWW",
+                       "SOf_MusselSumBmss_gWW")) %>%
             mutate_each(funs(as.numeric), Bin_Value) %>%
             group_by(Year, Region, Site_Name) %>%
             summarise(BinValue2 = sum(Bin_Value)) %>%
@@ -124,7 +125,9 @@ BenNear5 <- BenNear3 %>%
 
 BenNear6 <- BenNear3 %>%
             filter(DataSet %in% c("Bare_Sub_Per_Cov","barnacle_Per_Cov","mussel_Per_Cov",
-                                  "Fuc_dist_Per_Cov","Ala_marg_Per_Cov","Neo_Odon_sp_Per_Cov",                                                     "Brwn_alg_ann_Per_Cov","Green_alg_ann_Per_Cov","Red_alg_ann_Per_Cov",
+                                  "Fuc_dist_Per_Cov","Ala_marg_Per_Cov",
+                                  "Neo_Odon_sp_Per_Cov","Brwn_alg_ann_Per_Cov",
+                                  "Green_alg_ann_Per_Cov","Red_alg_ann_Per_Cov",
                                   "Red_alg_per_Per_Cov")) %>%
             mutate_each(funs(as.numeric), Bin_Value) %>%
             group_by(Year, Region, Site_Name) %>%
@@ -133,19 +136,21 @@ BenNear6 <- BenNear3 %>%
             mutate(DataSet = "Intertidal_Per_Cov")
   
 BenNear7 <- BenNear3 %>%
-            filter(!(DataSet %in% c("Leukoma_MnBmss_gWW","Macoma_MnBmss_gWW","Saxidomus_MnBmss_gWW",
-                                    "SOf_CrabSumBmss_gWW","SOf_ClamSumBmss_gWW","SOf_UrchinSumBmss_gWW",
-                                    "SOf_MusselSumBmss_gWW","SOf_StarSumBmss_gWW","SOf_SnailSumBmss_gWW",
-                                    "SOf_ChitonSumBmss_gWW","SOf_OctopusSumBmss_gWW","SOf_WormSumBmss_gWW",
-                                    "SOf_OtherSumBmss_gWW","Bare_Sub_Per_Cov","barnacle_Per_Cov",
-                                    "mussel_Per_Cov","Fuc_dist_Per_Cov","Ala_marg_Per_Cov",
-                                    "Neo_Odon_sp_Per_Cov","Brwn_alg_ann_Per_Cov","Green_alg_ann_Per_Cov",
-                                    "Red_alg_ann_Per_Cov","Red_alg_per_Per_Cov","SOf_CrabPropBmss",
-                                    "SOf_ClamPropBmss","SOf_UrchinPropBmss","SOf_MusselPropBmss",
-                                    "SOf_StarPropBmss","SOf_SnailPropBmss","SOf_ChitonPropBmss",
-                                    "SOf_OctopusPropBmss","SOf_WormPropBmss","SOf_OtherPropBmss",
-                                    "Leukoma_Abun_m2","Leukoma_MnSize_mm","Macoma_Abun_m2","Macoma_MnSize_mm",
-                                    "Saxidomus_Abun_m2","Saxidomus_MnSize_mm"))) 
+            filter(!(DataSet %in%
+                       c("Leukoma_MnBmss_gWW","Macoma_MnBmss_gWW","Saxidomus_MnBmss_gWW",
+                         "SOf_CrabSumBmss_gWW","SOf_ClamSumBmss_gWW",
+                         "SOf_UrchinSumBmss_gWW","SOf_MusselSumBmss_gWW",
+                         "Bare_Sub_Per_Cov","barnacle_Per_Cov","mussel_Per_Cov",
+                         "Fuc_dist_Per_Cov","Ala_marg_Per_Cov",
+                         "Neo_Odon_sp_Per_Cov","Brwn_alg_ann_Per_Cov",
+                         "Green_alg_ann_Per_Cov","Red_alg_ann_Per_Cov",
+                         "Red_alg_per_Per_Cov","SOf_CrabPropBmss","SOf_ClamPropBmss",
+                         "SOf_UrchinPropBmss","SOf_MusselPropBmss",
+                         "SOf_StarPropBmss","SOf_SnailPropBmss",
+                         "SOf_ChitonPropBmss","SOf_OctopusPropBmss","SOf_WormPropBmss",
+                         "SOf_OtherPropBmss","Leukoma_Abun_m2","Leukoma_MnSize_mm",
+                         "Macoma_Abun_m2","Macoma_MnSize_mm",
+                         "Saxidomus_Abun_m2","Saxidomus_MnSize_mm"))) 
            
 BenNear8 <- bind_rows(BenNear7,BenNear4) 
 BenNear9 <- bind_rows(BenNear8,BenNear5)
@@ -162,12 +167,13 @@ BenNear11 <- BenNear10 %>%
 ```
 
 ##Plot 1: Data presence for all Regions, all Sites we have in hand to date
-```{r,echo=FALSE, fig.height=12, fig.width=14}
+```{r,echo=FALSE, fig.height=14, fig.width=18}
 p <- ggplot(data=BenNear11, aes(x=Site_Name, y=Year)) + 
             geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
             scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
             scale_y_reverse() + facet_wrap(~DataSet) +
-            theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=8),
+            theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
+                                             color="black", size=11),
                   axis.text.y = element_text(color="black", size=15),
                   axis.title  = element_text(face="bold", size=20))
 p
@@ -176,7 +182,7 @@ p
 ```
 
 ###Plot 2: Data presence for only Regions WPWS, KEFJ, KATM
-```{r, echo=FALSE, fig.height=12, fig.width=12}
+```{r, echo=FALSE, fig.height=14, fig.width=18}
 # Only include Regions WPWS, KEFJ, KATM
 BenNear12 <- BenNear11 %>%
              filter(Region %in% c("WPWS","KEFJ","KATM")) %>%
@@ -187,7 +193,8 @@ p15 <- ggplot(data=BenNear12, aes(x=Region_Site, y=Year)) +
               geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
               scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
               scale_y_reverse() + facet_wrap(~DataSet) +
-              theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=10),
+              theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
+                                               color="black", size=11),
                     axis.text.y = element_text(color="black", size=15),
                     axis.title  = element_text(face="bold", size=20))
 p15
@@ -196,13 +203,14 @@ p15
 ```
 
 ###Plot 3: Data presence for WPWS, KEFJ, KATM presented another way
-```{r, echo=FALSE, fig.height=12, fig.width=12}
+```{r, echo=FALSE, fig.height=14, fig.width=18}
 
 p16 <- ggplot(data=BenNear12, aes(x=DataSet, y=Year)) + 
               geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
               scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
               scale_y_reverse() + facet_wrap(~Region_Site) +
-              theme(axis.text.x = element_text(angle=70, vjust=1, hjust=1, color="black", size=10),
+              theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
+                                               color="black", size=11),
                     axis.text.y = element_text(color="black", size=15),
                     axis.title  = element_text(face="bold", size=20))
 p16
@@ -210,14 +218,15 @@ p16
 ```
 
 ###Correlation pair plots of raw data: 
-```{r, echo=FALSE, fig.height=10, fig.width=10}
+```{r, echo=FALSE, fig.height=14, fig.width=14}
+library(psych)
 BenNear2 <- as.data.frame(BenNear2)
 
-pairs.panels(BenNear2[,c(4:10)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) #
-pairs.panels(BenNear2[,c(37,39,41,43,45,47,49,51,53,55)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
-pairs.panels(BenNear2[,c(8:10,15)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
-pairs.panels(BenNear2[,c(8,57)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
-pairs.panels(BenNear2[,c(8,10,11)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
+pairs.panels(BenNear2[,c(4:10,13,17)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) #
+#pairs.panels(BenNear2[,c(20,27,42,45,48)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+pairs.panels(BenNear2[,c(42,45,48,50,52,54,56,58,60,61)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+pairs.panels(BenNear2[,c(8,20,28:34)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
+pairs.panels(BenNear2[,c(19,13,25,26)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
 
 
 ```
