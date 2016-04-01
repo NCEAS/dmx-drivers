@@ -8,7 +8,7 @@ library(plyr) ; library(dplyr)
 
 
 # Download the hydrocarbon database
-
+if(!exists("ALKANE")|!exists("PAH")) {
 HCDBzipd <- tempfile()
 download.file("https://workspace.aoos.org/published/file/536d72c5e4b08354c761ae8c/2014_EVTHD_DataPackage.zip",
               HCDBzipd, mode="wb")
@@ -27,15 +27,17 @@ lapply(UNz, mdb_table_list)  # running the function over the two .accdb files
 conn <- odbcConnectAccess2007(path.expand("./EVTHD 2014.accdb")) # establish a connection
 ALKANE <- sqlFetch(conn,"Alkane")  # read in a table
 PAH <- sqlFetch(conn,"PAH") 
+Sample <- sqlFetch(conn,"sample")
 
 close(conn) 
 unlink(HCDBzipd)
+}
 
 #setwd("C:/Users/rblake/Documents/NCEAS/GoA Portfolio Effects WG/Hydrocarbon Data")
 
 #############################
 # Calculate Total Aromatics  
-PAH <- read.csv("PAH.csv")  # read in the PAH data file
+#PAH <- read.csv("PAH.csv")  # read in the PAH data file
 head(PAH) ; str(PAH)
 
 # Taking means of all chemical compound concentrations to get Total PAHs
@@ -46,7 +48,8 @@ TotalAromat <- PAH1[PAH1$Sin > 0, -c(3,8,15:22,24:71)]   # remove rows with Sin 
 
 ##########################
 # Extract Total Alkanes
-Alk <- read.csv("ALKANE.csv")  # read in the Alkanes data file
+#Alk <- read.csv("ALKANE.csv")  # read in the Alkanes data file
+Alk <- ALKANE
 #library(plyr)  # only need to run this if you haven't loaded plyr previously
 Alk <- dplyr::rename(Alk, QCbatch=QCBatch) # rename QCBatch column to match QCbatch column from PAH table
 head(Alk) ; str(Alk)
@@ -67,7 +70,7 @@ AromAlk <-  join(TotalAromat, TtlAlkane, by="Sin", type="full")
 
 #############################
 # Adding in the Sample information 
-SamIDs <- read.csv("sample.csv")
+SamIDs <- Sample
 #library(plyr)
 Samples1 <- arrange(SamIDs, Sin)  ; head(Samples1) # arranges the rows by Sample ID 
   
@@ -98,7 +101,7 @@ TotalAromAlk3b$Funding[is.na(TotalAromAlk3b$Funding) & TotalAromAlk3b$FundingSou
 TotalAromAlk4 <- TotalAromAlk3b[,!names(TotalAromAlk3b) %in% c("FundingSource")]
 
 ### Remove NON-EVOSTC Samples (list confirmed by Mark Carls at NOAA Auk Bay Lab)
-Non_EVOS <- read.csv("Non-EVOS SINs.csv") # read in the list of non_EVOS Sample ID numbers
+Non_EVOS <- read.csv("./Benthic_Nearshore_Drivers/Non-EVOS SINs.csv") # read in the list of non_EVOS Sample ID numbers
 head(Non_EVOS) ; nrow(Non_EVOS)
 
 TotalAromAlk5 <- TotalAromAlk4[!TotalAromAlk4$Sin %in% Non_EVOS$Sin,]
