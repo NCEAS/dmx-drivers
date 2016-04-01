@@ -19,6 +19,7 @@ library(stringr)
 
 #############
 ### Upwelling Anomalies: 
+# MONTHLY UPWELLING ANOMALIES (units are cubic meters/second/100 meters of coastline)
 URL_upanom <- "http://www.pfeg.noaa.gov/products/PFELData/upwell/monthly/upanoms.mon"
 upanom_raw <- read_html(URL_upanom)
 upanom_pre <- upanom_raw %>% 
@@ -30,6 +31,7 @@ upanom_df <- read.csv(file=textConnection(upanom_pre), skip=4, stringsAsFactors=
                    header=FALSE, col.names=upanom_cols, strip.white=TRUE)
 #
 upanom <- upanom_df %>% 
+          filter(Long %in% c("146W","149W")) %>%  # subsets for the two sites in the GOA
           rename(Year=YEAR) %>% # rename data columns   
   #        filter(Year %in% c(2010:2015)) %>% # selects years 
           gather(Month, UpwelAnom,-Year,-Lat,-Long) %>% # reshapes data to be column-wise
