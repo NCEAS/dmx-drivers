@@ -147,7 +147,7 @@ NEPWS <- bind_rows(EPWS,NPWS)
 WaterTmp_Ann <- bind_rows(WaterTmp_3regA,NEPWS)
 
 
- # need to add a way to copy WPWS data for EPWS and NPWS as well
+
   
 # Winter
 WaterTmp_3regW <- Buoys_all %>%
@@ -177,7 +177,53 @@ WaterTmp_Winter <- bind_rows(WaterTmp_3regW,NEPWSW)
 
 
 
- # need to add a way to copy WPWS data for EPWS and NPWS as well
+# Winter Anomoly
+WaterTmp_WAnom <- Buoys_all %>%
+                  select(YYYY,MM,DD,hh,WTMP,BuoyID) %>%
+                  filter(WTMP!=99, WTMP!=999) %>%  # remove missing data
+                  rename(Year = YYYY, Month=MM) %>%       # rename column for uniformity
+                  mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
+                                  ifelse((BuoyID == "46077"), "KATM",       
+                                  ifelse((BuoyID == "46076"), "KEFJ","")))) %>% 
+                  group_by(Year,Month,Region) %>%
+                  mutate(WaterTmp_C_MonthMn=mean(WTMP)) %>%  # get means for each month
+                  ungroup() %>%
+                  group_by(Year,Region) %>%
+                  mutate(WaterTmp_C_AnnMn=mean(WTMP)) %>%  # get means for each year
+                  ungroup() %>%
+                  group_by(Year,Month,Region) %>%
+                  mutate(WaterTmp_MonthAnom=(WaterTmp_C_MonthMn-WaterTmp_C_AnnMn)) %>%
+                  ungroup() %>%
+                  filter(Month %in% c(12,1,2)) %>%
+                  group_by(Year,Region) %>%
+                  summarise(WaterTmp_WinterAnom=mean(WaterTmp_MonthAnom)) %>%  # get means
+                  ungroup() %>%
+                  select(Year, Region, WaterTmp_WinterAnom) # select water temp
+
+
+# Spring Anomoly
+WaterTmp_SAnom <- Buoys_all %>%
+                  select(YYYY,MM,DD,hh,WTMP,BuoyID) %>%
+                  filter(WTMP!=99, WTMP!=999) %>%  # remove missing data
+                  rename(Year = YYYY, Month=MM) %>%       # rename column for uniformity
+                  mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
+                                  ifelse((BuoyID == "46077"), "KATM",       
+                                  ifelse((BuoyID == "46076"), "KEFJ","")))) %>% 
+                  group_by(Year,Month,Region) %>%
+                  mutate(WaterTmp_C_MonthMn=mean(WTMP)) %>%  # get means for each month
+                  ungroup() %>%
+                  group_by(Year,Region) %>%
+                  mutate(WaterTmp_C_AnnMn=mean(WTMP)) %>%  # get means for each year
+                  ungroup() %>%
+                  group_by(Year,Month,Region) %>%
+                  mutate(WaterTmp_MonthAnom=(WaterTmp_C_MonthMn-WaterTmp_C_AnnMn)) %>%
+                  ungroup() %>%
+                  filter(Month %in% c(3,4,5)) %>%
+                  group_by(Year,Region) %>%
+                  summarise(WaterTmp_SpringAnom=mean(WaterTmp_MonthAnom)) %>%  # get means
+                  ungroup() %>%
+                  select(Year, Region, WaterTmp_SpringAnom) # select water temp
+
 
 
 ##### FUNCTION for annual buoy data
