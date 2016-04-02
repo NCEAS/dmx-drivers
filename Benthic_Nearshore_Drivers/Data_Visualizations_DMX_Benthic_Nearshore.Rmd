@@ -265,6 +265,7 @@ pairs.panels(BenNear2[,c(42,45,48,50,52,54,56,58,60,61)],smooth=F,density=T,elli
 pairs.panels(BenNear2[,c(8,20,28:34)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
 pairs.panels(BenNear2[,c(19,13,25,26)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
 
+pairs.panels(BenNear2[,c(6,9,29,11)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
 
 ```
 
@@ -305,14 +306,14 @@ ggplot(data=BenNear_sub, aes(x=Year, y=WaterTmp_C_AnnMn)) +
 
 ```{r, echo=FALSE}
 BenNear_sub2 <- BenNear %>%
-               filter(Region %in% c("WPWS","KATM","KEFJ")) %>%
-              # na.omit() %>%
-               filter(!is.na(mussel_Per_Cov)) %>%
-               select(-Quadrat, -Lat,-Long) %>%
-               mutate_each(funs(as.numeric), Otter_Abun_est) %>%
-               group_by(Year, Region, Site_Name) %>%
-               summarize_each(funs(mean)) %>%
-               ungroup()  
+                filter(Region %in% c("WPWS","KATM","KEFJ")) %>%
+               # na.omit() %>%
+                filter(!is.na(mussel_Per_Cov)) %>%
+                select(-Quadrat, -Lat,-Long) %>%
+                mutate_each(funs(as.numeric), Otter_Abun_est) %>%
+                group_by(Year, Region, Site_Name) %>%
+                summarize_each(funs(mean)) %>%
+                ungroup()  
             
 ```
 
