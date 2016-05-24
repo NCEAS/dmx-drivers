@@ -4,7 +4,7 @@
 #####################################################
 
 # load packages
-library(plyr) ; library(dplyr)
+library(plyr) ; library(dplyr) ; library(RODBC)
 
 
 # Download the hydrocarbon database

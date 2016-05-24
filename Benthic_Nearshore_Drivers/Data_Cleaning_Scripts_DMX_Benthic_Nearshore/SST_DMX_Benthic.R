@@ -24,13 +24,13 @@ TGet <- GET(URL_T)
 T1 <- content(TGet, as='text')
 Tmps <- read.csv(file=textConnection(T1),stringsAsFactors=FALSE,strip.white=TRUE)
 head(Tmps)
-
+# Sample info:
 URL_Ts <- "http://gulfwatch.nceas.ucsb.edu/goa/d1/mn/v1/object/df35b.32.2"
 TsGet <- GET(URL_Ts)
 Ts1 <- content(TsGet, as='text')
 TmpSams <- read.csv(file=textConnection(Ts1),stringsAsFactors=FALSE,strip.white=TRUE)
 head(TmpSams)
-#
+# Merge sample info with data: 
 Temps <- merge(Tmps, TmpSams, all.x=TRUE)  # merge sample information with data values
 Temps$Date <- sapply((strsplit(as.character(Temps$dateTime), split=" ")), function(x) x[1]) # split date out
 head(Temps)

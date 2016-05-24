@@ -24,7 +24,44 @@ URL_Chl <- "http://gulfwatch.nceas.ucsb.edu/goa/d1/mn/v1/object/df35b.41.3"
 ChlGet <- GET(URL_Chl)
 Chl1 <- content(ChlGet, as='text')
 Chl_df <- read.csv(file=textConnection(Chl1),stringsAsFactors=FALSE)
-head(Chl_df)
+head(Chl_df) ; str(Chl_df)
+
+# Get more years of data
+load_data <- function(path) { 
+             files <- dir(path, pattern = '\\.csv', full.names = TRUE)
+             tables <- lapply(files, function(x) read.csv(x, skip=3))
+          
+             # if the merged dataset doesn't exist, create it
+             if (!exists("one_df")){
+                 one_df <- read.csv(i, skip=3)
+                 }
+             # if the merged dataset does exist, append to it
+             if (exists("one_df")){
+                 temp_dataset <- read.csv(i, skip=3)
+                 one_df <- merge(one_df, temp_dataset, all=T)
+                 rm(temp_dataset)
+                 }
+                  
+             one_df <- do.call(full_join, tables, by=c("Date","Station_Name"), all=TRUE)
+             
+             reshape::merge_all(tables)
+             
+             
+             return(one_df)
+             }
+
+list_csvs <- load_data("./Seward_Line_Chla")
+
+
+load_data <- function(path) { 
+  files <- dir(path, pattern = '\\.csv', full.names = TRUE)
+  tables <- lapply(files, read.csv)
+  do.call(rbind, tables)
+}
+
+pol
+
+
 #################
 ### NTOE: Have Jessica correct the dates for 2007 (swapped Month and Day)
 ### in the data sheet on the portal.  
@@ -42,4 +79,8 @@ Phy <- Chl_df %>%
        ungroup() %>%
        mutate(TotChlA_micgL_AnnSpMn=rowSums(.[2:3],na.rm=T)) %>%
        select(Year,TotChlA_micgL_AnnSpMn)
+
+
+
+# Just use data from both seasons and annually and just from most inshore one, which GAK1
 
