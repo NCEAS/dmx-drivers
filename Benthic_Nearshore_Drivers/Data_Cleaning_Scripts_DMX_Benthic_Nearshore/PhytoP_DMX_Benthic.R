@@ -12,6 +12,8 @@ library(curl)
 library(rvest)
 library(tidyr)
 library(stringr)
+library(reshape)
+
 
 ## Steps for data cleaning: 
 ## 1) read in data
@@ -23,43 +25,61 @@ library(stringr)
 URL_Chl <- "http://gulfwatch.nceas.ucsb.edu/goa/d1/mn/v1/object/df35b.41.3"
 ChlGet <- GET(URL_Chl)
 Chl1 <- content(ChlGet, as='text')
-Chl_df <- read.csv(file=textConnection(Chl1),stringsAsFactors=FALSE)
+Chl_df <- read.csv(file=textConnection(Chl1), stringsAsFactors=FALSE)
+Chl_df$Datef<-as.Date(Chl_df$dateTime) # Setting the Date column as date format
+# Matching column Names for the merge
+colnames(Chl_df)[4] <- "Station_Name" 
+colnames(Chl_df)[9] <- "Depth_m"
+#Check it
 head(Chl_df) ; str(Chl_df)
 
-# Get more years of data
+
+
+##
+# Function to format the date stored as character into the date format
+date_formatter <- function(df, date_column="Date") {
+                  df_tmp <- df
+                  df_tmp[["Datef"]] <- as.Date(df[[date_column]], format = "%m/%d/%Y")
+                  # Handle the case the date format is already formatted as dd-Mon-yy
+                  if (sum(is.na(df_tmp[["Datef"]])) == length(df[[date_column]])) {
+                      df_tmp[["Datef"]] <- as.Date(df[[date_column]],"%d-%b-%y")
+                      }
+                  return(df_tmp)
+                  }
+##
+
+
+# Get more years of data 2011 - 2015
 load_data <- function(path) { 
              files <- dir(path, pattern = '\\.csv', full.names = TRUE)
-             tables <- lapply(files, function(x) read.csv(x, skip=3))
-          
-             # if the merged dataset doesn't exist, create it
-             if (!exists("one_df")){
-                 one_df <- read.csv(i, skip=3)
-                 }
-             # if the merged dataset does exist, append to it
-             if (exists("one_df")){
-                 temp_dataset <- read.csv(i, skip=3)
-                 one_df <- merge(one_df, temp_dataset, all=T)
-                 rm(temp_dataset)
-                 }
-                  
-             one_df <- do.call(full_join, tables, by=c("Date","Station_Name"), all=TRUE)
-             
-             reshape::merge_all(tables)
-             
-             
+             tables <- lapply(files, function(x) read.csv(x, skip=3, fileEncoding="latin1", 
+                                                          stringsAsFactors = FALSE))
+             # add formatted date column
+             tables <- lapply(tables, date_formatter)
+             # Merge all the other csv into one dataframe
+             one_df <- merge_recurse(tables)
+         
              return(one_df)
              }
 
 list_csvs <- load_data("./Seward_Line_Chla")
 
 
-load_data <- function(path) { 
-  files <- dir(path, pattern = '\\.csv', full.names = TRUE)
-  tables <- lapply(files, read.csv)
-  do.call(rbind, tables)
-}
 
-pol
+
+# Read the other csv
+files <- dir(path, pattern = '\\.csv', full.names = TRUE)
+tables <- lapply(files, function(x) read.csv(x, skip=3, fileEncoding="latin1",stringsAsFactors = FALSE))
+
+# Add a formatted date
+tables <- lapply(tables, date_formatter)
+
+# Merge all the other csv into one dataframe
+df_other <- merge_recurse(tables)
+
+#Merge with the main Chlorophylle data
+merge(Chl_df,df_other, by = c("Station_Name", "Datef", "Depth_m"), all =T)
+
 
 
 #################
