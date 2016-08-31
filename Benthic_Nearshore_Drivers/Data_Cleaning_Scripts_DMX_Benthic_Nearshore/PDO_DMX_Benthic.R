@@ -31,7 +31,7 @@ pdo_df <- read.table(file=textConnection(pdo_pre), skip=30, nrows=116, stringsAs
 pdo_df$YEAR <- substr(pdo_df$YEAR, 1, 4)  # removes asterisks from years 2002-2015
 #
 pdo_ann <- pdo_df %>% 
-           rename(Year=YEAR) %>% # rename data columns         
+           dplyr::rename(Year=YEAR) %>% # rename data columns         
       #    filter(Year %in% c(2010:2015)) %>% # selects years 
            gather(Month, PDO, -Year) %>% # reshapes data to be column-wise
            group_by(Year) %>%
@@ -40,7 +40,7 @@ pdo_ann <- pdo_df %>%
 
 # Spring PDO March through May 
 pdo_spr <- pdo_df %>% 
-           rename(Year=YEAR) %>% # rename data columns         
+           dplyr::rename(Year=YEAR) %>% # rename data columns         
       #    filter(Year %in% c(2010:2015)) %>% # selects years 
            gather(Month, PDO, -Year) %>% # reshapes data to be column-wise
            filter(Month %in% c("MAR","APR","MAY")) %>%
@@ -50,7 +50,7 @@ pdo_spr <- pdo_df %>%
 
 # Winter PDO Dec through Feb
 pdo_win <- pdo_df %>% 
-           rename(Year=YEAR) %>% # rename data columns         
+           dplyr::rename(Year=YEAR) %>% # rename data columns         
       #    filter(Year %in% c(2010:2015)) %>% # selects years 
            gather(Month, PDO, -Year) %>% # reshapes data to be column-wise
            filter(Month %in% c("JAN","FEB","DEC")) %>%

@@ -45,7 +45,7 @@ BuoyData <- function(data_url){
             if (year < 1999) {
                               df <- read.table(file=textConnection(data1),fill=TRUE,
                                                stringsAsFactors=FALSE,header=TRUE)
-                              df <- rename(df, YYYY=YY)
+                              df <- dplyr::rename(df, YYYY=YY)
                               df$YYYY <- as.integer(paste(rep(19),df$YYYY,sep=""))
                               df$BuoyID <- rep(buoynum,nrow(df))
             # and if year is 1999 to 2006 do this...                  
@@ -61,7 +61,7 @@ BuoyData <- function(data_url){
                                      stringsAsFactors=FALSE,skip=2,header=FALSE)
                     names(df) <- data_h   # pastes the header line in
                     df$BuoyID <- rep(buoynum,nrow(df))
-                    df <- rename(df, WD=WDIR, BAR=PRES)
+                    df <- dplyr::rename(df, WD=WDIR, BAR=PRES)
                     }
 
             return(df)
@@ -126,7 +126,7 @@ Buoys_all <- bind_rows(Buoy_df_list) # bind the list of dataframes output by lap
 WaterTmp_3regA <- Buoys_all %>%
                   select(YYYY,MM,DD,hh,WTMP,BuoyID) %>%
                   filter(WTMP!=99, WTMP!=999) %>%  # remove missing data
-                  rename(Year = YYYY) %>%       # rename column for uniformity
+                  dplyr::rename(Year = YYYY) %>%       # rename column for uniformity
                   mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
                                   ifelse((BuoyID == "46077"), "KATM",       
                                   ifelse((BuoyID == "46076"), "KEFJ","")))) %>%    
@@ -153,7 +153,7 @@ WaterTmp_Ann <- bind_rows(WaterTmp_3regA,NEPWS)
 WaterTmp_3regW <- Buoys_all %>%
                   select(YYYY,MM,DD,hh,WTMP,BuoyID) %>%
                   filter(WTMP!=99, WTMP!=999) %>%  # remove missing data
-                  rename(Year = YYYY) %>%       # rename column for uniformity
+                  dplyr::rename(Year = YYYY) %>%       # rename column for uniformity
                   mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
                                   ifelse((BuoyID == "46077"), "KATM",       
                                   ifelse((BuoyID == "46076"), "KEFJ","")))) %>%    
@@ -181,7 +181,7 @@ WaterTmp_Winter <- bind_rows(WaterTmp_3regW,NEPWSW)
 WaterTmp_WAnom <- Buoys_all %>%
                   select(YYYY,MM,DD,hh,WTMP,BuoyID) %>%
                   filter(WTMP!=99, WTMP!=999) %>%  # remove missing data
-                  rename(Year = YYYY, Month=MM) %>%       # rename column for uniformity
+                  dplyr::rename(Year = YYYY, Month=MM) %>%       # rename column for uniformity
                   mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
                                   ifelse((BuoyID == "46077"), "KATM",       
                                   ifelse((BuoyID == "46076"), "KEFJ","")))) %>% 
@@ -205,7 +205,7 @@ WaterTmp_WAnom <- Buoys_all %>%
 WaterTmp_SAnom <- Buoys_all %>%
                   select(YYYY,MM,DD,hh,WTMP,BuoyID) %>%
                   filter(WTMP!=99, WTMP!=999) %>%  # remove missing data
-                  rename(Year = YYYY, Month=MM) %>%       # rename column for uniformity
+                  dplyr::rename(Year = YYYY, Month=MM) %>%       # rename column for uniformity
                   mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
                                   ifelse((BuoyID == "46077"), "KATM",       
                                   ifelse((BuoyID == "46076"), "KEFJ","")))) %>% 

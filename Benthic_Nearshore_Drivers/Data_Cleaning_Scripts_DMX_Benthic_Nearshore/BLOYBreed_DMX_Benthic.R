@@ -49,7 +49,7 @@ BLOY_nest1[BLOY_nest1 == "."] <- NA  # replace "." with NA in the entire data fr
 
 BLOY_nest <- BLOY_nest1 %>% 
              select(-X,-X.1,-X.2,-NORTH_) %>%
-             rename(BLOCK.NUMBER=BLOCK, Region=REGION, Nest_Site=NEST_SITE.., 
+             dplyr::rename(BLOCK.NUMBER=BLOCK, Region=REGION, Nest_Site=NEST_SITE.., 
                     Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, Chicks_Num=X._CHICKS, 
                     Prey_Collected=PREY_COLL., LAT=NORTH, LON=WEST, Year=YEAR) %>%
       #       filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
@@ -79,7 +79,7 @@ OysC[OysC == "."] <- NA  # replace "." with NA in the entire data frame
 
 OysC <- OysC %>%
         select(-X) %>%  # remove weird blank column
-        rename(Nest_Site=NEST_SITE.., Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, 
+        dplyr::rename(Nest_Site=NEST_SITE.., Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, 
                Chicks_Num=X._CHICKS, Prey_Collected=PREY_COLL., Region=Block.Name) %>%
         mutate(Site_Name = ifelse((SITE=="RI-01" & Region=="KATM"),'Kukak Bay',  # add Site names
                            ifelse((SITE=="RI-02" & Region=="KATM"),'Kaflia Bay',

@@ -41,7 +41,7 @@ SS2 <- bind_rows(SS, SS15) # bind dataframes together
 SS_GOA <- SS2 %>%
           mutate(SS_n_m2 = Density..individuals.per.200.square.m./200) %>% # getting n per m2
           select(-Density..individuals.per.200.square.m.) %>%
-          rename(Year=Sample_Year) %>%
+          dplyr::rename(Year=Sample_Year) %>%
  #         filter(Year %in% c(2010, 2011, 2012, 2013, 2014, 2015)) %>% # taking out years before 2010
           # STOP here if you want species-level data
           group_by(Site_Name, Year) %>%

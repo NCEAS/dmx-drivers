@@ -32,7 +32,7 @@ SOPop <- SOp %>%
          select(-X,-X.1,-X.2,-X.3) %>%
          # remove asterisk after Katmai
          mutate(Region = gsub("\\*","",Region)) %>%
-         rename(Region_Long=Region, Otter_Abun_est=Abun_estimate) %>%
+         dplyr::rename(Region_Long=Region, Otter_Abun_est=Abun_estimate) %>%
          filter(!Region_Long %in% c("Katmai1"),
                 !is.na(Year)) %>%
          mutate(Region = ifelse((Region_Long %in% c("Katmai")), "KATM",

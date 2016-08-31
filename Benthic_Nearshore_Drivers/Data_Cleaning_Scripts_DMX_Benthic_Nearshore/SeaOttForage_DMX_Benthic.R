@@ -67,11 +67,11 @@ SOf_all$end_time <- substr(SOf_all$end_time, 12, 19)  # removes weird year digit
 
 # cleaning all the data
 SOf_A <- SOf_all %>% 
-         rename(Region=area_cd) %>%
+         dplyr::rename(Region=area_cd) %>%
          mutate(preytype_cd = toupper(preytype_cd),
                 YearSlash = sapply(strsplit(as.character(bout_date), split="/") , function(x) x[3]),
                 YearDash = sapply(strsplit(as.character(bout_date), split="-") , function(x) x[1])) %>%
-         rename(Year=YearSlash) %>%
+         dplyr::rename(Year=YearSlash) %>%
          mutate(Year = ifelse((is.na(Year)),YearDash,Year),
                 Region = revalue(Region, c(wpws="WPWS",npws="NPWS",kefj="KEFJ",katm="KATM")),
                 Region = ifelse((specific_location_txt=="Surprise Bay-5-RI3/RI4" & Region=="KEFJ"),'WPWS',Region),
@@ -203,7 +203,7 @@ SOf_A <- SOf_all %>%
 # Calculate proportion of biomass provided by clams, mussels, crabs, and other  
 # paste in prey name info 
 BmCalc_sub <- BmCalc[,c(1:3,5:7)]
-BmCalc_sub <- rename(BmCalc_sub, preytype_cd=Prey)
+BmCalc_sub <- dplyr::rename(BmCalc_sub, preytype_cd=Prey)
 BmCalc_sub$preytype_cd <- as.character(BmCalc_sub$preytype_cd)
 SOf_bm1 <- merge(SOf_A, BmCalc_sub, by="preytype_cd", all=TRUE) # merge prey name info into dataset
 
@@ -214,7 +214,7 @@ PawSize <- data.frame(preysize_cd=c("1a","1b","1c","2a","2b","2c","3a","3b","3c"
 SOf_bm <- merge(SOf_bm1, PawSize, by=c("preysize_cd"), all.y=TRUE)  # merge in paw sizes
 SOf_bm <- SOf_bm %>%
           select(-prey_size_cm.x) %>%
-          rename(prey_size_cm = prey_size_cm.y) %>%
+          dplyr::rename(prey_size_cm = prey_size_cm.y) %>%
           mutate(PreySize_mm = prey_size_cm/0.1) %>%
           select(Region,Site_Name,Year,obs_lat,obs_long,otter_lat,otter_long,preytype_cd,
                  prey_qty,preysize_cd,prey_size_cm,PreySize_mm,everything()) %>%
@@ -225,7 +225,7 @@ SOf_bm <- SOf_bm %>%
 Prey_PBmss <- function(df, prey, preytypebmss_colname, propbmss_colname){
               # sum of all biomass per site per year
               B <- df %>%
-                   rename(PreyType=Type) %>%
+                   dplyr::rename(PreyType=Type) %>%
                    mutate_(.dots = setNames(list(~df[,21]*
                                                   df$PreySize_mm^df[,22]), 
                                                   "biomass_gWW")) %>%
@@ -237,7 +237,7 @@ Prey_PBmss <- function(df, prey, preytypebmss_colname, propbmss_colname){
                    ungroup()
               # sum of biomass per type per site per year
               C <- df %>%
-                   rename(PreyType=Type) %>%
+                   dplyr::rename(PreyType=Type) %>%
                    mutate_(.dots = setNames(list(~df[,21]*
                                                   df$PreySize_mm^df[,22]), 
                                                   "biomass_gWW")) %>%
@@ -252,7 +252,7 @@ Prey_PBmss <- function(df, prey, preytypebmss_colname, propbmss_colname){
                 
               # proportion of biomass for each prey type per site per year
               D <- df %>%
-                   rename(PreyType=Type) %>%
+                   dplyr::rename(PreyType=Type) %>%
                    filter(PreyType != "Unknown") %>%
                    full_join(C, by=c("Region","Site_Name","Year","PreyType")) %>%
                    arrange(Region,Site_Name,Year)

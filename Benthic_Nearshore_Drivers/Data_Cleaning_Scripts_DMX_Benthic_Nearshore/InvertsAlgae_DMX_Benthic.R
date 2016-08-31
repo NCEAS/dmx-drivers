@@ -97,7 +97,7 @@ worm <- c("spirorbidae","unidentified worm")
 
 IA_GOA <- IA2 %>% 
    #       filter(Sample_Year %in% c(2010, 2011, 2012, 2013, 2014, 2015)) %>% # taking out years before 2010
-          rename(Year=Sample_Year, Quadrat=Quadrat_Num) %>%
+          dplyr::rename(Year=Sample_Year, Quadrat=Quadrat_Num) %>%
           mutate(Common_Cat = ifelse((Species_Name %in% anemone),'anemone',
                               ifelse((Species_Name %in% barnacle),'barnacle',
                               ifelse((Species_Name %in% brown_alga),'brown_alga',
@@ -155,7 +155,7 @@ PerCovCalc <- function(df, new_column_name) {
               x <- IA_GOA %>% 
                    filter(Species_Name %in% c("Bare Substrate","bare substrate")) %>% 
                    count(Site_Code, Site_Name, Year, Elevation_Position, Quadrat) %>%
-                   rename(Point_Count=n)
+                   dplyr::rename(Point_Count=n)
               # join calculated points df to referenced df
               y <- left_join(df, x, by=c("Site_Code", "Site_Name", "Year", 
                                          "Elevation_Position", "Quadrat"))
@@ -182,7 +182,7 @@ AddZeros <- function(df, new_column_name){
             # create data frame with one column with 12 quadrats for each unique combination of Site_Name and Year
             z <- df1 %>%
                  mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%
-                 expand(Site_Year, Quadrat)  
+                 tidyr::expand(Site_Year, Quadrat)  
             # insert rows for missing quadrat values, ie, not found in c(1:12),     
             u <- df1 %>%
                  mutate(Site_Year = paste(Site_Name, Year, sep="/")) %>%

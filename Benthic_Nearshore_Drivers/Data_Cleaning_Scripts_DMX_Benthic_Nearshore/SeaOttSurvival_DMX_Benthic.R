@@ -29,7 +29,7 @@ head(SOs)
 
 # Cleaning the data
 SOS <- SOs %>%
-       rename(Year=YEAR, ToothAge=TOOTHAGE) %>%
+       dplyr::rename(Year=YEAR, ToothAge=TOOTHAGE) %>%
   #     filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
        mutate(Region = ifelse((AREA=="KATM"),'KATM',
                        ifelse((AREA=="KEFJ"),'KEFJ',
@@ -70,7 +70,7 @@ SOS <- SOs %>%
               CC.From.Matson = revalue(CC.From.Matson, c("."=NA)),
               Age.Range = revalue(Age.Range, c("."=NA))
               ) %>%
-       rename(SeaOtt_CarcToothAge=ToothAge) %>%
+       dplyr::rename(SeaOtt_CarcToothAge=ToothAge) %>%
        select(Year, Region, SeaOtt_CarcToothAge)
   
 
@@ -90,13 +90,13 @@ MnPrimAge <- function(df){
                   filter(!is.na(SeaOtt_CarcToothAge)) %>%
                   # count total number per region
                   count(Year, Region) %>%
-                  rename(Total_Count=n)
+                  dplyr::rename(Total_Count=n)
              v <- df %>%
                   filter(!is.na(SeaOtt_CarcToothAge)) %>%
                   # subset those 2-8 years old and count how many
                   filter(SeaOtt_CarcToothAge %in% c(2:8)) %>%
                   count(Year,Region) %>%
-                  rename(Prime_Count=n)
+                  dplyr::rename(Prime_Count=n)
              w <- full_join(u,v, by=c("Year","Region")) %>%
                   replace(is.na(.), 0)
              

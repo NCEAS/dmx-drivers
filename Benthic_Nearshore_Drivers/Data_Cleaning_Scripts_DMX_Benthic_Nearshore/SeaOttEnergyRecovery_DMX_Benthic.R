@@ -31,7 +31,7 @@ head(SOer)
 
 REG <- SOer %>%
        select(-X.1,-X.2,-X.3,-X.4) %>%
-       rename(Comments=X) %>%
+       dplyr::rename(Comments=X) %>%
        mutate(Year = str_sub(SOer$Period, -4,-1),
               Region = str_sub(SOer$Period, 1,4),
               Season = str_sub(SOer$Period, 5,-5)) %>%

@@ -76,7 +76,7 @@ Littorina <- c("L. sitkana")
 BLOY_diet1[BLOY_diet1 == "."] <- NA  # replace "." with NA in the entire data frame
 
 BLOY_diet <- BLOY_diet1 %>% 
-             rename(Size_mm=Size, Site=Site.) %>% 
+             dplyr::rename(Size_mm=Size, Site=Site.) %>% 
              select(-Comment, -Observers) %>%
     #         filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
              mutate(Region = replace(as.character(Region), Region=="PWS", "WPWS"),
@@ -121,7 +121,7 @@ BLOY_diet <- BLOY_diet1 %>%
 BLOYD[BLOYD == "."] <- NA  # replace "." with NA in the entire data frame
 
 BLOYD_D <- BLOYD %>%
-           rename(REGIONBLOCK=Region,Region=Block.Name,Size_mm=Size..mm.) %>%
+           dplyr::rename(REGIONBLOCK=Region,Region=Block.Name,Size_mm=Size..mm.) %>%
            mutate(Year = sapply(strsplit(as.character(Date), split="/") , function(x) x[3]), # create Sample Year column
                   Year = ifelse(Year == "14", '2014', Year),  # replace weird first date 
                   Site_Name = ifelse((Site=="Ninagiak" & Region=="KATM"),'Ninagiak Island',

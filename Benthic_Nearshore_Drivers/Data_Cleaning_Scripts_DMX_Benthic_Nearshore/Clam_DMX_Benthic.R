@@ -35,7 +35,7 @@ head(BmCalc)
 
 # clean the data          
 Clam <- Cl %>%
-        rename(Site_Name=site.name, Quadrat=quad.,Size_mm=size..mm.) %>%
+        dplyr::rename(Site_Name=site.name, Quadrat=quad.,Size_mm=size..mm.) %>%
         mutate(spp.name = capitalize(spp.name),
                Year = sapply(strsplit(as.character(date), split="/") , function(x) x[3]),
                Year = revalue(Year, c("3013"="2013")),
@@ -115,7 +115,7 @@ AddZeros2 <- function(df, genus, abun_column_name, size_column_name, biom_column
              # create data frame with one column with 12 quadrats for each unique combination of Site_Name and Year
              z <- df1 %>%
                   mutate(Site_Year = paste(Site_Name, Year, Region, sep="/")) %>%
-                  expand(Site_Year, Quadrat)  
+                  tidyr::expand(Site_Year, Quadrat)  
              # insert rows for missing quadrat values, ie, not found in c(1:12),     
              u <- df1 %>%
                   mutate(Site_Year = paste(Site_Name, Year, Region, sep="/")) %>%

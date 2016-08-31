@@ -47,7 +47,7 @@ SST <- Temps %>%
                                 function(x) x[3])) %>%   # creates Year column
   #           filter(Year %in% c(2010:2015)) %>%
              arrange(dateTime) %>%
-             rename(WTemp_C=temp) %>%
+             dplyr::rename(WTemp_C=temp) %>%
              group_by(Year) %>%
              summarise(WTemp_C_AnnMn=mean(WTemp_C)) %>% # get annual means
              ungroup() %>%

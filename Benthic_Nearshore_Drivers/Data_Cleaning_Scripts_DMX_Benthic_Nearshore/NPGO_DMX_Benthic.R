@@ -29,7 +29,7 @@ npgo_df <- read.csv(file=textConnection(npgo_pre), skip=26, stringsAsFactors=F, 
 
 
 npgo_annual <- npgo_df %>% 
-               rename(Year=YEAR) %>% # rename data columns         
+               dplyr::rename(Year=YEAR) %>% # rename data columns         
      #          filter(Year %in% c(2010:2015)) %>% # selects years 2010 - 2015
                group_by(Year) %>%
                summarise(NPGO_anul_mn=mean(NPGO)) %>% # get annual means
