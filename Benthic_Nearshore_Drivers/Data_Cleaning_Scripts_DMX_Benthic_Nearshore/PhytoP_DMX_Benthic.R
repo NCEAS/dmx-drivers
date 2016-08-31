@@ -81,10 +81,10 @@ colnames(list_csvs[[1]])[4] <- "phaeophytin"
 colnames(list_csvs[[2]])[3] <- "chlorophyllA" 
 colnames(list_csvs[[2]])[4] <- "phaeophytin" 
 
-list_csvs[[3]] <- select(list_csvs[[3]], -c(X, X.1))
+list_csvs[[3]] <- dplyr::select(list_csvs[[3]], -c(X, X.1))
 colnames(list_csvs[[3]])[6] <- "chlorophyllA"
 
-list_csvs[[4]] <- select(list_csvs[[4]], -X)
+list_csvs[[4]] <- dplyr::select(list_csvs[[4]], -X)
 colnames(list_csvs[[4]])[7] <- "chlorophyllA"
 
 colnames(list_csvs[[5]])[4] <- "chlorophyllA"
