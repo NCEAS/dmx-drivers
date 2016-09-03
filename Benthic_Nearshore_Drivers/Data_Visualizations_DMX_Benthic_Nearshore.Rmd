@@ -102,7 +102,7 @@ melt_BenNear2 <- melt(as.data.frame(BenNear2), id.vars=c("Year","Region","Site_N
 BenNear3 <- melt_BenNear2 %>%
             mutate(Bin_Value = ifelse((is.na(value)),'0',
                                ifelse((!is.na(value)),'1',""))) %>%
-            rename(DataSet=variable) %>%
+            dplyr::rename(DataSet=variable) %>%
             mutate_each(funs(as.character), Site_Name) %>%
             mutate_each(funs(as.character), DataSet)
 
@@ -334,5 +334,60 @@ ggplot(data=BenNear_sub2, aes(x=Year, y=mussel_Per_Cov)) +
 
 ```
 
+```{r, echo=FALSE}
+# LOAD and pre-process data for the mussel analysis
+BenNearMUSS <- read.csv("BenthicNearshore_MusselQuestData.csv")
 
+BenNearMUSS2 <- BenNearMUSS %>%
+                select(-Quadrat, -Lat,-Long) %>%
+                mutate_each(funs(as.numeric), Otter_Abun_est) %>%
+                group_by(Year, Region, Site_Name) %>%
+                summarize_each(funs(sum)) %>%
+                ungroup() %>%
+                select(-BLOY_MnDensity_km2) 
+
+```
+
+```{r, echo=FALSE}
+# make Yes/No for sample presence
+melt_BenNearMUSS2 <- melt(as.data.frame(BenNearMUSS2), id.vars=c("Year","Region","Site_Name"),                           variable_name="Data_Set")
+
+BenNearMUSS3 <- melt_BenNearMUSS2 %>%
+                mutate(Bin_Value = ifelse((is.na(value)),'0',
+                                   ifelse((!is.na(value)),'1',""))) %>%
+             #   dplyr::rename(variable=Data_Set) %>%
+                mutate_each(funs(as.character), Site_Name) %>%
+                mutate_each(funs(as.character), Data_Set) %>%
+                mutate_each(funs(as.factor), Bin_Value) %>%
+                filter(!(Region %in% c("NPWS", "EPWS", "LACL")))
+  
+
+```
+
+```{r,echo=FALSE, fig.height=18, fig.width=18}
+pm <- ggplot(data=BenNearMUSS3, aes(x=Site_Name, y=Year)) + 
+             geom_tile(aes(fill = as.factor(Bin_Value)), colour = "white") +
+             scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
+             scale_y_reverse() + facet_wrap(~Data_Set) +
+             theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
+                                              color="black", size=11),
+                   axis.text.y = element_text(color="black", size=15),
+                   axis.title  = element_text(face="bold", size=20))
+pm
+```
+
+```{r,echo=FALSE, fig.height=18, fig.width=18}
+
+pm2 <- ggplot(data=BenNearMUSS3, aes(x=Data_Set, y=Year)) + 
+              geom_tile(aes(fill = as.factor(Bin_Value)), colour = "white") +
+              scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
+              scale_y_reverse() + facet_wrap(~Site_Name) +
+              theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
+                                               color="black", size=11),
+                    axis.text.y = element_text(color="black", size=15),
+                    axis.title  = element_text(face="bold", size=20))
+pm2
+
+
+```
 
