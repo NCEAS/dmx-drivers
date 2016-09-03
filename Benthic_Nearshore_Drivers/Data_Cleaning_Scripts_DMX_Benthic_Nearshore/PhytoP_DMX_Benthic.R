@@ -60,20 +60,20 @@ date_formatter <- function(df, date_column="Date") {
 ##
 
 # Get more years of data 2011 - 2015
-load_data <- function(path) { 
-             # read the other csv
-             files <- dir(path, pattern = '\\.csv', full.names = TRUE)
-             tables <- lapply(files, function(x) read.csv(x, skip=3, fileEncoding="latin1", 
-                                                          stringsAsFactors = FALSE))
-             # add formatted date column
-             tables <- lapply(tables, date_formatter)
-             # Merge all the other csv into one dataframe
-             #one_df <- merge_recurse(tables)
+load_my_data <- function(path) { 
+                # read the other csv
+                files <- dir(path, pattern = '\\.csv', full.names = TRUE)
+                tables <- lapply(files, function(x) read.csv(x, skip=3, fileEncoding="latin1", 
+                                                             stringsAsFactors = FALSE))
+                # add formatted date column
+                tables <- lapply(tables, date_formatter)
+                # Merge all the other csv into one dataframe
+                #one_df <- merge_recurse(tables)
          
-             return(tables)
-             }
+                return(tables)
+                }
 
-list_csvs <- load_data("./Seward_Line_Chla")
+list_csvs <- load_my_data("./Seward_Line_Chla")
 
 # Clean column names, etc.in the csvs
 colnames(list_csvs[[1]])[3] <- "chlorophyllA" 
@@ -90,8 +90,10 @@ colnames(list_csvs[[4]])[7] <- "chlorophyllA"
 colnames(list_csvs[[5]])[4] <- "chlorophyllA"
 colnames(list_csvs[[5]])[5] <- "phaeophytin"
 
-list_csvs[[6]] <- dplyr::select(list_csvs[[6]], -c(X.20_Chl_A..µg.L..1, Total_Chl_A..µg.L.,
-                                                   Total_Phaeo..µg.L.))
+list_csvs[[6]] <- list_csvs[[6]][,c(1:7,11)]
+  
+  #dplyr::select(list_csvs[[6]], -c(X.20_Chl_A..µg.L..1, Total_Chl_A..µg.L.,
+  #                                                 Total_Phaeo..µg.L.))
 colnames(list_csvs[[6]])[7] <- "chlorophyllA"
 
 colnames(list_csvs[[7]])[7] <- "chlorophyllA"

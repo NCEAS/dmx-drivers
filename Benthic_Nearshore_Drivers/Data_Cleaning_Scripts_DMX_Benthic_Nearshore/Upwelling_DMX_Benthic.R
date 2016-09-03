@@ -29,13 +29,30 @@ upanom_cols <- scan(textConnection(upanom_pre), skip=2, nlines=1, what=character
 upanom_cols <- c("Lat", "Long", upanom_cols[-1])# split position into lat and long 
 upanom_df <- read.csv(file=textConnection(upanom_pre), skip=4, stringsAsFactors=F, sep="", 
                    header=FALSE, col.names=upanom_cols, strip.white=TRUE)
-#
-upanom <- upanom_df %>% 
-          filter(Long %in% c("146W","149W")) %>%  # subsets for the two sites in the GOA
-          dplyr::rename(Year=YEAR) %>% # rename data columns   
-  #        filter(Year %in% c(2010:2015)) %>% # selects years 
-          gather(Month, UpwelAnom,-Year,-Lat,-Long) %>% # reshapes data to be column-wise
-          group_by(Year) %>%
-          summarise(UpWelAnom_anul_mn=mean(UpwelAnom, na.rm = TRUE)) %>% # get annual means
-          ungroup() 
+
+
+upanom_df1 <- upanom_df %>%
+              filter(Long %in% c("146W","149W")) %>%  # subsets for the two sites in the GOA
+              dplyr::rename(Year=YEAR) %>% # rename data columns
+              gather(Month, UpwelAnom,-Year,-Lat,-Long)  # reshapes data to be column-wise
+
+###
+upanom_spr <- upanom_df1 %>% 
+              filter(Month %in% c("MAR", "APR", "MAY")) %>%
+              group_by(Year) %>%
+              summarise(UpWelAnom_spr_mn=mean(UpwelAnom, na.rm = TRUE)) %>% # get annual means
+              ungroup() 
+
+upanom_fal <- upanom_df1 %>%
+              filter(Month %in% c("SEP", "OCT", "NOV")) %>%
+              group_by(Year) %>%
+              summarise(UpWelAnom_fal_mn=mean(UpwelAnom, na.rm = TRUE)) %>% # get annual means
+              ungroup() 
+
+upanom_ann <- upanom_df1 %>%
+              group_by(Year) %>%
+              summarise(UpWelAnom_anul_mn=mean(UpwelAnom, na.rm = TRUE)) %>% # get annual means
+              ungroup() 
+
+
 

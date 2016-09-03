@@ -44,7 +44,7 @@ BuoyData <- function(data_url){
             if (year < 1999) {
                               df <- read.table(file=textConnection(data1),fill=TRUE,
                                                stringsAsFactors=FALSE,header=TRUE)
-                              df <- rename(df, YYYY=YY)
+                              df <- dplyr::rename(df, YYYY=YY)
                               df$YYYY <- as.integer(paste(rep(19),df$YYYY,sep=""))
                               df$BuoyID <- rep(buoynum,nrow(df))
             # and if year is 1999 to 2006 do this...                  
@@ -60,7 +60,7 @@ BuoyData <- function(data_url){
                                      stringsAsFactors=FALSE,skip=2,header=FALSE)
                     names(df) <- data_h   # pastes the header line in
                     df$BuoyID <- rep(buoynum,nrow(df))
-                    df <- rename(df, WD=WDIR, BAR=PRES)
+                    df <- dplyr::rename(df, WD=WDIR, BAR=PRES)
                     }
 
             return(df)
@@ -124,7 +124,7 @@ Buoys_all <- bind_rows(Buoy_df_list) # bind the list of dataframes output by lap
 Wind_3regA <- Buoys_all %>%
               select(YYYY,MM,DD,hh,WD,WSPD,BuoyID) %>%
               filter(WD!=99, WD!=999, WSPD!=99, WSPD!=999) %>%  # remove missing data
-              rename(Year = YYYY) %>%       # rename column for uniformity
+              dplyr::rename(Year = YYYY) %>%       # rename column for uniformity
               mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
                               ifelse((BuoyID == "46077"), "KATM",       
                               ifelse((BuoyID == "46076"), "KEFJ","")))) %>%  
@@ -150,7 +150,7 @@ Wind_Ann <- bind_rows(Wind_3regA,NEPWS)
 Wind_3regW <- Buoys_all %>%
               select(YYYY,MM,DD,hh,WD,WSPD,BuoyID) %>%
               filter(WD!=99, WD!=999, WSPD!=99, WSPD!=999) %>%  # remove missing data
-              rename(Year=YYYY) %>%       # rename column for uniformity
+              dplyr::rename(Year=YYYY) %>%       # rename column for uniformity
               mutate(Region = ifelse((BuoyID == "46060"), "WPWS",    # add Region column
                               ifelse((BuoyID == "46077"), "KATM",       
                               ifelse((BuoyID == "46076"), "KEFJ","")))) %>% 
