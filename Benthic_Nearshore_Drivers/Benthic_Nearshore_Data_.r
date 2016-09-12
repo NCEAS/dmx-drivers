@@ -208,14 +208,14 @@ BenNear <- merge(BenNear,SOf_Muss_Bmss,all.x=T)   # Sea Otter forage mussel biom
 #BenNear <- merge(BenNear,SOf_Octo_Bmss,all.x=T)   # Sea Otter forage octopus biomass
 #BenNear <- merge(BenNear,SOf_Worm_Bmss,all.x=T)   # Sea Otter forage worm biomass
 #BenNear <- merge(BenNear,SOf_Other_Bmss,all.x=T)  # Sea Otter forage "other" biomass
-#BenNear <- merge(BenNear,SOAD,all.x=T)             # Sea Otter mean carcass tooth age; proportion of prime age
-BenNear <- merge(BenNear,SOPop,all.x=T)            # Sea Otter population estimates
-BenNear <- merge(BenNear,REG,all.x=T)              # Sea Otter energy recovery (kcal/min)
-BenNear <- merge(BenNear,WaterTmp_WAnom,all.x=T)   # Water Temp Anomoly Winter Mean
-BenNear <- merge(BenNear,WaterTmp_SAnom,all.x=T)   # Water Temp Anomoly Spring Mean
-
-
-
+#BenNear <- merge(BenNear,SOAD,all.x=T)            # Sea Otter mean carcass tooth age; proportion of prime age
+BenNear <- merge(BenNear,SOPop,all.x=T)           # Sea Otter population estimates
+BenNear <- merge(BenNear,REG,all.x=T)             # Sea Otter energy recovery (kcal/min)
+BenNear <- merge(BenNear,WaterTmp_WAnom,all.x=T)  # Water Temp Anomoly Winter Mean
+BenNear <- merge(BenNear,WaterTmp_SAnom,all.x=T)  # Water Temp Anomoly Spring Mean
+BenNear <- merge(BenNear,Fresh_H2O_Spr,all.x=T)   # Freshwater Discharge Spring Mean
+BenNear <- merge(BenNear,Fresh_H2O_Fal,all.x=T)   # Freshwater Discharge Fall Mean
+BenNear <- merge(BenNear,Fresh_H2O_Yr,all.x=T)    # Freshwater Discharge Annual Mean
 
 
 BenNear <- arrange(BenNear,Region,Site_Name,Year,Quadrat)

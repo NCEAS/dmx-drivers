@@ -12,7 +12,7 @@ library(curl)
 library(rvest)
 library(tidyr)
 library(stringr)
-library(data.table)
+library(dtplyr)
 library(lazyeval)
 
 ## Steps for data cleaning: 
