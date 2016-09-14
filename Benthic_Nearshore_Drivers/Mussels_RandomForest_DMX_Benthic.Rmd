@@ -1,0 +1,256 @@
+---
+title: "Random_Forest_Explore_DMX_Benthic"
+author: "Rachael Blake"
+date: "April 1, 2016"
+output: html_document
+---
+
+```{r, echo=FALSE, include=FALSE}
+
+# load necessary packages
+library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) 
+
+# load data 
+BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
+
+# call the data assembly script
+#source("Benthic_Nearshore_Drivers/Benthic_Nearshore_Data_.R")
+#head(BenNear)
+
+
+```
+
+```{r, echo=FALSE}
+# Define some functions
+
+# Important variables are greater than the absolute value of the most negative
+# importance value.
+Imp_Var <- function(rf_obj){
+           a <- data.frame(rf_obj$importance)  
+           b <- min(a[,1])  # smallest value
+           c <- abs(b)  # absolute value of smallest value
+           d <- a$X.IncMSE[a$X.IncMSE>c]  # numbers great than absolute value of smallest value
+           return(d)
+           }
+
+
+```
+
+
+```{r, echo=FALSE}
+# filtering data for more complete dataset
+BenNear_m <- BenNearMuss %>%
+             filter(Year %in% c(2005:2015),
+                    Region %in% c("WPWS","KATM","KEFJ")) %>%
+             mutate_each(funs(as.numeric), Otter_Abun_est) %>%
+             mutate(log_mussel_Per_Cov = log(mussel_Per_Cov+1),
+                    log_SOf_MusselSumBmss_gWW = log(SOf_MusselSumBmss_gWW+1),
+                    log_TotChlA_micgL_FlMn = log(TotChlA_micgL_FlMn+1),
+                    log_TotChlA_micgL_AnnMn = log(TotChlA_micgL_AnnMn+1)) %>%
+             select(-BLOY_MnDensity_km2, -TotChlA_micgL_SpMn)
+       
+
+#BenNear4 <- BenNearMuss %>%
+#            select(-BLOY_MnDensity_km2) %>%
+#            select(which(colMeans(is.na(.)) < 0.5)) %>%
+#            filter(complete.cases(.))
+
+#!(Site_Name %in% c("Herring Bay-Southwest", "Herring Bay-Bear Cove"))
+
+
+```
+
+
+
+```{r, echo=FALSE}
+#### Manipulate data columns to add 1-year lags!!!!
+
+#dplyr::lead
+#Copy with values shifted by 1.
+#dplyr::lag
+#Copy with values lagged by 1.
+
+BenNear_reg <- BenNear_m %>% 
+               select(-Site_Name,-Quadrat,-Lat,-Long) %>%
+               group_by(Year, Region) %>%
+               summarise_each(funs(mean(., na.rm=TRUE))) %>%
+               ungroup() %>%
+               arrange(Region, Year) %>%
+               group_by(Region) %>%
+               mutate(LAG_log_TotChlA_micgL_AnnMn = lag(log_TotChlA_micgL_AnnMn),
+                      LAG_UpWelAnom_anul_mn = lag(UpWelAnom_anul_mn),
+                      LED_SOf_MusselPropBmss = lead(SOf_MusselPropBmss),
+                      LED_BLOYAdult_breed_n = lead(BLOYAdult_breed_n),
+                      LAG_Bare_Sub_Per_Cov = lag(Bare_Sub_Per_Cov),
+                      LAG_PDO_anul_mn = lag(PDO_anul_mn),
+                      LAG_WndSp_m_s_AnnMn = lag(WndSp_m_s_AnnMn),
+                      LAG_WndSp_m_s_Winter = lag(WndSp_m_s_Winter),
+                      LAG_Fuc_dist_Per_Cov = lag(Fuc_dist_Per_Cov),
+                      LAG_SC_Mn_FWDisc_AnMn = lag(SC_Mn_FWDisc_AnMn),
+                      LAG_Ttl_FWDisc_Anom_AnMn = lag(Ttl_FWDisc_Anom_AnMn),
+                      LAG_SC_Mn_FWDisc_SpMn = lag(SC_Mn_FWDisc_SpMn),
+                      LAG_Ttl_FWDisc_Anom_SpMn = lag(Ttl_FWDisc_Anom_SpMn)) %>%
+               ungroup() 
+               
+
+BenNear_GOA <- BenNear_m %>% 
+               select(-Site_Name,-Quadrat,-Lat,-Long,-Region) %>%
+               group_by(Year) %>%
+               summarise_each(funs(mean(., na.rm=TRUE))) %>%
+               ungroup() %>%
+               arrange(Year) %>%
+               mutate(LAG_log_TotChlA_micgL_AnnMn = lag(log_TotChlA_micgL_AnnMn),
+                      LAG_UpWelAnom_anul_mn = lag(UpWelAnom_anul_mn),
+                      LED_SOf_MusselPropBmss = lead(SOf_MusselPropBmss),
+                      LED_BLOYAdult_breed_n = lead(BLOYAdult_breed_n),
+                      LAG_Bare_Sub_Per_Cov = lag(Bare_Sub_Per_Cov),
+                      LAG_PDO_anul_mn = lag(PDO_anul_mn),
+                      LAG_WndSp_m_s_AnnMn = lag(WndSp_m_s_AnnMn),
+                      LAG_WndSp_m_s_Winter = lag(WndSp_m_s_Winter),
+                      LAG_Fuc_dist_Per_Cov = lag(Fuc_dist_Per_Cov),
+                      LAG_SC_Mn_FWDisc_AnMn = lag(SC_Mn_FWDisc_AnMn),
+                      LAG_Ttl_FWDisc_Anom_AnMn = lag(Ttl_FWDisc_Anom_AnMn),
+                      LAG_SC_Mn_FWDisc_SpMn = lag(SC_Mn_FWDisc_SpMn),
+                      LAG_Ttl_FWDisc_Anom_SpMn = lag(Ttl_FWDisc_Anom_SpMn))  
+
+
+```
+
+
+
+```{r, echo=FALSE}
+###
+# Mussels 
+Muss_rf <- BenNear_GOA[,c(5,8,9,12,14,15,21,24,27,30,34,38:40,43)]#
+
+Muss_lg <- BenNear_reg[,c(6,9,10,13,15,16,22,25,28,31,40,41,44)]#
+
+LAG_Muss_rf <- BenNear_GOA[,c(8,12,14,30,39,40,42:53)]#
+
+LAG_Muss_lg <- BenNear_reg[,c(9,13,15,31,39,40,45:54)]#
+
+```
+
+# Correlations
+```{r, echo=FALSE, fig.height=18, fig.width=18}
+
+pairs.panels(Muss_rf,smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+
+pairs.panels(LAG_Muss_rf,smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+
+pairs.panels(Muss_lg,smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+
+pairs.panels(LAG_Muss_lg,smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+
+```
+
+# Random Forests
+```{r, echo=FALSE}
+# GOA-averaged; As complete as possible
+BenNear_GOA_c <- BenNear_GOA %>%  filter(Year %in% c(2007:2013)) %>%
+                 select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2)
+
+rf_tot_GOA <- randomForest(log_mussel_Per_Cov ~ ., data=BenNear_GOA_c, importance=TRUE, 
+                           do.trace=1000, ntree=5000)
+print(rf_tot_GOA)
+#plot(rf_tot_GOA)
+#rf_tot_GOA$importance
+Imp_Var(rf_tot_GOA)
+
+```
+
+```{r, echo=FALSE}
+# Region-averaged; As complete as possible
+BenNear_reg_c <- BenNear_reg %>%  filter(Year %in% c("2007","2010","2012","2013")) %>%
+                 select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2, -WndDir_degT_AnnMn,
+                        -WndSp_m_s_AnnMn, -LAG_WndSp_m_s_AnnMn, -WndDir_degT_Winter, -WndSp_m_s_Winter,
+                        -LAG_WndSp_m_s_Winter, -WaterTmp_SpringAnom, -LAG_Bare_Sub_Per_Cov,
+                        -LAG_Fuc_dist_Per_Cov, -LED_BLOYAdult_breed_n, -LED_SOf_MusselPropBmss,
+                        -SOf_MusselSumBmss_gWW, -SOf_MusselPropBmss, -log_SOf_MusselSumBmss_gWW)
+
+#data.frame(BenNear_reg_c[!complete.cases(BenNear_reg_c),])  # Save this for reference!!!
+
+rf_tot_reg <- randomForest(log_mussel_Per_Cov ~ ., data=BenNear_reg_c, importance=TRUE, 
+                           do.trace=1000, ntree=5000)
+print(rf_tot_reg)
+#plot(rf_tot_reg)
+#rf_tot_reg$importance
+Imp_Var(rf_tot_reg)
+
+```
+
+```{r, echo=FALSE}
+# Region WPWS:
+WPWS_reg_c <- BenNear_reg %>%  filter(Year %in% c("2007","2010","2011","2012","2013"), 
+                                      Region %in% c("WPWS")) %>%
+              select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2, -LAG_Fuc_dist_Per_Cov,
+                     -LAG_Bare_Sub_Per_Cov, -LED_BLOYAdult_breed_n, -LED_SOf_MusselPropBmss,
+                     -WaterTmp_SpringAnom)
+
+#data.frame(WPWS_reg_c[!complete.cases(WPWS_reg_c),])  # Save this for reference!!!
+
+rf_wpws_reg <- randomForest(log_mussel_Per_Cov ~ ., data=WPWS_reg_c, importance=TRUE, 
+                           do.trace=1000, ntree=5000)
+print(rf_wpws_reg)
+#plot(rf_wpws_reg)
+#rf_wpws_reg$importance
+Imp_Var(rf_wpws_reg)
+
+```
+
+```{r, echo=FALSE}
+# Region KEFJ: 
+KEFJ_reg_c <- BenNear_reg %>%  filter(Year %in% c(2007:2013), 
+                                      Region %in% c("KEFJ")) %>%
+              select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2, -LAG_Fuc_dist_Per_Cov,
+                     -LAG_Bare_Sub_Per_Cov, -WaterTmp_SpringAnom)
+
+#data.frame(KEFJ_reg_c[!complete.cases(KEFJ_reg_c),])  # Save this for reference!!!
+
+rf_kefj_reg <- randomForest(log_mussel_Per_Cov ~ ., data=KEFJ_reg_c, importance=TRUE, 
+                           do.trace=1000, ntree=5000)
+print(rf_kefj_reg)
+#plot(rf_kefj_reg)
+#rf_kefj_reg$importance
+Imp_Var(rf_kefj_reg)
+
+```
+
+
+```{r, echo=FALSE}
+# Just some correlated variables
+Muss_GOA <-  BenNear_GOA %>%  filter(Year %in% c(2007:2013)) %>%
+             select(Year, log_mussel_Per_Cov, LAG_log_TotChlA_micgL_AnnMn, LAG_UpWelAnom_anul_mn,
+                    ENSO_anul_mn, LAG_WndSp_m_s_AnnMn, LAG_Ttl_FWDisc_Anom_AnMn)
+
+#data.frame(Muss_GOA[!complete.cases(Muss_GOA),])  # Save this for reference!!!
+
+rf_muss_GOA <- randomForest(log_mussel_Per_Cov ~ ., data=Muss_GOA, importance=TRUE, 
+                            do.trace=1000, ntree=5000)
+print(rf_muss_GOA)
+#plot(rf_muss_GOA)
+rf_muss_GOA$importance
+Imp_Var(rf_muss_GOA)
+
+```
+
+```{r, echo=FALSE}
+# Just some correlated variables
+Bio_GOA <-  BenNear_GOA %>%  filter(Year %in% c(2007:2013)) %>%
+             select(Year, log_mussel_Per_Cov, WaterTmp_C_AnnMn, WaterTmp_SpringAnom, Bare_Sub_Per_Cov, 
+                    SOf_MusselPropBmss, BLOYAdult_breed_n, Fuc_dist_Per_Cov)
+
+#data.frame(Bio_GOA[!complete.cases(Bio_GOA),])  # Save this for reference!!!
+
+rf_bio_GOA <- randomForest(log_mussel_Per_Cov ~ ., data=Bio_GOA, importance=TRUE, 
+                            do.trace=1000, ntree=5000)
+print(rf_bio_GOA)
+#plot(rf_bio_GOA)
+rf_bio_GOA$importance
+Imp_Var(rf_bio_GOA)
+
+```
+ 
+
+
+
