@@ -95,30 +95,39 @@ BenNear_reg_l <- BenNear_m %>%
 # Function to create interaction plots of all variables
 my_interactions <- function(dataframe,x,y,key){
                    # get a mean value for each Region
-                   A <- aggregate(dataframe[[y]], dataframe[key], 
-                                  function(y) val=mean(y))
-                     
-                         
+                   A <- dataframe %>%
+                        group_by_(x,key) %>%
+                        summarise_each_(funs(val=mean(., na.rm=TRUE)), y)
+                   #return(A)
                    # make a plot
-                   PT <- ggplot(data=dataframe, aes(x=x, y=y, colour=factor(key))) +
+                   PT <- ggplot(data=dataframe, aes_string(x=x, y=y, colour=factor(key))
+                                                 ) +
                          geom_point(data=A, aes(y=val)) + theme_bw() + 
-                         geom_line(data=A, aes(y=val, group=key))
+                         geom_line(data=A, aes_string(y="val", group=key))
                    return(PT)
                    }
+my_interactions(BenNear_reg_l, "LAG_log_TotChlA_micgL_AnnMn", "log_mussel_Per_Cov", "Region")
 
 
 #trying this from a Stack Overflow answer
-descriptives_by_group <- function(dataset, group, x){
-                         aggregate(dataset[[x]], dataset[group], function(x)
-                                   c(mean = mean(x), sd = sd(x), min = min(x),
-                                     max= max(x)))
-                         }
+testplot <- function(meansdf){
+            p <- ggplot(meansdf, aes(fill = condition, y = means, x = condition)) +
+                 geom_bar(position = "dodge", stat = "identity")
+}
 
-descriptives_by_group(mtcars, 'cyl', 'hp')
+aes_string(x="date", y=aesy) 
+
+mtcars %>% 
+     group_by(gear) %>% 
+     summarise_each(funs(mean=mean(., na.rm=TRUE),
+                     sd=sd(., na.rm=TRUE)), wt, qsec)
+
 
 # My original attempt 
-   A <- ddply(dataframe, .(x,key), summarise, val=mean(y, na.rm=TRUE))
-
+   A <- ddply(dataframe, .(x, key), summarise, val=mean(y, na.rm=TRUE))
+# partial success
+    A <- ddply(dataframe, c(x, key), summarise, val=mean(c(y), na.rm=TRUE))
+    
    
 # The manual way of doing things...   
 # y=log_mussel_Per_Cov x=LAG_log_TotChlA_micgL_AnnMn key=Region
@@ -152,7 +161,7 @@ sb  <- ggplot(data=BenNear_reg_l, aes(x=LAG_log_TotChlA_micgL_AnnMn,
 boxplot(log_mussel_Per_Cov ~ Year, data=BenNear_reg_l)
 
 # Models
-mgls1 <- gls(log_mussel_Per_Cov ~ Region+Year+LAG_UpWelAnom_anul_mn+
+mgls1 <- gls(log_mussel_Per_Cov ~ Year+LAG_UpWelAnom_anul_mn+
              LAG_log_TotChlA_micgL_AnnMn+ENSO_anul_mn+LAG_WndSp_m_s_AnnMn+
              LAG_Ttl_FWDisc_Anom_AnMn, 
              # LAG_log_TotChlA_micgL_AnnMn:LAG_Ttl_FWDisc_Anom_AnMn, 
@@ -160,7 +169,7 @@ mgls1 <- gls(log_mussel_Per_Cov ~ Region+Year+LAG_UpWelAnom_anul_mn+
 
 # random intercept model, allows for variation between Regions
 mlme1 <- lme(log_mussel_Per_Cov ~ Year+LAG_UpWelAnom_anul_mn+LAG_log_TotChlA_micgL_AnnMn+
-                                  ENSO_anul_mn+LAG_WndSp_m_s_AnnMn+LAG_Ttl_FWDisc_Anom_AnMn,
+             ENSO_anul_mn+LAG_WndSp_m_s_AnnMn+LAG_Ttl_FWDisc_Anom_AnMn,
              random=~1|Region, na.action=na.exclude, data=BenNear_reg_l)
 
 anova(mgls1, mlme1)   
@@ -174,22 +183,21 @@ mlme2 <- lme(log_mussel_Per_Cov ~ Year+LAG_UpWelAnom_anul_mn+LAG_log_TotChlA_mic
 anova(mlme1, mlme2)
 
 # Adding in variance structure to mlme2
-mlme3 <- lme(log_mussel_Per_Cov ~ Year+LAG_UpWelAnom_anul_mn+LAG_log_TotChlA_micgL_AnnMn+
-             ENSO_anul_mn+LAG_WndSp_m_s_AnnMn+LAG_Ttl_FWDisc_Anom_AnMn,
-             random=~1+LAG_Ttl_FWDisc_Anom_AnMn|Region, weights=varIdent(form=~1|Region), 
-             na.action=na.exclude, data=BenNear_reg_l)
-anova(mlme1, mlme3)
+#mlme3 <- lme(log_mussel_Per_Cov ~ Year+LAG_UpWelAnom_anul_mn+LAG_log_TotChlA_micgL_AnnMn+
+#             ENSO_anul_mn+LAG_WndSp_m_s_AnnMn+LAG_Ttl_FWDisc_Anom_AnMn,
+#             random=~1+LAG_Ttl_FWDisc_Anom_AnMn|Region, weights=varIdent(form=~1|Region),
+#             na.action=na.exclude, data=BenNear_reg_l)
+#anova(mlme1, mlme3)
 
 # Adding variance structure to mlme1
 mlme4 <- lme(log_mussel_Per_Cov ~ Year+LAG_UpWelAnom_anul_mn+LAG_log_TotChlA_micgL_AnnMn+
              ENSO_anul_mn+LAG_WndSp_m_s_AnnMn+LAG_Ttl_FWDisc_Anom_AnMn,
              random=~1|Region, weights=varIdent(form=~1|Region), na.action=na.exclude, 
              data=BenNear_reg_l)
-anova(mlme3, mlme4)
 anova(mlme1, mlme4)
 
 
-# mlme4 is simpler and not sig. diff. than mlme3
+# mlme4 is it
 
 ```
 
@@ -207,7 +215,7 @@ anova(mlme1, mlme4)
 
 # Mussel cover Everything Model
 MGM <- lme(log_mussel_Per_Cov ~ Year+LAG_UpWelAnom_anul_mn+LAG_log_TotChlA_micgL_AnnMn+
-                                ENSO_anul_mn+LAG_WndSp_m_s_AnnMn+LAG_Ttl_FWDisc_Anom_AnMn,
+           ENSO_anul_mn+LAG_WndSp_m_s_AnnMn+LAG_Ttl_FWDisc_Anom_AnMn,
            random=~1|Region, weights=varIdent(form=~1|Region), na.action=na.exclude, 
            data=BenNear_reg_l, method="ML")
 
