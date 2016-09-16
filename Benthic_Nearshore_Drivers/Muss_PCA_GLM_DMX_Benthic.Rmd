@@ -1,0 +1,96 @@
+---
+title: "Muss_PCA_GLM_DMX_Benthic"
+author: "Rachael Blake"
+date: "September 16, 2016"
+output: html_document
+---
+
+```{r , echo=FALSE}
+
+# load necessary packages
+library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) ; library(nlme) ; library(ggplot2) ; library(AICcmodavg) ; library(stats)
+
+# load data 
+BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
+
+# call the data assembly script
+#source("Benthic_Nearshore_Drivers/Benthic_Nearshore_Data_.R")
+#head(BenNear)
+
+```
+
+
+```{r, echo=FALSE}
+# filtering data for more complete dataset
+BenNear_m <- BenNearMuss %>%
+             filter(Year %in% c(2007:2013),
+                    Region %in% c("WPWS","KATM","KEFJ")) %>%
+             mutate_each(funs(as.numeric), Otter_Abun_est) %>%
+             mutate(log_mussel_Per_Cov = log(mussel_Per_Cov+1),
+                    log_SOf_MusselSumBmss_gWW = log(SOf_MusselSumBmss_gWW+1),
+                    log_TotChlA_micgL_FlMn = log(TotChlA_micgL_FlMn+1),
+                    log_TotChlA_micgL_AnnMn = log(TotChlA_micgL_AnnMn+1)) %>%
+             select(-BLOY_MnDensity_km2, -TotChlA_micgL_SpMn)
+
+```
+
+```{r, echo=FALSE}
+#### Manipulate data columns to add 1-year lags!!!!
+
+#dplyr::lead
+#Copy with values shifted by 1.
+#dplyr::lag
+#Copy with values lagged by 1.
+
+BenNear_reg_l <- BenNear_m %>% 
+                 select(-Site_Name,-Quadrat,-Lat,-Long) %>%
+                 group_by(Year, Region) %>%
+                 summarise_each(funs(mean(., na.rm=TRUE))) %>%
+                 ungroup() %>%
+                 arrange(Region, Year) %>%
+                 group_by(Region) %>%
+                 mutate(LAG_log_TotChlA_micgL_AnnMn = lag(log_TotChlA_micgL_AnnMn),
+                        LAG_UpWelAnom_anul_mn = lag(UpWelAnom_anul_mn),
+                        LED_SOf_MusselPropBmss = lead(SOf_MusselPropBmss),
+                        LED_BLOYAdult_breed_n = lead(BLOYAdult_breed_n),
+                        LAG_Bare_Sub_Per_Cov = lag(Bare_Sub_Per_Cov),
+                        LAG_PDO_anul_mn = lag(PDO_anul_mn),
+                        LAG_WndSp_m_s_AnnMn = lag(WndSp_m_s_AnnMn),
+                        LAG_WndSp_m_s_Winter = lag(WndSp_m_s_Winter),
+                        LAG_Fuc_dist_Per_Cov = lag(Fuc_dist_Per_Cov),
+                        LAG_SC_Mn_FWDisc_AnMn = lag(SC_Mn_FWDisc_AnMn),
+                        LAG_Ttl_FWDisc_Anom_AnMn = lag(Ttl_FWDisc_Anom_AnMn),
+                        LAG_SC_Mn_FWDisc_SpMn = lag(SC_Mn_FWDisc_SpMn),
+                        LAG_Ttl_FWDisc_Anom_SpMn = lag(Ttl_FWDisc_Anom_SpMn)) %>%
+                 ungroup() 
+               
+
+# BenNear_GOA_l <- BenNear_m %>% 
+#                  select(-Site_Name,-Quadrat,-Lat,-Long,-Region) %>%
+#                  group_by(Year) %>%
+#                  summarise_each(funs(mean(., na.rm=TRUE))) %>%
+#                  ungroup() %>%
+#                  arrange(Year) %>%
+#                  mutate(LAG_log_TotChlA_micgL_AnnMn = lag(log_TotChlA_micgL_AnnMn),
+#                         LAG_UpWelAnom_anul_mn = lag(UpWelAnom_anul_mn),
+#                         LED_SOf_MusselPropBmss = lead(SOf_MusselPropBmss),
+#                         LED_BLOYAdult_breed_n = lead(BLOYAdult_breed_n),
+#                         LAG_Bare_Sub_Per_Cov = lag(Bare_Sub_Per_Cov),
+#                         LAG_PDO_anul_mn = lag(PDO_anul_mn),
+#                         LAG_WndSp_m_s_AnnMn = lag(WndSp_m_s_AnnMn),
+#                         LAG_WndSp_m_s_Winter = lag(WndSp_m_s_Winter),
+#                         LAG_Fuc_dist_Per_Cov = lag(Fuc_dist_Per_Cov),
+#                         LAG_SC_Mn_FWDisc_AnMn = lag(SC_Mn_FWDisc_AnMn),
+#                         LAG_Ttl_FWDisc_Anom_AnMn = lag(Ttl_FWDisc_Anom_AnMn),
+#                         LAG_SC_Mn_FWDisc_SpMn = lag(SC_Mn_FWDisc_SpMn),
+#                         LAG_Ttl_FWDisc_Anom_SpMn = lag(Ttl_FWDisc_Anom_SpMn))    
+
+
+```
+
+
+
+
+
+
+
