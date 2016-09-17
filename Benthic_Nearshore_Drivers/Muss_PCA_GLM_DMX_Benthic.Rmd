@@ -8,7 +8,7 @@ output: html_document
 ```{r , echo=FALSE}
 
 # load necessary packages
-library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) ; library(nlme) ; library(ggplot2) ; library(AICcmodavg) ; library(stats)
+library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) ; library(nlme) ; library(ggplot2) ; library(AICcmodavg) ; library(stats) ; library(ggfortify) ; library(devtools)
 
 # load data 
 BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
@@ -23,7 +23,7 @@ BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-dri
 ```{r, echo=FALSE}
 # filtering data for more complete dataset
 BenNear_m <- BenNearMuss %>%
-             filter(Year %in% c(2007:2013),
+             filter(Year %in% c(2005:2013),
                     Region %in% c("WPWS","KATM","KEFJ")) %>%
              mutate_each(funs(as.numeric), Otter_Abun_est) %>%
              mutate(log_mussel_Per_Cov = log(mussel_Per_Cov+1),
@@ -85,6 +85,33 @@ BenNear_reg_l <- BenNear_m %>%
 #                         LAG_SC_Mn_FWDisc_SpMn = lag(SC_Mn_FWDisc_SpMn),
 #                         LAG_Ttl_FWDisc_Anom_SpMn = lag(Ttl_FWDisc_Anom_SpMn))    
 
+
+```
+
+```{r, echo=FALSE}
+
+BenNear_reg_pca <- select(BenNear_reg_l, Region, Year, LAG_UpWelAnom_anul_mn,
+                          LAG_log_TotChlA_micgL_AnnMn, ENSO_anul_mn,
+                          LAG_WndSp_m_s_AnnMn, LAG_Ttl_FWDisc_Anom_AnMn) %>%
+                   filter(complete.cases(.))
+
+#data.frame(BenNear_reg_pca[!complete.cases(BenNear_reg_pca),])
+
+pca_cli <- prcomp(~., data=BenNear_reg_pca[,2:7], na.action=na.omit, scale=TRUE)
+print(pca_cli)
+summary(pca_cli)
+pca_cli$x # this is the PCA scores for each row of data.
+par(mfrow=c(1,2))
+plot(pca_cli, main="climate")
+plot(pca_cli, type="lines", main="climate")
+
+
+```
+
+```{r, echo=FALSE}
+# Plotting
+
+pca_reg_cli <- autoplot(prcomp(BenNear_reg_pca[,2:7]), data=BenNear_reg_pca, color='Region')
 
 ```
 
