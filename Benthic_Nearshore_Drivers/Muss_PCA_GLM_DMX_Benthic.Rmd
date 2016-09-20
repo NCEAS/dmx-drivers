@@ -87,7 +87,15 @@ BenNear_reg_l <- BenNear_m %>%
 
 ```
 
-# Everything (or as much as possible) PCA
+###H1: Mussel recruitment (via abundance) is associated with strong wind stress periods (monthly average - and some metric of oscillations? freq?).
+
+###H2: Mussel recruitment (via abundance) is associated with high Chl years - specifically the spring bloom.
+
+###H3: Mussel recruitment (via abundance) is driven by extreme air temperatures – meaning degree heating days type of threshold plus time (needs to include tidal threshold). 
+
+
+
+# Everything (or as much as possible)
 ```{r, echo=FALSE}
 # Everyhting (or as much as possible) PCA
 BenNear_reg_cpa <- BenNear_reg_l %>%  #filter(Year %in% c("2007","2010","2012","2013")) %>%
@@ -97,7 +105,7 @@ BenNear_reg_cpa <- BenNear_reg_l %>%  #filter(Year %in% c("2007","2010","2012","
                           -WaterTmp_SpringAnom, -LAG_Bare_Sub_Per_Cov, -LAG_Fuc_dist_Per_Cov,
                           -LED_BLOYAdult_breed_n, -LED_SOf_MusselPropBmss,
                           -SOf_MusselSumBmss_gWW,-SOf_MusselPropBmss,
-                          -log_SOf_MusselSumBmss_gWW) %>% 
+                          -log_SOf_MusselSumBmss_gWW, -TotChlA_micgL_AnnMn) %>% 
                    filter(complete.cases(.))
 
 #data.frame(BenNear_reg_cpa[!complete.cases(BenNear_reg_cpa),])
@@ -105,16 +113,24 @@ BenNear_reg_cpa <- BenNear_reg_l %>%  #filter(Year %in% c("2007","2010","2012","
 
 ```{r, echo=FALSE}
 # Run the PCA
-pca_cpa <- prcomp(~., data=BenNear_reg_cpa[,c(1,3:37)], na.action=na.omit, scale=TRUE)
+pca_cpa <- prcomp(~., data=BenNear_reg_cpa[,c(3:36)], na.action=na.omit, scale=TRUE)
 #print(pca_cpa) # shows SDs and weightings
 summary(pca_cpa)
 #pca_cpa$x # this is the PCA scores for each row of data.
 #pca_cpa$rotation  # weightings for variables by themselves
 evyload <- abs(pca_cpa$rotation)
 evi_per <- sweep(evyload, 2, colSums(evyload), "/")
-evi_per_imp <- data.frame(evi_per) %>% select(PC1:PC7) %>% tibble::rownames_to_column() %>%
+evi_per_imp <- data.frame(evi_per) %>% select(PC1) %>% tibble::rownames_to_column() %>%
                arrange(-PC1)
-evi_per_imp
+evi_per_imp2 <- data.frame(evi_per) %>% select(PC2) %>% tibble::rownames_to_column() %>%
+               arrange(-PC2)
+evi_per_imp3 <- data.frame(evi_per) %>% select(PC3) %>% tibble::rownames_to_column() %>%
+               arrange(-PC3)
+evi_per_imp4 <- data.frame(evi_per) %>% select(PC4) %>% tibble::rownames_to_column() %>%
+               arrange(-PC4)
+evi_per_imp5 <- data.frame(evi_per) %>% select(PC5) %>% tibble::rownames_to_column() %>%
+               arrange(-PC5)
+evi_per_imp ; evi_per_imp2 ; evi_per_imp3
 
 par(mfrow=c(1,2))
 plot(pca_cpa, main="everything")
@@ -124,18 +140,83 @@ plot(pca_cpa, type="lines", main="everything")
 
 ```{r, echo=FALSE}
 # Plotting
-pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,c(3:37)], scale=TRUE), data=BenNear_reg_cpa,
+pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,c(3:36)], scale=TRUE), data=BenNear_reg_cpa,
                         colour='Region', loadings=TRUE, loadings.colour='blue',
                         loadings.label=TRUE, loadings.label.size=3)
 pca_reg_all
 
 ```
 
+```{r, echo=FALSE}
+# GLM, comprehensive 
+# subset the data based on above PCA
+BenNear_reg_cpa_sub <- BenNear_reg_cpa %>%
+                       select(log_mussel_Per_Cov,  
+                              log_TotChlA_micgL_AnnMn, LAG_log_TotChlA_micgL_AnnMn, 
+                              LAG_Ttl_FWDisc_Anom_AnMn, Ttl_FWDisc_Anom_AnMn, 
+                              UpWelAnom_anul_mn, LAG_UpWelAnom_anul_mn, ENSO_fal_mn,
+                              SOtt_AnnMnEngRec, Fuc_dist_Per_Cov, WaterTmp_C_Winter)
+                              #PDO_anul_mn, LAG_PDO_anul_mn,
+                              #PDO_winter_mn, SC_Mn_FWDisc_AnMn, LAG_SC_Mn_FWDisc_SpMn,
+                              #NPGO_anul_mn, )
+ 
+ev_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_reg_cpa_sub, family=gaussian)
+summary(ev_glm)
+
+
+```
+
+```{r, echo=FALSE}
+# GLM, comprehensive 
+# trying to get as many predictor variables in here as possible
+BenNear_reg_cpa_sub2 <- BenNear_reg_cpa %>%
+                        select(-Year, -Region, -UpWelAnom_fal_mn, -UpWelAnom_spr_mn,
+                               -TotChlA_micgL_FlMn, -SC_Mn_FWDisc_SpMn, 
+                               -Ttl_FWDisc_Anom_SpMn, -SC_Mn_FWDisc_FlMn, 
+                               -Ttl_FWDisc_Anom_FlMn, -log_TotChlA_micgL_FlMn, 
+                               -ENSO_spr_mn, -ENSO_fal_mn, -PDO_spring_mn, -PDO_winter_mn,
+                               -WaterTmp_C_Winter, -LAG_log_TotChlA_micgL_AnnMn, 
+                               -LAG_UpWelAnom_anul_mn, -LAG_PDO_anul_mn, 
+                               -LAG_SC_Mn_FWDisc_AnMn, -LAG_Ttl_FWDisc_Anom_AnMn, 
+                               -LAG_SC_Mn_FWDisc_SpMn, -LAG_Ttl_FWDisc_Anom_SpMn)
+ 
+al_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_reg_cpa_sub2, family=gaussian)
+summary(al_glm)
+
+
+```
+
+```{r, echo=FALSE}
+# GLM, comprehensive 
+# everything with lags 
+BenNear_reg_cpa_sub3 <- BenNear_reg_cpa %>%
+                        select(log_mussel_Per_Cov, 
+                               LAG_log_TotChlA_micgL_AnnMn, LAG_UpWelAnom_anul_mn, 
+                               LAG_PDO_anul_mn, LAG_SC_Mn_FWDisc_AnMn,
+                               LAG_Ttl_FWDisc_Anom_AnMn, LAG_SC_Mn_FWDisc_SpMn, 
+                               LAG_Ttl_FWDisc_Anom_SpMn)
+ 
+al2_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_reg_cpa_sub3, family=gaussian)
+summary(al2_glm)
+
+
+```
+
+```{r, echo=FALSE}
+
+AIC(ev_glm, al_glm, al2_glm)
+
+#names(BenNear_reg_cpa_sub2)
+
+```
+
+
 
 # "Climate" factor PCA
 ```{r, echo=FALSE}
 # "Climate" factor PCA
-BenNear_reg_pca <- select(BenNear_reg_l, Region, Year, LAG_UpWelAnom_anul_mn,
+BenNear_reg_pca <- select(BenNear_reg_l, log_mussel_Per_Cov, Region, 
+                          LAG_UpWelAnom_anul_mn,
                           LAG_log_TotChlA_micgL_AnnMn, ENSO_anul_mn,
                           LAG_WndSp_m_s_AnnMn, LAG_Ttl_FWDisc_Anom_AnMn) %>%
                    filter(complete.cases(.))
@@ -145,15 +226,19 @@ BenNear_reg_pca <- select(BenNear_reg_l, Region, Year, LAG_UpWelAnom_anul_mn,
 
 ```{r, echo=FALSE}
 # run the PCA
-pca_cli <- prcomp(~., data=BenNear_reg_pca[,2:7], na.action=na.omit, scale=TRUE)
+pca_cli <- prcomp(~., data=BenNear_reg_pca[,3:7], na.action=na.omit, scale=TRUE)
 #print(pca_cli)
 summary(pca_cli)
 #pca_cli$x # this is the PCA scores for each row of data.  
 cliload <- abs(pca_cli$rotation)
 cli_per <- sweep(cliload, 2, colSums(cliload), "/")
-cli_per_imp <- data.frame(cli_per) %>% select(PC1:PC3) %>% tibble::rownames_to_column() %>%
+cli_per_imp <- data.frame(cli_per) %>% select(PC1) %>% tibble::rownames_to_column() %>%
                arrange(-PC1)
-cli_per_imp
+cli_per_imp2 <- data.frame(cli_per) %>% select(PC2) %>% tibble::rownames_to_column() %>%
+               arrange(-PC2)
+cli_per_imp3 <- data.frame(cli_per) %>% select(PC3) %>% tibble::rownames_to_column() %>%
+               arrange(-PC3)
+cli_per_imp ; cli_per_imp2 ; cli_per_imp3
 
 par(mfrow=c(1,2))
 plot(pca_cli, main="climate")
@@ -174,10 +259,35 @@ pca_reg_cli
 
 ```
 
+
+```{r, echo=FALSE}
+# GLM, climate
+# subset the data based on above PCA
+BenNear_reg_pca_sub <- BenNear_reg_pca %>%
+                       select(log_mussel_Per_Cov,  
+                              LAG_UpWelAnom_anul_mn,
+                              LAG_log_TotChlA_micgL_AnnMn, ENSO_anul_mn,
+                              LAG_WndSp_m_s_AnnMn, LAG_Ttl_FWDisc_Anom_AnMn)
+ 
+cl_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_reg_pca_sub, family=gaussian)
+summary(cl_glm)
+
+
+```
+
+```{r, echo=FALSE}
+
+AIC(al_glm, cl_glm)
+
+```
+
+
+
+
 # "Biological" factor PCA
 ```{r, echo=FALSE}
 
-BenNear_reg_bpc <- select(BenNear_reg_l, Region, Year, WaterTmp_C_AnnMn, 
+BenNear_reg_bpc <- select(BenNear_reg_l, log_mussel_Per_Cov, Region, WaterTmp_C_AnnMn, 
                           WaterTmp_SpringAnom, Bare_Sub_Per_Cov, SOf_MusselPropBmss,
                           BLOYAdult_breed_n, Fuc_dist_Per_Cov) %>%
                    filter(complete.cases(.))
@@ -187,16 +297,19 @@ BenNear_reg_bpc <- select(BenNear_reg_l, Region, Year, WaterTmp_C_AnnMn,
 
 ```{r, echo=FALSE}
 # run the PCA
-pca_bio <- prcomp(~., data=BenNear_reg_bpc[,2:8], na.action=na.omit, scale=TRUE)
+pca_bio <- prcomp(~., data=BenNear_reg_bpc[,3:8], na.action=na.omit, scale=TRUE)
 #print(pca_bio)
 summary(pca_bio)
 #pca_bio$x # this is the PCA scores for each row of data.  
 bioload <- abs(pca_bio$rotation)
 bio_per <- sweep(bioload, 2, colSums(bioload), "/")
-bio_per_imp <- data.frame(bio_per) %>% select(PC1:PC4) %>% tibble::rownames_to_column() %>%
+bio_per_imp <- data.frame(bio_per) %>% select(PC1) %>% tibble::rownames_to_column() %>%
                arrange(-PC1)
-bio_per_imp
-
+bio_per_imp2 <- data.frame(bio_per) %>% select(PC2) %>% tibble::rownames_to_column() %>%
+               arrange(-PC2)
+bio_per_imp3 <- data.frame(bio_per) %>% select(PC3) %>% tibble::rownames_to_column() %>%
+               arrange(-PC3)
+bio_per_imp ; bio_per_imp2 ; bio_per_imp3 
 
 par(mfrow=c(1,2))
 plot(pca_bio, main="biol")
@@ -207,7 +320,7 @@ plot(pca_bio, type="lines", main="biol")
 
 ```{r, echo=FALSE}
 # Plotting
-pca_plot_b <- BenNear_reg_bpc[,2:8]
+pca_plot_b <- BenNear_reg_bpc[,3:8]
 
 pca_reg_bio <- autoplot(prcomp(pca_plot_b, scale=TRUE), data=BenNear_reg_bpc, colour='Region',
                         loadings=TRUE, loadings.colour='blue', loadings.label=TRUE,
@@ -216,13 +329,162 @@ pca_reg_bio
 
 ```
 
-### GLMs
 ```{r, echo=FALSE}
-
-
+# GLM, biological
+# subset the data based on above PCA
+BenNear_reg_bpc_sub <- BenNear_reg_bpc %>%
+                       select(log_mussel_Per_Cov,  
+                              WaterTmp_C_AnnMn, WaterTmp_SpringAnom, Bare_Sub_Per_Cov,
+                              SOf_MusselPropBmss, BLOYAdult_breed_n, Fuc_dist_Per_Cov)
+ 
+bo_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_reg_bpc_sub, family=gaussian)
+summary(bo_glm)
 
 
 ```
+
+
+```{r, echo=FALSE}
+
+AIC(al_glm, bo_glm)
+
+```
+
+# Wind Stress
+```{r, echo=FALSE}
+
+BenNear_wind <- select(BenNear_reg_l, Year, Region, log_mussel_Per_Cov, WndSp_m_s_AnnMn,
+                       WndSp_m_s_Winter, LAG_WndSp_m_s_AnnMn) %>%
+                filter(complete.cases(.))
+
+```
+
+
+```{r, echo=FALSE}
+# run the PCA
+pca_wnd <- prcomp(~., data=BenNear_wind[,4:6], na.action=na.omit, scale=TRUE)
+#print(pca_wnd)
+summary(pca_wnd)
+#pca_bio$x # this is the PCA scores for each row of data.  
+wndload <- abs(pca_wnd$rotation)
+wnd_per <- sweep(wndload, 2, colSums(wndload), "/")
+wnd_per_imp <- data.frame(wnd_per) %>% select(PC1) %>% tibble::rownames_to_column() %>%
+               arrange(-PC1)
+wnd_per_imp2 <- data.frame(wnd_per) %>% select(PC2) %>% tibble::rownames_to_column() %>%
+               arrange(-PC2)
+wnd_per_imp ; wnd_per_imp2 
+
+par(mfrow=c(1,2))
+plot(pca_wnd, main="wind")
+plot(pca_wnd, type="lines", main="wind")
+
+
+```
+
+```{r, echo=FALSE}
+# Plotting
+pca_plot_w <- BenNear_wind[,4:6]
+
+pca_reg_wnd <- autoplot(prcomp(pca_plot_w, scale=TRUE), data=BenNear_wind, colour='Region',
+                        loadings=TRUE, loadings.colour='blue', loadings.label=TRUE,
+                        loadings.label.size=3)
+pca_reg_wnd
+
+```
+
+
+```{r, echo=FALSE}
+# GLM, wind stress
+# 
+BenNear_wind_sub <- BenNear_wind %>%
+                    select(log_mussel_Per_Cov, WndSp_m_s_AnnMn,
+                           WndSp_m_s_Winter, LAG_WndSp_m_s_AnnMn)
+ 
+wind_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_wind_sub, family=gaussian)
+summary(wind_glm)
+
+
+```
+
+#Chla
+```{r, echo=FALSE}
+
+BenNear_chla <- select(BenNear_reg_l, Year, Region, log_mussel_Per_Cov,
+                       log_TotChlA_micgL_AnnMn, LAG_log_TotChlA_micgL_AnnMn) %>%
+                filter(complete.cases(.))
+
+```
+
+
+```{r, echo=FALSE}
+# run the PCA
+pca_chla <- prcomp(~., data=BenNear_chla[,4:5], na.action=na.omit, scale=TRUE)
+#print(pca_chla)
+summary(pca_chla)
+#pca_chla$x # this is the PCA scores for each row of data.  
+chlaload <- abs(pca_chla$rotation)
+chla_per <- sweep(chlaload, 2, colSums(chlaload), "/")
+chla_per_imp <- data.frame(chla_per) %>% select(PC1) %>% tibble::rownames_to_column() %>%
+                arrange(-PC1)
+chla_per_imp2 <- data.frame(chla_per) %>% select(PC2) %>% tibble::rownames_to_column() %>%
+                arrange(-PC2)
+chla_per_imp ; wnd_per_imp2 
+
+par(mfrow=c(1,2))
+plot(pca_wnd, main="chla")
+plot(pca_wnd, type="lines", main="chla")
+
+
+```
+
+
+```{r, echo=FALSE}
+# Plotting
+pca_plot_c <- BenNear_chla[,4:5]
+
+pca_reg_chl <- autoplot(prcomp(pca_plot_c, scale=TRUE), data=BenNear_chla, colour='Region',
+                        loadings=TRUE, loadings.colour='blue', loadings.label=TRUE,
+                        loadings.label.size=3)
+pca_reg_chl
+
+```
+
+
+```{r, echo=FALSE}
+# GLM, wind stress
+# 
+BenNear_chla_sub <- BenNear_chla %>%
+                    select(log_mussel_Per_Cov,  
+                           log_TotChlA_micgL_AnnMn, LAG_log_TotChlA_micgL_AnnMn)
+ 
+chla_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_chla_sub, family=gaussian)
+summary(chla_glm)
+
+
+```
+
+```{r, echo=FALSE}
+
+AIC( al_glm, chla_glm)
+
+```
+
+# Air Temps
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
