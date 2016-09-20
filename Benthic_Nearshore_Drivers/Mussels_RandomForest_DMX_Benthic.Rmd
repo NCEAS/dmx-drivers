@@ -162,11 +162,13 @@ Imp_Var(rf_tot_GOA)
 ```{r, echo=FALSE}
 # Region-averaged; As complete as possible
 BenNear_reg_c <- BenNear_reg %>%  filter(Year %in% c("2007","2010","2012","2013")) %>%
-                 select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2, -WndDir_degT_AnnMn,
-                        -WndSp_m_s_AnnMn, -LAG_WndSp_m_s_AnnMn, -WndDir_degT_Winter, -WndSp_m_s_Winter,
-                        -LAG_WndSp_m_s_Winter, -WaterTmp_SpringAnom, -LAG_Bare_Sub_Per_Cov,
-                        -LAG_Fuc_dist_Per_Cov, -LED_BLOYAdult_breed_n, -LED_SOf_MusselPropBmss,
-                        -SOf_MusselSumBmss_gWW, -SOf_MusselPropBmss, -log_SOf_MusselSumBmss_gWW)
+                 select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2,
+                        -WndDir_degT_AnnMn, -WndSp_m_s_AnnMn, -LAG_WndSp_m_s_AnnMn,
+                        -WndDir_degT_Winter, -WndSp_m_s_Winter, -LAG_WndSp_m_s_Winter,
+                        -WaterTmp_SpringAnom, -LAG_Bare_Sub_Per_Cov, -LAG_Fuc_dist_Per_Cov,
+                        -LED_BLOYAdult_breed_n, -LED_SOf_MusselPropBmss,
+                        -SOf_MusselSumBmss_gWW,-SOf_MusselPropBmss,
+                        -log_SOf_MusselSumBmss_gWW)
 
 #data.frame(BenNear_reg_c[!complete.cases(BenNear_reg_c),])  # Save this for reference!!!
 
@@ -183,9 +185,9 @@ Imp_Var(rf_tot_reg)
 # Region WPWS:
 WPWS_reg_c <- BenNear_reg %>%  filter(Year %in% c("2007","2010","2011","2012","2013"), 
                                       Region %in% c("WPWS")) %>%
-              select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2, -LAG_Fuc_dist_Per_Cov,
-                     -LAG_Bare_Sub_Per_Cov, -LED_BLOYAdult_breed_n, -LED_SOf_MusselPropBmss,
-                     -WaterTmp_SpringAnom)
+              select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2,
+                     -LAG_Fuc_dist_Per_Cov, -LAG_Bare_Sub_Per_Cov, -LED_BLOYAdult_breed_n,
+                     -LED_SOf_MusselPropBmss, -WaterTmp_SpringAnom)
 
 #data.frame(WPWS_reg_c[!complete.cases(WPWS_reg_c),])  # Save this for reference!!!
 
@@ -202,8 +204,8 @@ Imp_Var(rf_wpws_reg)
 # Region KEFJ: 
 KEFJ_reg_c <- BenNear_reg %>%  filter(Year %in% c(2007:2013), 
                                       Region %in% c("KEFJ")) %>%
-              select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2, -LAG_Fuc_dist_Per_Cov,
-                     -LAG_Bare_Sub_Per_Cov, -WaterTmp_SpringAnom)
+              select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2,
+                     -LAG_Fuc_dist_Per_Cov, -LAG_Bare_Sub_Per_Cov, -WaterTmp_SpringAnom)
 
 #data.frame(KEFJ_reg_c[!complete.cases(KEFJ_reg_c),])  # Save this for reference!!!
 
@@ -220,8 +222,9 @@ Imp_Var(rf_kefj_reg)
 ```{r, echo=FALSE}
 # Just some correlated variables
 Muss_GOA <-  BenNear_GOA %>%  filter(Year %in% c(2007:2013)) %>%
-             select(Year, log_mussel_Per_Cov, LAG_log_TotChlA_micgL_AnnMn, LAG_UpWelAnom_anul_mn,
-                    ENSO_anul_mn, LAG_WndSp_m_s_AnnMn, LAG_Ttl_FWDisc_Anom_AnMn)
+             select(Year, log_mussel_Per_Cov, LAG_log_TotChlA_micgL_AnnMn,
+                    LAG_UpWelAnom_anul_mn,  ENSO_anul_mn, LAG_WndSp_m_s_AnnMn,
+                    LAG_Ttl_FWDisc_Anom_AnMn)
 
 #data.frame(Muss_GOA[!complete.cases(Muss_GOA),])  # Save this for reference!!!
 
@@ -237,8 +240,9 @@ Imp_Var(rf_muss_GOA)
 ```{r, echo=FALSE}
 # Just some correlated variables
 Bio_GOA <-  BenNear_GOA %>%  filter(Year %in% c(2007:2013)) %>%
-             select(Year, log_mussel_Per_Cov, WaterTmp_C_AnnMn, WaterTmp_SpringAnom, Bare_Sub_Per_Cov, 
-                    SOf_MusselPropBmss, BLOYAdult_breed_n, Fuc_dist_Per_Cov)
+             select(Year, log_mussel_Per_Cov, WaterTmp_C_AnnMn, WaterTmp_SpringAnom,
+                    Bare_Sub_Per_Cov,  SOf_MusselPropBmss, BLOYAdult_breed_n,
+                    Fuc_dist_Per_Cov)
 
 #data.frame(Bio_GOA[!complete.cases(Bio_GOA),])  # Save this for reference!!!
 

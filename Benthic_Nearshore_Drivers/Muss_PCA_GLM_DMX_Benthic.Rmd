@@ -5,10 +5,10 @@ date: "September 16, 2016"
 output: html_document
 ---
 
-```{r , echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 
 # load necessary packages
-library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) ; library(nlme) ; library(ggplot2) ; library(AICcmodavg) ; library(stats) ; library(ggfortify) ; library(devtools)
+library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) ; library(nlme) ; library(ggplot2) ; library(AICcmodavg) ; library(stats) ; library(ggfortify) ; library(devtools) ; library(tibble)
 
 # load data 
 BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
@@ -18,7 +18,6 @@ BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-dri
 #head(BenNear)
 
 ```
-
 
 ```{r, echo=FALSE}
 # filtering data for more complete dataset
@@ -88,19 +87,74 @@ BenNear_reg_l <- BenNear_m %>%
 
 ```
 
+# Everything (or as much as possible) PCA
 ```{r, echo=FALSE}
+# Everyhting (or as much as possible) PCA
+BenNear_reg_cpa <- BenNear_reg_l %>%  #filter(Year %in% c("2007","2010","2012","2013")) %>%
+                   select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2,
+                          -WndDir_degT_AnnMn, -WndSp_m_s_AnnMn, -LAG_WndSp_m_s_AnnMn,
+                          -WndDir_degT_Winter, -WndSp_m_s_Winter, -LAG_WndSp_m_s_Winter,
+                          -WaterTmp_SpringAnom, -LAG_Bare_Sub_Per_Cov, -LAG_Fuc_dist_Per_Cov,
+                          -LED_BLOYAdult_breed_n, -LED_SOf_MusselPropBmss,
+                          -SOf_MusselSumBmss_gWW,-SOf_MusselPropBmss,
+                          -log_SOf_MusselSumBmss_gWW) %>% 
+                   filter(complete.cases(.))
 
+#data.frame(BenNear_reg_cpa[!complete.cases(BenNear_reg_cpa),])
+```
+
+```{r, echo=FALSE}
+# Run the PCA
+pca_cpa <- prcomp(~., data=BenNear_reg_cpa[,c(1,3:37)], na.action=na.omit, scale=TRUE)
+#print(pca_cpa) # shows SDs and weightings
+summary(pca_cpa)
+#pca_cpa$x # this is the PCA scores for each row of data.
+#pca_cpa$rotation  # weightings for variables by themselves
+evyload <- abs(pca_cpa$rotation)
+evi_per <- sweep(evyload, 2, colSums(evyload), "/")
+evi_per_imp <- data.frame(evi_per) %>% select(PC1:PC7) %>% tibble::rownames_to_column() %>%
+               arrange(-PC1)
+evi_per_imp
+
+par(mfrow=c(1,2))
+plot(pca_cpa, main="everything")
+plot(pca_cpa, type="lines", main="everything")
+
+```
+
+```{r, echo=FALSE}
+# Plotting
+pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,c(3:37)], scale=TRUE), data=BenNear_reg_cpa,
+                        colour='Region', loadings=TRUE, loadings.colour='blue',
+                        loadings.label=TRUE, loadings.label.size=3)
+pca_reg_all
+
+```
+
+
+# "Climate" factor PCA
+```{r, echo=FALSE}
+# "Climate" factor PCA
 BenNear_reg_pca <- select(BenNear_reg_l, Region, Year, LAG_UpWelAnom_anul_mn,
                           LAG_log_TotChlA_micgL_AnnMn, ENSO_anul_mn,
                           LAG_WndSp_m_s_AnnMn, LAG_Ttl_FWDisc_Anom_AnMn) %>%
                    filter(complete.cases(.))
 
 #data.frame(BenNear_reg_pca[!complete.cases(BenNear_reg_pca),])
+```
 
+```{r, echo=FALSE}
+# run the PCA
 pca_cli <- prcomp(~., data=BenNear_reg_pca[,2:7], na.action=na.omit, scale=TRUE)
-print(pca_cli)
+#print(pca_cli)
 summary(pca_cli)
-pca_cli$x # this is the PCA scores for each row of data.
+#pca_cli$x # this is the PCA scores for each row of data.  
+cliload <- abs(pca_cli$rotation)
+cli_per <- sweep(cliload, 2, colSums(cliload), "/")
+cli_per_imp <- data.frame(cli_per) %>% select(PC1:PC3) %>% tibble::rownames_to_column() %>%
+               arrange(-PC1)
+cli_per_imp
+
 par(mfrow=c(1,2))
 plot(pca_cli, main="climate")
 plot(pca_cli, type="lines", main="climate")
@@ -110,13 +164,65 @@ plot(pca_cli, type="lines", main="climate")
 
 ```{r, echo=FALSE}
 # Plotting
+pca_plot <- BenNear_reg_pca[,3:7]
 
-pca_reg_cli <- autoplot(prcomp(BenNear_reg_pca[,2:7]), data=BenNear_reg_pca, color='Region')
+pca_reg_cli <- autoplot(prcomp(pca_plot, scale=TRUE), data=BenNear_reg_pca, colour='Region',
+                        #label = TRUE, label.size = 3,
+                        loadings=TRUE, loadings.colour='blue', loadings.label=TRUE,
+                        loadings.label.size=3)
+pca_reg_cli
 
 ```
 
+# "Biological" factor PCA
+```{r, echo=FALSE}
+
+BenNear_reg_bpc <- select(BenNear_reg_l, Region, Year, WaterTmp_C_AnnMn, 
+                          WaterTmp_SpringAnom, Bare_Sub_Per_Cov, SOf_MusselPropBmss,
+                          BLOYAdult_breed_n, Fuc_dist_Per_Cov) %>%
+                   filter(complete.cases(.))
+
+#data.frame(BenNear_reg_bpc[!complete.cases(BenNear_reg_bpc),])
+```
+
+```{r, echo=FALSE}
+# run the PCA
+pca_bio <- prcomp(~., data=BenNear_reg_bpc[,2:8], na.action=na.omit, scale=TRUE)
+#print(pca_bio)
+summary(pca_bio)
+#pca_bio$x # this is the PCA scores for each row of data.  
+bioload <- abs(pca_bio$rotation)
+bio_per <- sweep(bioload, 2, colSums(bioload), "/")
+bio_per_imp <- data.frame(bio_per) %>% select(PC1:PC4) %>% tibble::rownames_to_column() %>%
+               arrange(-PC1)
+bio_per_imp
 
 
+par(mfrow=c(1,2))
+plot(pca_bio, main="biol")
+plot(pca_bio, type="lines", main="biol")
+
+
+```
+
+```{r, echo=FALSE}
+# Plotting
+pca_plot_b <- BenNear_reg_bpc[,2:8]
+
+pca_reg_bio <- autoplot(prcomp(pca_plot_b, scale=TRUE), data=BenNear_reg_bpc, colour='Region',
+                        loadings=TRUE, loadings.colour='blue', loadings.label=TRUE,
+                        loadings.label.size=3)
+pca_reg_bio
+
+```
+
+### GLMs
+```{r, echo=FALSE}
+
+
+
+
+```
 
 
 

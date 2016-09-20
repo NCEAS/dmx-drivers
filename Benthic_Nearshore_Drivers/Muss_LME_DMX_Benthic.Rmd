@@ -100,8 +100,7 @@ my_interactions <- function(dataframe,x,y,key){
                         summarise_each_(funs(val=mean(., na.rm=TRUE)), y)
                    #return(A)
                    # make a plot
-                   PT <- ggplot(data=dataframe, aes_string(x=x, y=y, colour=factor(key))
-                                                 ) +
+                   PT <- ggplot(data=dataframe, aes_string(x=x, y=y, colour=factor(key))) +
                          geom_point(data=A, aes(y=val)) + theme_bw() + 
                          geom_line(data=A, aes_string(y="val", group=key))
                    return(PT)
@@ -297,21 +296,24 @@ co_var(mcv_katm)
 # LAG_Ttl_FWDisc_Anom_AnMn, LAG_SC_Mn_FWDisc_SpMn, LAG_Ttl_FWDisc_Anom_SpMn 
 
 # Models
-mgls12 <- gls(log_mussel_Per_Cov ~ Region+Year+WaterTmp_C_AnnMn+WaterTmp_SpringAnom+Bare_Sub_Per_Cov+ 
-                                   SOf_MusselPropBmss+BLOYAdult_breed_n+Fuc_dist_Per_Cov,
+mgls12 <- gls(log_mussel_Per_Cov ~ Region+Year+WaterTmp_C_AnnMn+WaterTmp_SpringAnom+
+                                   Bare_Sub_Per_Cov+SOf_MusselPropBmss+BLOYAdult_breed_n+
+                                   Fuc_dist_Per_Cov,
               na.action=na.exclude, data=BenNear_reg_l)
 
 # random intercept model, allows for variation between Regions
-mlme12 <- lme(log_mussel_Per_Cov ~ Year+WaterTmp_C_AnnMn+WaterTmp_SpringAnom+Bare_Sub_Per_Cov+ 
-                                   SOf_MusselPropBmss+BLOYAdult_breed_n+Fuc_dist_Per_Cov,
+mlme12 <- lme(log_mussel_Per_Cov ~ Year+WaterTmp_C_AnnMn+WaterTmp_SpringAnom+
+                                   Bare_Sub_Per_Cov+SOf_MusselPropBmss+BLOYAdult_breed_n+
+                                   Fuc_dist_Per_Cov,
               random=~1|Region, na.action=na.exclude, data=BenNear_reg_l)
 
 anova(mgls12, mlme12)   
 # this corrects the p-value for the difference between the two models
 0.5*(1-pchisq(6.093615e-11,1))  # formula is 0.5*(1-pchisq(L.Ratio,1))
 
-mlme22 <- lme(log_mussel_Per_Cov ~ Year+WaterTmp_C_AnnMn+WaterTmp_SpringAnom+Bare_Sub_Per_Cov+ 
-                                   SOf_MusselPropBmss+BLOYAdult_breed_n+Fuc_dist_Per_Cov,
+mlme22 <- lme(log_mussel_Per_Cov ~ Year+WaterTmp_C_AnnMn+WaterTmp_SpringAnom+
+                                   Bare_Sub_Per_Cov+SOf_MusselPropBmss+BLOYAdult_breed_n+
+                                   Fuc_dist_Per_Cov,
               random=~1+Bare_Sub_Per_Cov|Region, na.action=na.exclude, data=BenNear_reg_l)
 
 anova(mlme12, mlme22)  
