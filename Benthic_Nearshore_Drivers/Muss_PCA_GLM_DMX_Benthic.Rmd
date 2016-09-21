@@ -113,7 +113,7 @@ BenNear_reg_cpa <- BenNear_reg_l %>%  #filter(Year %in% c("2007","2010","2012","
 
 ```{r, echo=FALSE}
 # Run the PCA
-pca_cpa <- prcomp(~., data=BenNear_reg_cpa[,c(3:36)], na.action=na.omit, scale=TRUE)
+pca_cpa <- prcomp(~., data=BenNear_reg_cpa[,c(3:26,28:36)], na.action=na.omit, scale=TRUE)
 #print(pca_cpa) # shows SDs and weightings
 summary(pca_cpa)
 #pca_cpa$x # this is the PCA scores for each row of data.
@@ -140,9 +140,10 @@ plot(pca_cpa, type="lines", main="everything")
 
 ```{r, echo=FALSE}
 # Plotting
-pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,c(3:36)], scale=TRUE), data=BenNear_reg_cpa,
-                        colour='Region', loadings=TRUE, loadings.colour='blue',
-                        loadings.label=TRUE, loadings.label.size=3)
+pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,c(3:26,28:36)], scale=TRUE),
+                        data=BenNear_reg_cpa,  colour='Region', loadings=TRUE,
+                        loadings.colour='blue', loadings.label=TRUE,
+                        loadings.label.size=3)
 pca_reg_all
 
 ```
@@ -415,7 +416,6 @@ BenNear_chla <- select(BenNear_reg_l, Year, Region, log_mussel_Per_Cov,
 
 ```
 
-
 ```{r, echo=FALSE}
 # run the PCA
 pca_chla <- prcomp(~., data=BenNear_chla[,4:5], na.action=na.omit, scale=TRUE)
@@ -437,7 +437,6 @@ plot(pca_wnd, type="lines", main="chla")
 
 ```
 
-
 ```{r, echo=FALSE}
 # Plotting
 pca_plot_c <- BenNear_chla[,4:5]
@@ -449,9 +448,8 @@ pca_reg_chl
 
 ```
 
-
 ```{r, echo=FALSE}
-# GLM, wind stress
+# GLM, chlorophyll a
 # 
 BenNear_chla_sub <- BenNear_chla %>%
                     select(log_mussel_Per_Cov,  
@@ -463,20 +461,64 @@ summary(chla_glm)
 
 ```
 
+# Water Temps
 ```{r, echo=FALSE}
 
-AIC( al_glm, chla_glm)
+BenNear_tmp <- select(BenNear_reg_l, Year, Region, log_mussel_Per_Cov,
+                      WaterTmp_WinterAnom, WaterTmp_C_Winter) %>%
+               filter(complete.cases(.))
 
 ```
 
-# Air Temps
+```{r, echo=FALSE}
+# run the PCA
+pca_tmp <- prcomp(~., data=BenNear_tmp[,4:5], na.action=na.omit, scale=TRUE)
+#print(pca_tmp)
+summary(pca_tmp)
+#pca_tmp$x # this is the PCA scores for each row of data.  
+tmpload <- abs(pca_tmp$rotation)
+tmp_per <- sweep(tmpload, 2, colSums(tmpload), "/")
+tmp_per_imp <- data.frame(tmp_per) %>% select(PC1) %>% tibble::rownames_to_column() %>%
+                arrange(-PC1)
+tmp_per_imp2 <- data.frame(tmp_per) %>% select(PC2) %>% tibble::rownames_to_column() %>%
+                arrange(-PC2)
+tmp_per_imp ; tmp_per_imp2 
+
+par(mfrow=c(1,2))
+plot(pca_wnd, main="temp")
+plot(pca_wnd, type="lines", main="temp")
+
+```
+
+```{r, echo=FALSE}
+# Plotting
+pca_plot_t <- BenNear_tmp[,4:5]
+
+pca_reg_tmp <- autoplot(prcomp(pca_plot_t, scale=TRUE), data=BenNear_tmp, colour='Region',
+                        loadings=TRUE, loadings.colour='blue', loadings.label=TRUE,
+                        loadings.label.size=3)
+pca_reg_tmp
+
+```
+
+```{r, echo=FALSE}
+# GLM, temperature
+# 
+BenNear_temp_sub <- BenNear_tmp %>%
+                    select(log_mussel_Per_Cov,  
+                           WaterTmp_WinterAnom, WaterTmp_C_Winter)
+ 
+temp_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_temp_sub, family=gaussian)
+summary(temp_glm)
 
 
+```
 
+```{r, echo=FALSE}
 
+AIC(al_glm, wind_glm, chla_glm, temp_glm)
 
-
-
+```
 
 
 
