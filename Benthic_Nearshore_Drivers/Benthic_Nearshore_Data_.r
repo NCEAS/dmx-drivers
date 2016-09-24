@@ -181,12 +181,12 @@ BenNear <- merge(BenNear,BS_IA,all.x=T)           # Bare Substrate percent cover
 BenNear <- merge(BenNear,b_IA,all.x=T)            # Barnacles percent cover
 BenNear <- merge(BenNear,ms_IA,all.x=T)           # Mussels percent cover
 BenNear <- merge(BenNear,Fd_IA,all.x=T)           # Fucus percent cover
-#BenNear <- merge(BenNear,Am_IA,all.x=T)           # Alaria percent cover
-#BenNear <- merge(BenNear,No_IA,all.x=T)           # Odonthalia / Neorhodomela sp. percent cover
-#BenNear <- merge(BenNear,BAann_IA,all.x=T)        # Brown Algae Annual percent cover
-#BenNear <- merge(BenNear,GAann_IA,all.x=T)        # Green Algae Annual percent cover
-#BenNear <- merge(BenNear,RAann_IA,all.x=T)        # Red Algae Annual percent cover
-#BenNear <- merge(BenNear,RAper_IA,all.x=T)        # Red Algae Perennial percent cover
+BenNear <- merge(BenNear,Am_IA,all.x=T)           # Alaria percent cover
+BenNear <- merge(BenNear,No_IA,all.x=T)           # Odonthalia / Neorhodomela sp. percent cover
+BenNear <- merge(BenNear,BAann_IA,all.x=T)        # Brown Algae Annual percent cover
+BenNear <- merge(BenNear,GAann_IA,all.x=T)        # Green Algae Annual percent cover
+BenNear <- merge(BenNear,RAann_IA,all.x=T)        # Red Algae Annual percent cover
+BenNear <- merge(BenNear,RAper_IA,all.x=T)        # Red Algae Perennial percent cover
 #BenNear <- merge(BenNear,ElG,all.x=T)             # Eelgrass percent cover
 BenNear <- merge(BenNear,OyC_GOA,all.x=T)         # BLOY breeding adults abundance
 #BenNear <- merge(BenNear,,all.x=T)      # BLOY diet prey size
@@ -223,7 +223,7 @@ BenNear <- arrange(BenNear,Region,Site_Name,Year,Quadrat)
 # head(BenNear)
 
 # Optional: Write data frame to a CSV
-#write.csv(BenNear, file = "BenthicNearshore_MusselQuestData_TimW.csv", row.names=FALSE)
+#write.csv(BenNear, file = "BenthicNearshore_MusselQuestData.csv", row.names=FALSE)
 
 
 
