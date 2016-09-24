@@ -175,10 +175,10 @@ BenNear <- merge(BenNear,Phy_fal,all.x=T)         # Phytoplankton - Seward Line,
 BenNear <- merge(BenNear,Phy_yr,all.x=T)          # Phytoplankton - Seward Line, annual
 #BenNear <- merge(BenNear,SatChl_df,all.x=T)       # Chla - Satellite annual
 #BenNear <- merge(BenNear,SST,all.x=T)             # SST - Seward Line
-#BenNear <- merge(BenNear,Wlk_GOA,all.x=T)         # Whelks (Nucella sp.) abundance (n/m2)
+BenNear <- merge(BenNear,Wlk_GOA,all.x=T)         # Whelks (Nucella sp.) abundance (n/m2)
 #BenNear <- merge(BenNear,SS_GOA,all.x=T)          # Sea Stars abundance
 BenNear <- merge(BenNear,BS_IA,all.x=T)           # Bare Substrate percent cover
-#BenNear <- merge(BenNear,b_IA,all.x=T)            # Barnacles percent cover
+BenNear <- merge(BenNear,b_IA,all.x=T)            # Barnacles percent cover
 BenNear <- merge(BenNear,ms_IA,all.x=T)           # Mussels percent cover
 BenNear <- merge(BenNear,Fd_IA,all.x=T)           # Fucus percent cover
 #BenNear <- merge(BenNear,Am_IA,all.x=T)           # Alaria percent cover
@@ -223,7 +223,7 @@ BenNear <- arrange(BenNear,Region,Site_Name,Year,Quadrat)
 # head(BenNear)
 
 # Optional: Write data frame to a CSV
-#write.csv(BenNear, file = "BenthicNearshore_MusselQuestData.csv", row.names=FALSE)
+#write.csv(BenNear, file = "BenthicNearshore_MusselQuestData_TimW.csv", row.names=FALSE)
 
 
 

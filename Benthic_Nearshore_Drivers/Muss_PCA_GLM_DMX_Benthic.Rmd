@@ -8,7 +8,7 @@ output: html_document
 ```{r, echo=FALSE, include=FALSE}
 
 # load necessary packages
-library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) ; library(nlme) ; library(ggplot2) ; library(AICcmodavg) ; library(stats) ; library(ggfortify) ; library(devtools) ; library(tibble)
+library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) ; library(nlme) ; library(ggplot2) ; library(AICcmodavg) ; library(stats) ; library(ggfortify) ; library(devtools) ; library(tibble) ; library(pROC)
 
 # load data 
 BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
@@ -22,14 +22,20 @@ BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-dri
 ```{r, echo=FALSE}
 # filtering data for more complete dataset
 BenNear_m <- BenNearMuss %>%
-             filter(Year %in% c(2005:2013),
+             filter(Year %in% c(2005:2015),
                     Region %in% c("WPWS","KATM","KEFJ")) %>%
              mutate_each(funs(as.numeric), Otter_Abun_est) %>%
              mutate(log_mussel_Per_Cov = log(mussel_Per_Cov+1),
                     log_SOf_MusselSumBmss_gWW = log(SOf_MusselSumBmss_gWW+1),
                     log_TotChlA_micgL_FlMn = log(TotChlA_micgL_FlMn+1),
                     log_TotChlA_micgL_AnnMn = log(TotChlA_micgL_AnnMn+1)) %>%
-             select(-BLOY_MnDensity_km2, -TotChlA_micgL_SpMn)
+             group_by(Site_Name) %>%
+             mutate(mussel_Site_mn = mean(log_mussel_Per_Cov, na.rm=TRUE)) %>%  # Get site mean across all years
+             ungroup() %>%
+             group_by(Year, Region, Site_Name, Quadrat) %>%
+             mutate(mussel_Anom = log_mussel_Per_Cov-mussel_Site_mn) %>%  # calc anomalies
+             ungroup() %>%
+             select(-BLOY_MnDensity_km2, -TotChlA_micgL_SpMn, -mussel_Site_mn)
 
 ```
 
@@ -46,44 +52,23 @@ BenNear_reg_l <- BenNear_m %>%
                  group_by(Year, Region) %>%
                  summarise_each(funs(mean(., na.rm=TRUE))) %>%
                  ungroup() %>%
-                 arrange(Region, Year) %>%
-                 group_by(Region) %>%
-                 mutate(LAG_log_TotChlA_micgL_AnnMn = lag(log_TotChlA_micgL_AnnMn),
-                        LAG_UpWelAnom_anul_mn = lag(UpWelAnom_anul_mn),
-                        LED_SOf_MusselPropBmss = lead(SOf_MusselPropBmss),
-                        LED_BLOYAdult_breed_n = lead(BLOYAdult_breed_n),
-                        LAG_Bare_Sub_Per_Cov = lag(Bare_Sub_Per_Cov),
-                        LAG_PDO_anul_mn = lag(PDO_anul_mn),
-                        LAG_WndSp_m_s_AnnMn = lag(WndSp_m_s_AnnMn),
-                        LAG_WndSp_m_s_Winter = lag(WndSp_m_s_Winter),
-                        LAG_Fuc_dist_Per_Cov = lag(Fuc_dist_Per_Cov),
-                        LAG_SC_Mn_FWDisc_AnMn = lag(SC_Mn_FWDisc_AnMn),
-                        LAG_Ttl_FWDisc_Anom_AnMn = lag(Ttl_FWDisc_Anom_AnMn),
-                        LAG_SC_Mn_FWDisc_SpMn = lag(SC_Mn_FWDisc_SpMn),
-                        LAG_Ttl_FWDisc_Anom_SpMn = lag(Ttl_FWDisc_Anom_SpMn)) %>%
-                 ungroup() 
+                 arrange(Region, Year) # %>%
+                 # group_by(Region) %>%
+                 # mutate(LAG_log_TotChlA_micgL_AnnMn = lag(log_TotChlA_micgL_AnnMn),
+                 #        LAG_UpWelAnom_anul_mn = lag(UpWelAnom_anul_mn),
+                 #       # LED_SOf_MusselPropBmss = lead(SOf_MusselPropBmss),
+                 #       # LED_BLOYAdult_breed_n = lead(BLOYAdult_breed_n),
+                 #        LAG_Bare_Sub_Per_Cov = lag(Bare_Sub_Per_Cov),
+                 #        LAG_PDO_anul_mn = lag(PDO_anul_mn),
+                 #        LAG_WndSp_m_s_AnnMn = lag(WndSp_m_s_AnnMn),
+                 #        LAG_WndSp_m_s_Winter = lag(WndSp_m_s_Winter),
+                 #        LAG_Fuc_dist_Per_Cov = lag(Fuc_dist_Per_Cov),
+                 #        LAG_SC_Mn_FWDisc_AnMn = lag(SC_Mn_FWDisc_AnMn),
+                 #        LAG_Ttl_FWDisc_Anom_AnMn = lag(Ttl_FWDisc_Anom_AnMn),
+                 #        LAG_SC_Mn_FWDisc_SpMn = lag(SC_Mn_FWDisc_SpMn),
+                 #        LAG_Ttl_FWDisc_Anom_SpMn = lag(Ttl_FWDisc_Anom_SpMn)) %>%
+                 # ungroup() 
                
-
-# BenNear_GOA_l <- BenNear_m %>% 
-#                  select(-Site_Name,-Quadrat,-Lat,-Long,-Region) %>%
-#                  group_by(Year) %>%
-#                  summarise_each(funs(mean(., na.rm=TRUE))) %>%
-#                  ungroup() %>%
-#                  arrange(Year) %>%
-#                  mutate(LAG_log_TotChlA_micgL_AnnMn = lag(log_TotChlA_micgL_AnnMn),
-#                         LAG_UpWelAnom_anul_mn = lag(UpWelAnom_anul_mn),
-#                         LED_SOf_MusselPropBmss = lead(SOf_MusselPropBmss),
-#                         LED_BLOYAdult_breed_n = lead(BLOYAdult_breed_n),
-#                         LAG_Bare_Sub_Per_Cov = lag(Bare_Sub_Per_Cov),
-#                         LAG_PDO_anul_mn = lag(PDO_anul_mn),
-#                         LAG_WndSp_m_s_AnnMn = lag(WndSp_m_s_AnnMn),
-#                         LAG_WndSp_m_s_Winter = lag(WndSp_m_s_Winter),
-#                         LAG_Fuc_dist_Per_Cov = lag(Fuc_dist_Per_Cov),
-#                         LAG_SC_Mn_FWDisc_AnMn = lag(SC_Mn_FWDisc_AnMn),
-#                         LAG_Ttl_FWDisc_Anom_AnMn = lag(Ttl_FWDisc_Anom_AnMn),
-#                         LAG_SC_Mn_FWDisc_SpMn = lag(SC_Mn_FWDisc_SpMn),
-#                         LAG_Ttl_FWDisc_Anom_SpMn = lag(Ttl_FWDisc_Anom_SpMn))    
-
 
 ```
 
@@ -97,18 +82,25 @@ BenNear_reg_l <- BenNear_m %>%
 
 # Everything (or as much as possible)
 ```{r, echo=FALSE}
-# Everyhting (or as much as possible) PCA
+# Everything (or as much as possible) PCA
 BenNear_reg_cpa <- BenNear_reg_l %>%  #filter(Year %in% c("2007","2010","2012","2013")) %>%
+                   filter(!(Year == "2007" & Region == "KEFJ")) %>%  # Tom D says don't use this year/region
                    select(-mussel_Per_Cov, -Otter_Abun_est, -Otter_density_per_km2,
                           -WndDir_degT_AnnMn, -WndSp_m_s_AnnMn, -LAG_WndSp_m_s_AnnMn,
                           -WndDir_degT_Winter, -WndSp_m_s_Winter, -LAG_WndSp_m_s_Winter,
                           -WaterTmp_SpringAnom, -LAG_Bare_Sub_Per_Cov, -LAG_Fuc_dist_Per_Cov,
-                          -LED_BLOYAdult_breed_n, -LED_SOf_MusselPropBmss,
                           -SOf_MusselSumBmss_gWW,-SOf_MusselPropBmss,
                           -log_SOf_MusselSumBmss_gWW, -TotChlA_micgL_AnnMn) %>% 
                    filter(complete.cases(.))
 
 #data.frame(BenNear_reg_cpa[!complete.cases(BenNear_reg_cpa),])
+
+# make testing and training datasets 
+#BenNear_reg_cpa_test <- sample_n(BenNear_reg_cpa, 5)
+
+#BenNear_reg_cpa_train <- anti_join(BenNear_reg_cpa, BenNear_reg_cpa_test, by=c("Year", "Region")) 
+
+
 ```
 
 ```{r, echo=FALSE}
@@ -143,7 +135,7 @@ plot(pca_cpa, type="lines", main="everything")
 pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,c(3:26,28:36)], scale=TRUE),
                         data=BenNear_reg_cpa,  colour='Region', loadings=TRUE,
                         loadings.colour='blue', loadings.label=TRUE,
-                        loadings.label.size=3)
+                        loadings.label.size=4)
 pca_reg_all
 
 ```
@@ -170,8 +162,9 @@ summary(ev_glm)
 ```{r, echo=FALSE}
 # GLM, comprehensive 
 # trying to get as many predictor variables in here as possible
-BenNear_reg_cpa_sub2 <- BenNear_reg_cpa %>%
-                        select(-Year, -Region, -UpWelAnom_fal_mn, -UpWelAnom_spr_mn,
+BenNear_reg_cpa_sub2 <- BenNear_reg_cpa %>% #BenNear_reg_cpa_train %>%
+                        select(-Year, -Region, -log_mussel_Per_Cov, #-mussel_Anom,
+                               -UpWelAnom_fal_mn, -UpWelAnom_spr_mn,
                                -TotChlA_micgL_FlMn, -SC_Mn_FWDisc_SpMn, 
                                -Ttl_FWDisc_Anom_SpMn, -SC_Mn_FWDisc_FlMn, 
                                -Ttl_FWDisc_Anom_FlMn, -log_TotChlA_micgL_FlMn, 
@@ -179,37 +172,176 @@ BenNear_reg_cpa_sub2 <- BenNear_reg_cpa %>%
                                -WaterTmp_C_Winter, -LAG_log_TotChlA_micgL_AnnMn, 
                                -LAG_UpWelAnom_anul_mn, -LAG_PDO_anul_mn, 
                                -LAG_SC_Mn_FWDisc_AnMn, -LAG_Ttl_FWDisc_Anom_AnMn, 
-                               -LAG_SC_Mn_FWDisc_SpMn, -LAG_Ttl_FWDisc_Anom_SpMn)
+                               -LAG_SC_Mn_FWDisc_SpMn, -LAG_Ttl_FWDisc_Anom_SpMn,
+                               -Ttl_FWDisc_Anom_AnMn
+                               )
  
-al_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_reg_cpa_sub2, family=gaussian)
+al_glm <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2, family=gaussian)
 summary(al_glm)
 
+#####
+BenNear_reg_cpa_sub2a <- BenNear_reg_cpa %>%
+                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, SC_Mn_FWDisc_AnMn,
+                                Bare_Sub_Per_Cov, NPGO_anul_mn, Fuc_dist_Per_Cov
+                                )
 
-```
+al_glm2 <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2a, family=gaussian)
+summary(al_glm2)
 
-```{r, echo=FALSE}
-# GLM, comprehensive 
-# everything with lags 
-BenNear_reg_cpa_sub3 <- BenNear_reg_cpa %>%
-                        select(log_mussel_Per_Cov, 
-                               LAG_log_TotChlA_micgL_AnnMn, LAG_UpWelAnom_anul_mn, 
-                               LAG_PDO_anul_mn, LAG_SC_Mn_FWDisc_AnMn,
-                               LAG_Ttl_FWDisc_Anom_AnMn, LAG_SC_Mn_FWDisc_SpMn, 
-                               LAG_Ttl_FWDisc_Anom_SpMn)
+
+#####
+BenNear_reg_cpa_sub2b <- BenNear_reg_cpa %>% #BenNear_reg_cpa_train %>%
+                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, SC_Mn_FWDisc_AnMn,
+                                Bare_Sub_Per_Cov, Fuc_dist_Per_Cov,  WaterTmp_C_AnnMn, 
+                                SOtt_AnnMnEngRec, BLOYAdult_breed_n, ENSO_anul_mn,
+                                UpWelAnom_anul_mn, NPGO_anul_mn
+                                )
  
-al2_glm <- glm(log_mussel_Per_Cov ~ ., data=BenNear_reg_cpa_sub3, family=gaussian)
-summary(al2_glm)
+al_glm3 <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2b, family=gaussian)
+summary(al_glm3)
 
+
+
+AIC(al_glm, al_glm2, al_glm3)
+
+anova(al_glm, al_glm2, al_glm3)
 
 ```
 
 ```{r, echo=FALSE}
+#
+prob2 <- predict(al_glm2, BenNear_reg_cpa_sub2a)
+df33 <- cbind(BenNear_reg_cpa[,c(1,2,30)], prob2)
 
-AIC(ev_glm, al_glm, al2_glm)
+qplot(data=df33, prob2, mussel_Anom, color=Region, size=3)
+cor(prob2, BenNear_reg_cpa[,30])
+#cor(BenNear_reg_cpa_sub2a[,1], BenNear_reg_cpa_sub2a[,3])
 
-#names(BenNear_reg_cpa_sub2)
+# Hand calculate things
+#al_glm2$coefficients
+mod2 <- al_glm2$model %>%
+        mutate(chl = log_TotChlA_micgL_AnnMn * 0.8582371582,
+               fresh = SC_Mn_FWDisc_AnMn * -0.0006520642,
+               bare = Bare_Sub_Per_Cov * -0.0443574427,
+               NPGO = NPGO_anul_mn * 0.5163426933, 
+               Fucs = Fuc_dist_Per_Cov * -0.0135771762,
+               inter = 6.4909425827) %>%  # multiply by al_glm2$coefficients
+        select(chl, fresh, bare, NPGO, Fucs, inter) %>%
+        rowSums() 
+
+cbind(df33, mod2)       
 
 ```
+
+```{r, echo=FALSE}
+# Figure
+# BenNear_reg_l # has data through 2015
+# df33$prob2 # predicted mussel data
+
+fig1 <- ggplot() + 
+        geom_point(data=BenNear_reg_l, aes(x=as.factor(Year), y=mussel_Anom, color=Region), size=4) +
+        geom_point(data=df33, aes(x=as.factor(Year), y=prob2, color=Region), shape=17, size=4) + 
+        xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
+                                    "2013", "2014", "2015")) +
+        theme_bw() + geom_hline(yintercept = 0, show_guide = FALSE)
+  #      scale_x_discrete(breaks = c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
+   #                                 "2013", "2014", "2015"))
+        
+       
+fig1
+
+```
+
+```{r, echo=FALSE}
+# Figure
+
+line_dat <- BenNear_reg_cpa %>% 
+            select(Year, Region, mussel_Anom, log_TotChlA_micgL_AnnMn, SC_Mn_FWDisc_AnMn,
+                   Bare_Sub_Per_Cov, NPGO_anul_mn, Fuc_dist_Per_Cov) %>%
+            group_by() %>%
+            mutate(mean of bare, fuc, mussel_anom) %>%
+            ungroup() %>%
+            gather("Variable", "value", 3:8) %>%
+            mutate(facet = ifelse(Variable %in% c("NPGO_anul_mn", "mussel_Anom",
+                                                  "log_TotChlA_micgL_AnnMn"), "A", 
+                           ifelse(Variable %in% c("Fuc_dist_Per_Cov", "Bare_Sub_Per_Cov"), "B", 
+                           ifelse(Variable == "SC_Mn_FWDisc_AnMn", "C",""))))
+
+######
+fig2 <- ggplot(data=line_dat, aes(x=as.factor(Year), y=value, color=Variable)) + 
+        geom_line(aes(group=Variable)) + facet_wrap(~facet, ncol=1, scale="free") + 
+        
+fig2
+
+```
+
+
+
+```{r, echo=FALSE}
+# Trying to get 2014 and 2015 based on generating an "average" freshwater dischange value and using that
+# BenNear_reg_l # has data through 2015
+
+k <- mean(BenNear_reg_l$SC_Mn_FWDisc_AnMn, na.rm = TRUE)
+
+BenNear_reg_klug <- BenNear_reg_l %>%
+                    mutate(SC_Mn_FWDisc_AnMn_klug = ifelse(is.nan(SC_Mn_FWDisc_AnMn), 
+                                                           9997.097, SC_Mn_FWDisc_AnMn)) %>%
+                    select(mussel_Anom, log_TotChlA_micgL_AnnMn, #SC_Mn_FWDisc_AnMn, Year, Region,   
+                    Bare_Sub_Per_Cov, NPGO_anul_mn, Fuc_dist_Per_Cov, SC_Mn_FWDisc_AnMn_klug) %>%
+                    filter(Year %in% c(2006:2015)) %>%
+                    select(-Year, -Region)
+
+#mussel_Anom, log_TotChlA_micgL_AnnMn, SC_Mn_FWDisc_AnMn,
+#Bare_Sub_Per_Cov, NPGO_anul_mn, Fuc_dist_Per_Cov
+
+```
+
+```{r, echo=FALSE}
+####
+prob3 <- predict(al_glm2, BenNear_reg_klug)   #prob2 <- predict(al_glm2, BenNear_reg_cpa_sub2a)
+df34 <- cbind(BenNear_reg_klug[,c(1:3)], prob3)
+
+
+
+# Hand calculate things
+#al_glm2$coefficients
+mod2 <- al_glm2$model %>%
+        mutate(chl = log_TotChlA_micgL_AnnMn * 0.8582371582,
+               fresh = SC_Mn_FWDisc_AnMn * -0.0006520642,
+               bare = Bare_Sub_Per_Cov * -0.0443574427,
+               NPGO = NPGO_anul_mn * 0.5163426933, 
+               Fucs = Fuc_dist_Per_Cov * -0.0135771762,
+               inter = 6.4909425827) %>%  # multiply by al_glm2$coefficients
+        select(chl, fresh, bare, NPGO, Fucs, inter) %>%
+        rowSums() 
+
+cbind(df33, mod2)   
+
+
+
+
+
+qplot(data=df34, as.factor(Year), prob3, color=Region, size=3)
+qplot(data=df34, as.factor(Year), mussel_Anom, color=Region, size=3)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -28,10 +28,12 @@ library(stringr)
 
 
 ```{r, echo=FALSE, include=FALSE}
-source(file.path(dir_dmx_d, 
-                 "Benthic_Nearshore_Drivers/Benthic_Nearshore_Data_.R"))
+# source(file.path(dir_dmx_d, 
+#                  "Benthic_Nearshore_Drivers/Benthic_Nearshore_Data_.R"))
 
-#BenNearxx <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
+BenNearxx <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
+
+BenNear <- BenNearxx
 ```
  
 ```{r, echo=FALSE, include=FALSE}
@@ -220,15 +222,15 @@ p16
 
 ```
 
-```{r, echo=FALSE}
-# load in the data for oil
-source(file.path(dir_dmx_d, 
-                 "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore/Oil_DMX_Benthic.R"))
-
-TotArmAlk <- TotalAromAlk5 %>%
-             mutate(AnalysisType=tolower(AnalysisType)) %>%
-             filter(AnalysisType %in% c("sediment"))
-             
+```{r, echo=FALSE, include=FALSE, eval=FALSE}
+# # load in the data for oil
+# source(file.path(dir_dmx_d, 
+#                  "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore/Oil_DMX_Benthic.R"))
+# 
+# TotArmAlk <- TotalAromAlk5 %>%
+#              mutate(AnalysisType=tolower(AnalysisType)) %>%
+#              filter(AnalysisType %in% c("sediment"))
+#              
 
 ```
 
