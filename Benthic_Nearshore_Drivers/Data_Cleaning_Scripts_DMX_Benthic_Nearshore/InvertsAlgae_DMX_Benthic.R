@@ -245,7 +245,9 @@ RAann_IA <- AddZeros(RAann_IA_1, "Red_alg_ann_Per_Cov")  # call the function
 RAper_IA_1 <- filter(IA_GOA, Common_Cat=="red_alga_perennial")   # Filter out the species/entry of interest
 RAper_IA <- AddZeros(RAper_IA_1, "Red_alg_per_Per_Cov")  # call the function
 
-
+# Red Algae ALL
+RAall_IA_1 <- filter(IA_GOA, Common_Cat %in% c("red_alga_perennial", "red_alga_annual", "red_alga")) # Filter
+RAall_IA <- AddZeros(RAall_IA_1, "Red_alg_TOT_Per_Cov")
 
 
 

@@ -236,29 +236,29 @@ p16
 
 
 ```{r, echo=FALSE, fig.height=14, fig.width=18}
-
-p17 <-  ggplot(data=stateDf, aes(y=lat, x=long)) +
-        geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
-        coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
-        scale_fill_manual(values=colMap) +
-        geom_point(data=TotArmAlk, aes(x=as.numeric(LONG), y=as.numeric(LAT),
-                                           colour=AnalysisType), size=3, shape=18)
-  
-p17
+# 
+# p17 <-  ggplot(data=stateDf, aes(y=lat, x=long)) +
+#         geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
+#         coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
+#         scale_fill_manual(values=colMap) +
+#         geom_point(data=TotArmAlk, aes(x=as.numeric(LONG), y=as.numeric(LAT),
+#                                            colour=AnalysisType), size=3, shape=18)
+#   
+# p17
 
 ```
 
 ```{r, echo=FALSE, fig.height=14, fig.width=18}
-
-p18 <-  ggplot(data=stateDf, aes(y=lat, x=long)) +
-        geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
-        coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
-        scale_fill_manual(values=colMap) +
-        geom_point(data=TotArmAlk, aes(x=as.numeric(LONG), y=as.numeric(LAT),
-                                           colour=AnalysisType), size=3, shape=18) +
-        facet_wrap(~Year)
-  
-p18
+# 
+# p18 <-  ggplot(data=stateDf, aes(y=lat, x=long)) +
+#         geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
+#         coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
+#         scale_fill_manual(values=colMap) +
+#         geom_point(data=TotArmAlk, aes(x=as.numeric(LONG), y=as.numeric(LAT),
+#                                            colour=AnalysisType), size=3, shape=18) +
+#         facet_wrap(~Year)
+#   
+# p18
 
 ```
 

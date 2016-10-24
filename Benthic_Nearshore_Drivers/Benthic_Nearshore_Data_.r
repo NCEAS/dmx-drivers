@@ -187,6 +187,7 @@ BenNear <- merge(BenNear,BAann_IA,all.x=T)        # Brown Algae Annual percent c
 BenNear <- merge(BenNear,GAann_IA,all.x=T)        # Green Algae Annual percent cover
 BenNear <- merge(BenNear,RAann_IA,all.x=T)        # Red Algae Annual percent cover
 BenNear <- merge(BenNear,RAper_IA,all.x=T)        # Red Algae Perennial percent cover
+BenNear <- merge(BenNear,RAall_IA,all.x=T)        # Red Algae Total percent cover
 #BenNear <- merge(BenNear,ElG,all.x=T)             # Eelgrass percent cover
 BenNear <- merge(BenNear,OyC_GOA,all.x=T)         # BLOY breeding adults abundance
 #BenNear <- merge(BenNear,,all.x=T)      # BLOY diet prey size
