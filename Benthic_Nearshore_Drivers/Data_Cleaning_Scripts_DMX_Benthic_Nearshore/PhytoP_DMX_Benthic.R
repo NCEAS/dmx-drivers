@@ -123,8 +123,10 @@ Chl_GAK1 <- Chl_ALL %>%
             arrange(Datef) %>%     
             mutate(Year=substring(Datef,1,4),
                    Month=substring(Datef,6,7)) %>% 
-            filter(!(Size_Fraction %in% c(">20 µm", "<20 µm", "Total_Phaeo (µg/L)", ">20", "<20"))) 
-          
+            filter(!(Size_Fraction %in% c(">20 µm", "<20 µm", "Total_Phaeo (µg/L)", ">20", "<20"))) %>%
+            # fix the swapped Month and Day in 2007
+            mutate(Month = ifelse((Year == "2007" & Month == "10"), "05",  
+                           ifelse((Year == "2007" & Month == "11"), "09", Month)))
 
 #filter(str_detect(Treatment, "non"))
 
