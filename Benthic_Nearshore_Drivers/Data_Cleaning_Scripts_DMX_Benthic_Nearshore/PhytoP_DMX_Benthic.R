@@ -20,7 +20,7 @@ library(reshape)
 ## 2) format to annual estimates (2 column dataframe with cols=Year,spEstimate)
 
 #############
-### Phytoplankton (annual spring mean): (from Seward Line dataset)
+### Phytoplankton: (from Seward Line dataset)
 # Get 1998-2010 data 
 URL_Chl <- "http://gulfwatch.nceas.ucsb.edu/goa/d1/mn/v1/object/df35b.41.3"
 ChlGet <- GET(URL_Chl)
@@ -109,7 +109,11 @@ colnames(list_csvs[[11]])[7] <- "Depth_m"
 colnames(list_csvs[[11]])[9] <- "chlorophyllA"
 
 # Merge all the other csvs into one dataframe
-one_df <- merge_recurse(list_csvs)
+one_df1 <- merge_recurse(list_csvs)
+# Must remove the 2010 data from this new dataframe, since it duplicates what's in the old dataframe
+one_df <- filter(one_df1, !(Date %in% c("9/14/2010", "9/15/2010", "9/16/2010", "9/17/2010",
+                                        "9/18/2010", "9/19/2010", "5/6/2010",  "5/5/2010",
+                                        "5/4/2010",  "5/3/2010",  "5/7/2010",  "5/2/2010")))
 
 # Merge with the main Chlorophyll data
 Chl_ALL <- merge(Chl_df, one_df, all=T, 
@@ -132,7 +136,7 @@ Chl_GAK1 <- Chl_ALL %>%
 
 #################
 ### NOTE: Have Jessica correct the dates for 2007 (swapped Month and Day)
-### in the data sheet on the portal.  
+### in the data sheet on the portal.  But, I corrected them above. 
 #################
 #
 Phy_spr <- Chl_GAK1 %>%
