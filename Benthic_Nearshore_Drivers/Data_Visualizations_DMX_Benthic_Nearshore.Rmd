@@ -60,10 +60,16 @@ library(rgdal)
 ###Map of Regions & Sites
 ```{r, echo=FALSE, include=FALSE}
 BenNear1 <- BenNear %>%
+            filter(Region %in% c("WPWS","KATM","KEFJ"), 
+                    !(Site_Name %in% c("Northwest Bay", "Herring Bay-Southwest", "Herring Bay-Bear Cove",
+                                       "Ninagiak Island", "Disk Island"))) %>%
             mutate(Region_Site = paste(Region, Site_Name, sep=":"))
 # state:
 state <- readOGR(dsn=(file.path(dir_dmx_d, "Benthic_Nearshore_Drivers")), layer="statep010")
 stateDf <- fortify(state)
+
+# GAK1: 
+GAK1_loc <- data.frame(lat=59.85, long=-149.5)
   
 # palette:
 colMap <- c("dimgrey","black")
@@ -75,15 +81,15 @@ colors <- c("blue3","turquoise2","deepskyblue","royalblue1","violet","thistle1",
 ```
 
 ```{r, echo=FALSE, fig.height=12, fig.width=12}
-
-# plot:
+# Map plot:
  ggplot(data=stateDf, aes(y=lat, x=long)) +
         geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
         coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
         scale_fill_manual(values=colMap) +
         geom_point(data=BenNear1, aes(x=as.numeric(Long), y=as.numeric(Lat),
-                                      colour=Region_Site), size=3, shape=18) + 
-        facet_wrap(~Region) +
+                                      colour=Region), size=4, shape=18) + 
+        geom_point(data=GAK1_loc, aes(long, lat), colour="orange", size=5) +  # this is GAK1
+       # facet_wrap(~Region) +
         theme(axis.line=element_line('black'),
               panel.grid.major=element_blank(),
               panel.grid.minor=element_blank(),
@@ -94,42 +100,47 @@ colors <- c("blue3","turquoise2","deepskyblue","royalblue1","violet","thistle1",
               title=element_text(size=16,face="bold"),
               legend.position="bottom") 
 
+# NEED TO ADD:  water temp buoys??
+
+
+
 ```
 
 
 ```{r, echo=FALSE, include=FALSE}
 # make Yes/No for sample presence
-melt_BenNear2 <- melt(as.data.frame(BenNear2), id.vars=c("Year","Region","Site_Name"),                           variable_name="Data_Set")
+melt_BenNear2 <- reshape::melt.data.frame(as.data.frame(BenNear2), id.vars=c("Year","Region","Site_Name"),      
+                      variable_name="Data_Set")
 
 BenNear3 <- melt_BenNear2 %>%
             mutate(Bin_Value = ifelse((is.na(value)),'0',
                                ifelse((!is.na(value)),'1',""))) %>%
-            dplyr::rename(DataSet=variable) %>%
+           # dplyr::rename(DataSet=variable) %>%
             mutate_each(funs(as.character), Site_Name) %>%
-            mutate_each(funs(as.character), DataSet)
+            mutate_each(funs(as.character), Data_Set)
 
 BenNear4 <- BenNear3 %>%
-            filter(DataSet %in%
+            filter(Data_Set %in%
                      c("Leukoma_MnBmss_gWW","Macoma_MnBmss_gWW",
                        "Saxidomus_MnBmss_gWW")) %>%
             mutate_each(funs(as.numeric), Bin_Value) %>%
             group_by(Year, Region, Site_Name) %>%
             summarise(BinValue2 = sum(Bin_Value)) %>%
             ungroup() %>%
-            mutate(DataSet = "Clam_Bmss_gWW")
+            mutate(Data_Set = "Clam_Bmss_gWW")
 
 BenNear5 <- BenNear3 %>%
-            filter(DataSet %in%
+            filter(Data_Set %in%
                      c("SOf_CrabSumBmss_gWW","SOf_ClamSumBmss_gWW","SOf_UrchinSumBmss_gWW",
                        "SOf_MusselSumBmss_gWW")) %>%
             mutate_each(funs(as.numeric), Bin_Value) %>%
             group_by(Year, Region, Site_Name) %>%
             summarise(BinValue2 = sum(Bin_Value)) %>%
             ungroup() %>%
-            mutate(DataSet = "SeaOttForage_Bmss_gWW")
+            mutate(Data_Set = "SeaOttForage_Bmss_gWW")
 
 BenNear6 <- BenNear3 %>%
-            filter(DataSet %in% c("Bare_Sub_Per_Cov","barnacle_Per_Cov","mussel_Per_Cov",
+            filter(Data_Set %in% c("Bare_Sub_Per_Cov","barnacle_Per_Cov","mussel_Per_Cov",
                                   "Fuc_dist_Per_Cov","Ala_marg_Per_Cov",
                                   "Neo_Odon_sp_Per_Cov","Brwn_alg_ann_Per_Cov",
                                   "Green_alg_ann_Per_Cov","Red_alg_ann_Per_Cov",
@@ -138,10 +149,10 @@ BenNear6 <- BenNear3 %>%
             group_by(Year, Region, Site_Name) %>%
             summarise(BinValue2 = sum(Bin_Value)) %>%
             ungroup() %>%
-            mutate(DataSet = "Intertidal_Per_Cov")
+            mutate(Data_Set = "Intertidal_Per_Cov")
   
 BenNear7 <- BenNear3 %>%
-            filter(!(DataSet %in%
+            filter(!(Data_Set %in%
                        c("Leukoma_MnBmss_gWW","Macoma_MnBmss_gWW","Saxidomus_MnBmss_gWW",
                          "SOf_CrabSumBmss_gWW","SOf_ClamSumBmss_gWW",
                          "SOf_UrchinSumBmss_gWW","SOf_MusselSumBmss_gWW",
@@ -171,12 +182,14 @@ BenNear11 <- BenNear10 %>%
 
 ```
 
+
+```{r, eval=FALSE, include=FALSE, echo=FALSE, fig.height=14, fig.width=18}
 ##Plot 1: Data presence for all Regions, all Sites we have in hand to date
-```{r,echo=FALSE, fig.height=14, fig.width=18}
+
 p <- ggplot(data=BenNear11, aes(x=Site_Name, y=Year)) + 
             geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
             scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
-            scale_y_reverse() + facet_wrap(~DataSet) +
+            scale_y_reverse() + facet_wrap(~Data_Set) +
             theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
                                              color="black", size=11),
                   axis.text.y = element_text(color="black", size=15),
@@ -186,29 +199,45 @@ p
 
 ```
 
-###Plot 2: Data presence for only Regions WPWS, KEFJ, KATM
+
 ```{r, echo=FALSE, fig.height=14, fig.width=18}
+###Plot 2: Data presence for only Regions WPWS, KEFJ, KATM
 # Only include Regions WPWS, KEFJ, KATM
+
 BenNear12 <- BenNear11 %>%
-             filter(Region %in% c("WPWS","KEFJ","KATM")) %>%
+             filter(Year %in% c(2006:2015),
+                    Region %in% c("WPWS","KATM","KEFJ"), 
+                    !(Site_Name %in% c("Northwest Bay", "Herring Bay-Southwest", "Herring Bay-Bear Cove",
+                                       "Ninagiak Island", "Disk Island")),
+                    Data_Set %in% c("ENSO_anul_mn","PDO_anul_mn","NPGO_anul_mn","UpWelAnom_anul_mn",
+                                    "WaterTmp_C_AnnMn","TotChlA_micgL_AnnMn","Whelk_Sum_n_m2",
+                                    "BLOYAdult_breed_n","SOtt_AnnMnEngRec","WaterTmp_WinterAnom",
+                                    "SC_Mn_FWDisc_AnMn","Intertidal_Per_Cov")) %>%
              arrange(Region_Site, Year)
 
+BenNear12$Data_Set = factor(BenNear12$Data_Set, levels=c("ENSO_anul_mn","PDO_anul_mn",
+                                                         "NPGO_anul_mn","UpWelAnom_anul_mn",
+                                                         "SC_Mn_FWDisc_AnMn", "WaterTmp_C_AnnMn",
+                                                         "WaterTmp_WinterAnom","TotChlA_micgL_AnnMn",
+                                                         "SOtt_AnnMnEngRec","BLOYAdult_breed_n",
+                                                         "Whelk_Sum_n_m2", "Intertidal_Per_Cov"))
 
 p15 <- ggplot(data=BenNear12, aes(x=Region_Site, y=Year)) + 
               geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
               scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
-              scale_y_reverse() + facet_wrap(~DataSet) +
+              scale_y_reverse(breaks=c(2007,2009,2011,2013,2015)) + facet_wrap(~Data_Set) +
               theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
                                                color="black", size=11),
-                    axis.text.y = element_text(color="black", size=15),
+                    axis.text.y = element_text(color="black", size=13),
                     axis.title  = element_text(face="bold", size=20))
 p15
 
 
 ```
 
+
+```{r, eval=FALSE, include=FALSE, echo=FALSE, fig.height=14, fig.width=18}
 ###Plot 3: Data presence for WPWS, KEFJ, KATM presented another way
-```{r, echo=FALSE, fig.height=14, fig.width=18}
 
 p16 <- ggplot(data=BenNear12, aes(x=DataSet, y=Year)) + 
               geom_tile(aes(fill = as.factor(BinValue3)), colour = "white") +
@@ -222,48 +251,10 @@ p16
 
 ```
 
-```{r, echo=FALSE, include=FALSE, eval=FALSE}
-# # load in the data for oil
-# source(file.path(dir_dmx_d, 
-#                  "Benthic_Nearshore_Drivers/Data_Cleaning_Scripts_DMX_Benthic_Nearshore/Oil_DMX_Benthic.R"))
-# 
-# TotArmAlk <- TotalAromAlk5 %>%
-#              mutate(AnalysisType=tolower(AnalysisType)) %>%
-#              filter(AnalysisType %in% c("sediment"))
-#              
-
-```
-
-
-```{r, echo=FALSE, fig.height=14, fig.width=18}
-# 
-# p17 <-  ggplot(data=stateDf, aes(y=lat, x=long)) +
-#         geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
-#         coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
-#         scale_fill_manual(values=colMap) +
-#         geom_point(data=TotArmAlk, aes(x=as.numeric(LONG), y=as.numeric(LAT),
-#                                            colour=AnalysisType), size=3, shape=18)
-#   
-# p17
-
-```
-
-```{r, echo=FALSE, fig.height=14, fig.width=18}
-# 
-# p18 <-  ggplot(data=stateDf, aes(y=lat, x=long)) +
-#         geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
-#         coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
-#         scale_fill_manual(values=colMap) +
-#         geom_point(data=TotArmAlk, aes(x=as.numeric(LONG), y=as.numeric(LAT),
-#                                            colour=AnalysisType), size=3, shape=18) +
-#         facet_wrap(~Year)
-#   
-# p18
-
-```
 
 ###Correlation pair plots of raw data: 
-```{r, echo=FALSE, fig.height=14, fig.width=14}
+```{r, eval=FALSE, include=FALSE, echo=FALSE, fig.height=14, fig.width=14}
+
 library(psych)
 BenNear2 <- as.data.frame(BenNear2)
 
@@ -281,8 +272,16 @@ pairs.panels(BenNear2[,c(6,9,29,11)],smooth=F,density=T,ellipses=F,lm=T,digits=3
 
 # Plot variables through time:
 ```{r, echo=FALSE}
-BenNear_sub <- BenNear %>%
-               filter(Region %in% c("WPWS","KATM","KEFJ")) %>%
+BenNear_mus <- BenNear %>%
+               filter(Year %in% c(2006:2015),
+                      Region %in% c("WPWS","KATM","KEFJ"), 
+                      !(Site_Name %in% c("Northwest Bay", "Herring Bay-Southwest", "Herring Bay-Bear Cove",
+                                       "Ninagiak Island", "Disk Island"))) %>%
+               select("ENSO_anul_mn","PDO_anul_mn","NPGO_anul_mn","UpWelAnom_anul_mn",
+                                    "WaterTmp_C_AnnMn","TotChlA_micgL_AnnMn","Whelk_Sum_n_m2",
+                                    "BLOYAdult_breed_n","SOtt_AnnMnEngRec","WaterTmp_WinterAnom",
+                                    "SC_Mn_FWDisc_AnMn") %>%
+               arrange(Region_Site, Year)
               # na.omit() %>%
                filter(!is.na(WaterTmp_C_AnnMn)) %>%
                select(-Quadrat, -Lat,-Long,-Site_Name) %>%
@@ -327,7 +326,7 @@ BenNear_sub2 <- BenNear %>%
 
 ```{r, echo=FALSE}
 
-ggplot(data=BenNear_sub2, aes(x=Year, y=mussel_Per_Cov)) + 
+ggplot(data=BenNear12, aes(x=Year, y=mussel_Per_Cov)) + 
                geom_line(size=2) + facet_wrap(~Site_Name) + 
                theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
                                                color="black", size=11),
@@ -336,7 +335,7 @@ ggplot(data=BenNear_sub2, aes(x=Year, y=mussel_Per_Cov)) +
 
 ```
 
-```{r, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # LOAD and pre-process data for the mussel analysis
 BenNearMUSS <- read.csv("BenthicNearshore_MusselQuestData.csv")
 
@@ -350,7 +349,7 @@ BenNearMUSS2 <- BenNearMUSS %>%
 
 ```
 
-```{r, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # make Yes/No for sample presence
 melt_BenNearMUSS2 <- melt(as.data.frame(BenNearMUSS2), id.vars=c("Year","Region","Site_Name"),                           variable_name="Data_Set")
 
@@ -366,7 +365,7 @@ BenNearMUSS3 <- melt_BenNearMUSS2 %>%
 
 ```
 
-```{r,echo=FALSE, fig.height=18, fig.width=18}
+```{r,eval=FALSE, echo=FALSE, fig.height=18, fig.width=18}
 pm <- ggplot(data=BenNearMUSS3, aes(x=Site_Name, y=Year)) + 
              geom_tile(aes(fill = as.factor(Bin_Value)), colour = "white") +
              scale_fill_manual(breaks=c("0", "1"), values=c("gray", "green"), guide=FALSE) +
@@ -378,7 +377,7 @@ pm <- ggplot(data=BenNearMUSS3, aes(x=Site_Name, y=Year)) +
 pm
 ```
 
-```{r,echo=FALSE, fig.height=18, fig.width=18}
+```{r,eval=FALSE, echo=FALSE, fig.height=18, fig.width=18}
 
 pm2 <- ggplot(data=BenNearMUSS3, aes(x=Data_Set, y=Year)) + 
               geom_tile(aes(fill = as.factor(Bin_Value)), colour = "white") +
