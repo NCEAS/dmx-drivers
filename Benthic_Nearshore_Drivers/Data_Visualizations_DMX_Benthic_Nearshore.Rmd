@@ -57,8 +57,10 @@ library(rworldxtra)
 library(rgdal)
 ```
 
-###Map of Regions & Sites
+
 ```{r, echo=FALSE, include=FALSE}
+###Map of Regions & Sites
+
 BenNear1 <- BenNear %>%
             filter(Region %in% c("WPWS","KATM","KEFJ"), 
                     !(Site_Name %in% c("Northwest Bay", "Herring Bay-Southwest", "Herring Bay-Bear Cove",
@@ -69,7 +71,13 @@ state <- readOGR(dsn=(file.path(dir_dmx_d, "Benthic_Nearshore_Drivers")), layer=
 stateDf <- fortify(state)
 
 # GAK1: 
-GAK1_loc <- data.frame(lat=59.85, long=-149.5)
+GAK1_loc <- data.frame(lat=59.85, long= -149.5)
+# Station 46060 West Orca Bay
+WOB <- data.frame(lat=60.584, long= -146.805)
+# Station 46077 Shelikof Strait
+SS <- data.frame(lat=57.892, long= -154.291)
+# Station 46076 Cape Cleare
+CC <- data.frame(lat=59.502, long= -147.990)
   
 # palette:
 colMap <- c("dimgrey","black")
@@ -86,23 +94,30 @@ colors <- c("blue3","turquoise2","deepskyblue","royalblue1","violet","thistle1",
         geom_map(map=stateDf,aes(x=long,y=lat,map_id=id)) +
         coord_map(xlim = c(-155.5, -144),ylim = c(57.5, 62)) + 
         scale_fill_manual(values=colMap) +
+        labs(x = "Longitude", y = "Latitude") +
         geom_point(data=BenNear1, aes(x=as.numeric(Long), y=as.numeric(Lat),
-                                      colour=Region), size=4, shape=18) + 
-        geom_point(data=GAK1_loc, aes(long, lat), colour="orange", size=5) +  # this is GAK1
-       # facet_wrap(~Region) +
+                                      colour=Region), size=3, shape=19) + 
+        geom_point(data=GAK1_loc, aes(long, lat), colour="black", fill="#f37735",
+                   size=4, shape=24) +  # this is GAK1
+        geom_point(data=WOB, aes(long, lat), colour="black", fill="yellow",
+                   size=4, shape=24) + # this is West Orca Bay (PWS)
+        geom_point(data=SS, aes(long, lat), colour="black", fill="yellow", 
+                   size=4, shape=24) + # this is Shelikof Strait (KATM)
+        geom_point(data=CC, aes(long, lat), colour="black", fill="yellow", 
+                   size=4, shape=24) + # this is Cape Cleare (KEFJ)
         theme(axis.line=element_line('black'),
               panel.grid.major=element_blank(),
               panel.grid.minor=element_blank(),
               panel.border=element_blank(),
               panel.background=element_blank(),
               legend.key = element_blank(),
-              axis.text=element_text(size=14),
-              title=element_text(size=16,face="bold"),
-              legend.position="bottom") 
+              axis.text=element_text(size=12),
+              title=element_text(size=14),
+              legend.position = c(.9, .2)) 
 
-# NEED TO ADD:  water temp buoys??
-
-
+                # scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"), 
+                #                   breaks=c("KATM", "KEFJ", "WPWS"),
+                #                  labels=c("Katmai", " Kenai", "Prince William /n Sound")) +
 
 ```
 
