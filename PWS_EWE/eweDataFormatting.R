@@ -12,9 +12,15 @@
 
 library(dataone)
 library(dplyr)
+library(gdata)
+library(reshape2)
 
+cm <- CertificateManager()
+user <- showClientSubject(cm)
+
+ 
 pwsEwe=data.frame(
-  'Name'=factor(c('poolCode','type',1955:2015),levels=c('poolCode','type',1955:2015),ordered=T))
+  'Name'=factor(c('poolCode','type',1955:2015,'units'),levels=c('poolCode','type',1955:2015,'units'),ordered=T))
 
 
 mn_uri<-"https://goa.nceas.ucsb.edu/goa/d1/mn/v1"  ## define goa portal as DataONE member node
@@ -24,7 +30,7 @@ mn <- MNode(mn_uri)
 ## Type = 1 (absolute abundances) --> What do I do about them being estimates, uncertainty?
 
 hbwId <- "df35d.123.1"   # unique identifier for this data file
-hbwObj <- get(mn, hbwId)
+hbwObj <- get(mn,hbwId)
 hbw <- read.csv(text=rawToChar(hbwObj))
 hbw2=hbw %>%
   mutate(Name=as.factor(Year)) %>%
@@ -32,7 +38,8 @@ hbw2=hbw %>%
   select(Name,humpbackWhaleBM)
 
 pwsEwe=merge(pwsEwe,hbw2,all.x=T) ## x29,000 kg to get BM estimate. NOAA states hbw are 22,000-36,000kg each: http://www.nmfs.noaa.gov/pr/species/mammals/whales/humpback-whale.html
-pwsEwe[2,2]=1
+pwsEwe[2,2]=0
+pwsEwe[64,2]='tonnes'
 
 ######### Sea otter abundance estimates
 ## Type = 1 (absolute abundances) --> What do I do about them being estimates, uncertainty?
@@ -42,8 +49,8 @@ soDtSpl=strsplit(soTab[,1],split=' ')
 soEst=data.frame(Name=sapply(soDtSpl,function(x) x[1]),seaOtterBM=as.numeric(soTab[,2])*30*0.001) ## http://www.marinemammalcenter.org/education/marine-mammal-information/sea-otter.html; 23kg (Okey & Pauly 1999)
 
 new=merge(pwsEwe,soEst,all.x=T)
-new[2,3]=1
-
+new[2,3]=0
+pwsEwe[64,3]='tonnes'
 
 ######### Steller sea lions
 
@@ -80,7 +87,8 @@ pwsSslPop2=pwsSslPop%>%
   select(Name,stellerSlBM)
 
 pwsEwe=merge(new,pwsSslPop2,all=T)
-pwsEwe[2,4]=1
+pwsEwe[2,4]=0
+pwsEwe[64,4]='tonnes'
 
 ######### Harbor seals
 
@@ -104,11 +112,10 @@ hs2=hs%>%
   select(Name,harborSealBM)
 
 pwsEwe=merge(pwsEwe,hs2,all.x=T)
-pwsEwe[2,5]=1
-
+pwsEwe[2,5]=0
+pwsEwe[64,5]='tonnes'
 
 ######### Herring data: frm adfg, pulled from pfx covar. git hub page
-library(gdata)
 
 herr=read.xls("eweData/PWS_Biomass_Summaries_1974–2014_Updated_9-5-2014.xlsx",sheet=1,pattern='year',blank.lines.skip=T,stringsAsFactors=F)
 herr2=herr %>%
@@ -118,8 +125,8 @@ herr2=herr %>%
   mutate(pacHerrCatches=as.numeric(gsub(',','',X.tons.))) %>%
   select(Name,pacHerrBM,pacHerrCatches)
 pwsEwe=merge(pwsEwe,herr2,all.x=T)
-pwsEwe[2,5:6]=c(1,6)
-
+pwsEwe[2,5:6]=c(0,6)
+pwsEwe[64,5:6]='tonnes'
 
 
 ########## Chum estimates and harvest
@@ -135,12 +142,13 @@ chum2=chum %>%
   select(Name,chumBM,chumCatches)
 
 pwsEwe=merge(pwsEwe,chum2,all.x=T)
-pwsEwe[2,8:9]=c(1,6)
+pwsEwe[2,8:9]=c(0,6)
+pwsEwe[64,8:9]='tonnes'
 
 ######### Pink estimates - Rich Brenner, ADF&G
 pink=read.xls("eweData/2015_PWS_Pink_Wild_forecast-FINAL.xlsm",sheet=2,pattern='Brood Line',blank.lines.skip=T,stringsAsFactors=F)
 
-avePinkWt=((3.5+5)/2)*0.454*0.001 ## NOAA: 3.5- 5lbs
+avePinkWt=((3.5+5)/2)*0.454*0.001 ## NOAA: 3.5- 5lbs, ave estimated wt in lbs, convert to kg-->tonnes
 
 pink2=pink %>%
   "["(.,59:120,) %>% ## have data from 1896 but not sure if that's useful so limiting to 1955, ask Tom
@@ -150,7 +158,131 @@ pink2=pink %>%
   select(Name,pinkBM,pinkCatches)
 
 pwsEwe=merge(pwsEwe,pink2,all.x=T)
-pwsEwe[2,10:11]=c(1,6)
+pwsEwe[2,10:11]=c(0,6)
+pwsEwe[64,10:11]='tonnes'
 
 
-#########
+######### Tanner Crab abundances - ADF&G
+## Post online and link to this 
+tcrabNHM=read.xls("eweData/PWS_Tanner_Crab_Abundance_Estimates_1991-2014-1.xlsx",sheet=1,pattern='Year',blank.lines.skip=T,stringsAsFactors=F,na.strings = c('-','',' ')) ## read first sheet from tanner crab estimates: Abundances of male carbs at Nothern and hinchbrook Districts
+colnames(tcrabNHM)=c('year','dataType','pre4Males','pre3Males','pre2MalesOld','pre2MalesNew','pre1MalesOld','pre1MalesNew','recruitMaleOld','recruitMaleNew','postRecruitMalesOld','postRecruitMalesNew','legalMales','matureMales','totMales') ## Pre-4= (< 73mm), Pre-3=73-92mm, Pre-2=93-112mm,	Pre-1=113-134mm, Recruit=135-157mm, Post-recruit= (>157mm), Legal Males= (>135mm),	MatureMales= (>113)
+tcrabNHM=tcrabNHM[tcrabNHM$dataType=='Abundance',1:15]
+tcrabNHM2<-tcrabNHM %>%
+  mutate(sex='M') %>%
+  mutate(site='Northern and Hinchbrook Districts')%>%
+  rename(total=totMales) %>%
+  select(year,sex,site,total)
+
+tcrabNHF=read.xls("eweData/PWS_Tanner_Crab_Abundance_Estimates_1991-2014-1.xlsx",sheet=2,pattern='Year',blank.lines.skip=T,stringsAsFactors=F,na.strings = c('-','',' ')) ## read 2nd sheet from tanner crab estimates: Abundances of FEMALE carbs at Nothern and hinchbrook Districts
+colnames(tcrabNHF)=c('year','dataType','juvFem','matureFem','totFem')
+tcrabNHF=tcrabNHF[tcrabNHF$dataType=='Abundance',1:5]
+tcrabNHF2<-tcrabNHF %>%
+  mutate(sex='F') %>%
+  mutate(site='Northern and Hinchbrook Districts')%>%
+  rename(total=totFem) %>%
+  select(year,sex,site,total)
+
+
+tcrabVM=read.xls("eweData/PWS_Tanner_Crab_Abundance_Estimates_1991-2014-1.xlsx",sheet=3,pattern='Year',blank.lines.skip=T,stringsAsFactors=F,na.strings = c('-','',' ')) ## read 3rd sheet from tanner crab estimates: Abundances of male carbs in Valdez Arm
+colnames(tcrabVM)=c('year','dataType','pre4Males','pre3Males','pre2MalesOld','pre2MalesNew','pre1MalesOld','pre1MalesNew','recruitMaleOld','recruitMaleNew','postRecruitMalesOld','postRecruitMalesNew','legalMales','matureMales','totMales') ## Pre-4= (< 73mm), Pre-3=73-92mm, Pre-2=93-112mm,	Pre-1=113-134mm, Recruit=135-157mm, Post-recruit= (>157mm), Legal Males= (>135mm),	MatureMales= (>113); old/new refers to shell condition
+tcrabVM=tcrabVM[,1:15]
+tcrabVM2=tcrabVM %>%
+  filter(dataType=='Abundance') %>%
+  mutate(sex='M') %>%
+  mutate(site='ValdezArm')%>%
+  rename(total=totMales) %>%
+  select(year,sex,site,total)
+
+tcrabVF=read.xls("eweData/PWS_Tanner_Crab_Abundance_Estimates_1991-2014-1.xlsx",sheet=4,pattern='Year',blank.lines.skip=T,stringsAsFactors=F,na.strings = c('-','',' ')) ## read 4th sheet from tanner crab estimates: Abundances of FEMALE carbs in Valdez Arm
+colnames(tcrabVF)=c('year','dataType','juvFem','matureFem','totFem')
+tcrabVF=tcrabVF[,1:5]
+tcrabVF2=tcrabVF %>%
+  filter(dataType=='Abundance') %>%
+  mutate(sex='F') %>%
+  mutate(site='ValdezArm')%>%
+  rename(total=totFem) %>%
+  select(year,sex,site,total)
+
+tcV=merge(tcrabVF2,tcrabVM2,by='year')
+tcv2=tcV %>%
+  mutate(totF=gsub(',','',total.x))%>%
+  mutate(totM=gsub(',','',total.y))%>%
+  mutate(tannerCrabAbundVal=as.numeric(totF)+as.numeric(totM)) %>%
+  mutate(Name=as.numeric(year)) %>%
+  select(Name,tannerCrabAbundVal) ## Tanner crab abundance estimate from Valdez Arm, ask Rich what area this covers?
+
+tcNH=merge(tcrabNHM2,tcrabNHF2,by='year')
+tcnh2=tcNH %>%
+  mutate(totF=gsub(',','',total.x))%>%
+  mutate(totM=gsub(',','',total.y))%>%
+  mutate(tannerCrabAbundNoHin=as.numeric(totF)+as.numeric(totM)) %>%
+  mutate(Name=as.numeric(year)) %>%
+  select(Name,tannerCrabAbundNoHin) ## Tanner crab abundance estimate from Northern District and Hinchbrook District, ask Rich what areas these cover?
+tanCr=merge(tcv2,tcnh2,all=T)
+
+pwsEwe=merge(pwsEwe,tanCr,all.x=T)
+pwsEwe[64,c('tannerCrabAbundVal','tannerCrabAbundNoHin')]='abundance'
+
+
+######### ADF&G Herring BM estimates data from Steve Moffitt/Rich Brenner 1980-2014 (ASA estimates)
+## Replaced Norcross/Brown data since that was a short timeseries
+
+#ffId <- "df35d.94.5"   # unique identifier for this data file
+#ffObj <- get(mn,ffId)
+#ff <- read.csv(text=rawToChar(ffObj))
+
+ff=read.xls('eweData/tabulaHerringBMFMR15-34.csv',header=F,stringsAsFactors = T,na.strings=c('NAk','NA','ND','NAj'),strip.white = T)
+colnames(ff)=c('harvMgmtYr','totSpringUseHarvMort','aerialPeakBM','aerialMaxPossBM','aerialMiSpawn','aerialMiDaysSpawn','asaUnexplEsc','asaPreFishEst','obsAcoustPeakBMFall','obsAcoustPeakBMSpr','priorYrForecast')
+
+ff2=ff %>%
+  filter(!is.na(asaPreFishEst)) %>%
+  rename(Name=harvMgmtYr) %>%
+  mutate(preFish=gsub(',','',asaPreFishEst)) %>%
+  mutate(herrBmTonnes=as.numeric(preFish)*0.907185) %>% ##conversion from st to metricT
+  select(Name,herrBmTonnes)
+
+pwsEwe=merge(pwsEwe,ff2,all.x=T)
+pwsEwe[2,"herrBmTonnes"]=0
+pwsEwe[64,"herrBmTonnes"]='relativeBiomass'
+
+
+######### Zooplankton SEA proj: 94-98 --> OFF SHORE Zooplankton
+## TO calculated these in first model
+
+######### PWS Zooplankton tows - Campbell
+## connect to access db: http://rprogramming.net/connect-to-ms-access-in-r/
+library(Hmisc)
+pwsZoo <- mdb.get("eweData/LTM_PWS_Zooplankton.accdb") 
+contents(pwsZoo) # 3 tables, menu, cruise data, tow data
+
+#pzM<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='menutblTaxa') # species list
+#pzCr<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblCruiseData') # cruise data
+pzTow<-mdb.get('eweData/LTM_PWS_Zooplankton.accdb',tables='tblTowData') # Tow data, contains species concetrations per tow and year embeded in the TowID other metadata tables not needed
+
+## Cam says no need to aggregate into omnivore/herbivore
+## Campbell confirmed that the "total"column from pzTow is nIndividuals/m3
+
+yrSpl=strsplit(as.character(pzTow$TowID),'-')
+pzTow2=mutate(pzTow,Name=sapply(yrSpl,function(x) x[1]))
+
+pzGrps=group_by(pzTow2,Name,Species)
+pzt=pzGrps %>%
+  summarise(plktnConc=mean(Total))%>%
+  select(Name,Species,plnktnConc)
+
+pwsPlk=dcast(pzt,Name~Species,value.var = 'plktnConc')
+pwsPlk[7,1:212]='concentration (indiv/m3)'
+
+
+######### ADF&G Walleye Pollock biomass estimates (mt) from 2003 report (find more recent?)
+
+wpk=read.csv('eweData/tabulaPollockRIR.2A.2002.28.csv',header=T,stringsAsFactors = F,na.strings=c('',' ','NA'))
+yearSp=strsplit(wpk$Estimation.Source,' ')
+wpk2=wpk %>%
+  mutate(Name=sapply(yearSp,function(x) x[1])) %>%
+  filter(!is.na(Biomass..mi.)) %>%
+  filter(!duplicated(Name)) %>%
+  mutate(wPollBm=gsub(',','',Biomass..mi.)) %>%
+  select(Name,wPollBm)
+pwsEwe=merge(pwsEwe,wpk2,all.x=T)
+pwsEwe[64,'wPollBm']='relativeBiomass'
