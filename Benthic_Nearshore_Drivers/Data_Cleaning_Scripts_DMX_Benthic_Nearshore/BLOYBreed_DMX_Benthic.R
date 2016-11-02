@@ -32,10 +32,15 @@ BLOYzip1 <- unzip(BLOYzipd, list=TRUE)  # provides a list of all files in zipped
 BLOYzip <- BLOYzip1[grep(".csv", BLOYzip1$Name),]$Name # subsets all the .csv files
 BLOYzip_nest <- BLOYzip[grep("nest", BLOYzip)]   # subsets the nest data files
 
+# unzip_read <- function(file_list){
+#               # for every .csv file in zipped file list, unzip it & read it, bind all together
+#               z <- unzip(BLOYzipd, file_list)
+#               rbind.fill(lapply(z, read.csv))  
+#               }
 unzip_read <- function(file_list){
               # for every .csv file in zipped file list, unzip it & read it, bind all together
-              z <- unzip(BLOYzipd, file_list)
-              rbind.fill(lapply(z, read.csv))  
+              zz <- lapply(file_list, FUN = function(x) read.csv(x, stringsAsFactors = FALSE))
+              rbind.fill(zz)  
               }
 
 BLOY_nest1 <- unzip_read(BLOYzip_nest)
@@ -43,16 +48,14 @@ unlink(BLOYzipd)
 
 # Cleaning, filtering, etc. 
 # clean first data frame (pre 2014 data)
-BLOY_nest1$NORTH[is.na(BLOY_nest1$NORTH)] <- as.numeric(as.character(
-                                             BLOY_nest1$NORTH_[is.na(BLOY_nest1$NORTH)]))
+BLOY_nest1$NORTH[is.na(BLOY_nest1$NORTH)] <- as.numeric(BLOY_nest1$NORTH_[is.na(BLOY_nest1$NORTH)])
 BLOY_nest1[BLOY_nest1 == "."] <- NA  # replace "." with NA in the entire data frame
 
 BLOY_nest <- BLOY_nest1 %>% 
-             select(-X,-X.1,-X.2,-NORTH_) %>%
+             select(-X,-X.1,-X.2,-Notes,-NORTH_,-START.TIME,-END.TIME) %>%
              dplyr::rename(BLOCK.NUMBER=BLOCK, Region=REGION, Nest_Site=NEST_SITE.., 
-                    Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, Chicks_Num=X._CHICKS, 
-                    Prey_Collected=PREY_COLL., LAT=NORTH, LON=WEST, Year=YEAR) %>%
-      #       filter(Year %in% c(2010,2011,2012,2013,2014,2015)) %>%
+                           Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, Chicks_Num=X._CHICKS, 
+                           Prey_Collected=PREY_COLL., LAT=NORTH, LON=WEST, Year=YEAR) %>%
              mutate(Region = replace(as.character(Region), Region=="PWS", "WPWS"),  
                     Site_Name = ifelse((SITE=="RI1" & Region=="KATM"),'Kukak Bay',
                                 ifelse((SITE=="RI1" & Region=="KEFJ"),'Aialik Bay',       
@@ -77,40 +80,43 @@ BLOY_nest <- BLOY_nest1 %>%
 # clean second data frame (2014)
 OysC[OysC == "."] <- NA  # replace "." with NA in the entire data frame
 
-OysC <- OysC %>%
-        select(-X) %>%  # remove weird blank column
-        dplyr::rename(Nest_Site=NEST_SITE.., Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, 
-               Chicks_Num=X._CHICKS, Prey_Collected=PREY_COLL., Region=Block.Name) %>%
-        mutate(Site_Name = ifelse((SITE=="RI-01" & Region=="KATM"),'Kukak Bay',  # add Site names
-                           ifelse((SITE=="RI-02" & Region=="KATM"),'Kaflia Bay',
-                           ifelse((SITE=="RI-03" & Region=="KATM"),'Kinak Bay',
-                           ifelse((SITE=="RI-04" & Region=="KATM"),'Amalik Bay',
-                           ifelse((SITE=="RI-05" & Region=="KATM"),'Takli Island',
-                           ifelse((SITE=="RI-01" & Region=="KEFJ"),'Aialik Bay',
-                           ifelse((SITE=="RI-02" & Region=="KEFJ"),'McCarty Fjord',
-                           ifelse((SITE=="RI-03" & Region=="KEFJ"),'Nuka Bay',
-                           ifelse((SITE=="RI-04" & Region=="KEFJ"),'Nuka Passage',
-                           ifelse((SITE=="RI-05" & Region=="KEFJ"),'Harris Bay',       
-                           ifelse((SITE=="RI-01" & Region=="WPWS"),'Hogan Bay',
-                           ifelse((SITE=="RI-02" & Region=="WPWS"),'Iktua Bay',
-                           ifelse((SITE=="RI-03" & Region=="WPWS"),'Whale Bay',
-                           ifelse((SITE=="RI-04" & Region=="WPWS"),'Johnson Bay',
-                           ifelse((SITE=="RI-05" & Region=="WPWS"),'Herring Bay',        
-                           ""))))))))))))))),
-               Year = sapply(strsplit(as.character(DATE), split="/") , function(x) x[3]), # create Sample Year column
-               Year = ifelse(Year %in% c("14-6","2014 - 6"), '2014', Year),  # replace weird first date 
-               Adults_Num = replace(Adults_Num, Adults_Num=="U", NA),
-               Eggs_Num = replace(Eggs_Num, Eggs_Num=="U", NA),
-               Chicks_Num = replace(Chicks_Num, Chicks_Num=="U", NA)
-               )
+OysC2 <- OysC %>%
+         select(-X,-Notes) %>%  # remove weird blank column
+         dplyr::rename(Nest_Site=NEST_SITE.., Adults_Num=X._ADULTS, Eggs_Num=X._EGGS, 
+                       Chicks_Num=X._CHICKS, Prey_Collected=PREY_COLL., Region=Block.Name) %>%
+         mutate(Site_Name = ifelse((SITE=="RI-01" & Region=="KATM"),'Kukak Bay',  # add Site names
+                            ifelse((SITE=="RI-02" & Region=="KATM"),'Kaflia Bay',
+                            ifelse((SITE=="RI-03" & Region=="KATM"),'Kinak Bay',
+                            ifelse((SITE=="RI-04" & Region=="KATM"),'Amalik Bay',
+                            ifelse((SITE=="RI-05" & Region=="KATM"),'Takli Island',
+                            ifelse((SITE=="RI-01" & Region=="KEFJ"),'Aialik Bay',
+                            ifelse((SITE=="RI-02" & Region=="KEFJ"),'McCarty Fjord',
+                            ifelse((SITE=="RI-03" & Region=="KEFJ"),'Nuka Bay',
+                            ifelse((SITE=="RI-04" & Region=="KEFJ"),'Nuka Passage',
+                            ifelse((SITE=="RI-05" & Region=="KEFJ"),'Harris Bay',       
+                            ifelse((SITE=="RI-01" & Region=="WPWS"),'Hogan Bay',
+                            ifelse((SITE=="RI-02" & Region=="WPWS"),'Iktua Bay',
+                            ifelse((SITE=="RI-03" & Region=="WPWS"),'Whale Bay',
+                            ifelse((SITE=="RI-04" & Region=="WPWS"),'Johnson Bay',
+                            ifelse((SITE=="RI-05" & Region=="WPWS"),'Herring Bay',        
+                            ""))))))))))))))),
+                Year = sapply(strsplit(as.character(DATE), split="/") , function(x) x[3]), # create Sample Year column
+                Year = ifelse(Year %in% c("14-6","2014 - 6"), '2014', Year),  # replace weird first date
+                Year = as.numeric(Year),
+                Adults_Num = replace(Adults_Num, Adults_Num=="U", NA),
+                Eggs_Num = replace(Eggs_Num, Eggs_Num=="U", NA),
+                Chicks_Num = replace(Chicks_Num, Chicks_Num=="U", NA)
+                )
          
   
   
-  # bind the two data frames together
-OysC2 <- rbind.fill(OysC, BLOY_nest)
+# bind the two data frames together
 
-OyC_GOA <- OysC2 %>%
-           select(-START.TIME,-END.TIME) %>%
+OysC3 <- bind_rows(OysC2, BLOY_nest)
+
+
+OyC_GOA <- OysC3 %>%
+           #select(-START.TIME,-END.TIME) %>%
            filter(STATUS %in% c('A','O'), Site_Name!="") %>%
            mutate_each(funs(as.numeric), Adults_Num,Chicks_Num,Eggs_Num) %>% # change columns to numeric
            group_by(Region, Site_Name, Year) %>%
