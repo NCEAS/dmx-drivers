@@ -39,18 +39,8 @@ IA2 <- IA %>%
        bind_rows(IA15) %>%
        mutate(Lump_Name = ifelse((Lump_Name == ""), Species_Name, Lump_Name))
 
-# add zeros for samples where species were not observed
-# Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
-#DT <-  as.data.table(as.data.frame(IA_))
-#setkey(DT, Site_Name, Sample_Year, Quadrat_Num, Species_Name)
-#DT2 <- CJ(unique(DT$Site_Name), unique(DT$Sample_Year), unique(DT$Quadrat_Num),
-#          unique(DT$Species_Name))
-#colnames(DT2) <- c("Site_Name","Sample_Year","Quadrat_Num","Species_Name")
-#IA2 <- full_join(IA_, DT2)
 
-#head(IA2) ; tail(IA2)
-
-
+#####
 # Cleaning
 # define common categories of species for larger aggregation of data
 anemone <-  c("Anthopleura elegantissima","Anthopleura xanthogrammica","Epiactis sp.",
@@ -164,6 +154,7 @@ PerCovCalc <- function(df, new_column_name) {
                      count(Site_Code, Site_Name, Year, Elevation_Position, Quadrat, Point_Count) %>%
               # calculate percent cover per quadrat  
                      mutate(Per_Cov = (n/Point_Count)*100) %>% 
+              # get the mean of the two quadrats for each of 12 position along shore
                      group_by(Site_Name, Year, Quadrat) %>%
                      summarise_(.dots = setNames(list(~mean(Per_Cov)), new_column_name)) %>%  # mean of elevations together
                      ungroup() %>% 
