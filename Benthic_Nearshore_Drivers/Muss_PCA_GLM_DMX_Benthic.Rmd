@@ -28,9 +28,9 @@ BenNear_m <- BenNearMuss %>%
                     Region %in% c("WPWS","KATM","KEFJ"), 
                     !(Site_Name %in% c("Northwest Bay", "Herring Bay-Southwest", "Herring Bay-Bear Cove",
                                        "Ninagiak Island", "Disk Island"))) %>%
-             mutate_each(funs(as.numeric), Otter_Abun_est) %>%
+             #mutate_each(funs(as.numeric), Otter_Abun_est) %>%
              mutate(log_mussel_Per_Cov = log(mussel_Per_Cov+1),
-                    log_SOf_MusselSumBmss_gWW = log(SOf_MusselSumBmss_gWW+1),
+                    #log_SOf_MusselSumBmss_gWW = log(SOf_MusselSumBmss_gWW+1),
                     log_TotChlA_micgL_FlMn = log(TotChlA_micgL_FlMn+1),
                     log_TotChlA_micgL_SpMn = log(TotChlA_micgL_SpMn+1),
                     log_TotChlA_micgL_AnnMn = log(TotChlA_micgL_AnnMn+1)) %>%
