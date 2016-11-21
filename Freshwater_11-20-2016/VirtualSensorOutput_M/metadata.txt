@@ -1,0 +1,11 @@
+Virtual Sensor Output - The following time series is produced from extracting data out of a netCDF model to emulate what a sensor would collect if it were recording information from a location and depth within the model.Model Name: Gulf of Alaska Modeled Mean Daily Streamflow
+Model Parameter: q
+Model Spatial Resolution: None
+Model Temporal Resolution (Period): 1 hours
+Model Hyperlink: None
+Latitude: 60.134863313680086
+Longitude: -147.96738013737635
+Depth: 0.0
+Download Time: 2016-11-20T23:32:40Z
+Start Time: 1979-09-01T00:00:00Z
+End Time: 2014-08-31T00:00:00Z
