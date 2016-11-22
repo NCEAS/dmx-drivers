@@ -77,11 +77,11 @@ all_info <- all_yrs[rep(seq_len(nrow(all_yrs)), each=5),]
 
 m_WTmp <- all_info %>%
           full_join(Hobo_WTmp_ann) %>%
-          select(-Hobo_WaterTemp_AnnMin, -Hobo_WaterTemp_AnnMax) 
+          select(-Hobo_WaterTemp_AnnMin, -Hobo_WaterTemp_AnnMax) %>%
 
 
-              mutate(Bin_Value = ifelse((is.na(value)),'0',
-                                 ifelse((!is.na(value)),'1',""))) %>%
+              mutate(Bin_Value = ifelse((is.na(Hobo_WaterTemp_AnnMn)),'0',
+                                 ifelse((!is.na(Hobo_WaterTemp_AnnMn)),'1',"")))# %>%
              # dplyr::rename(DataSet=variable) %>%
               mutate_each(funs(as.character), Site_Name) %>%
               mutate_each(funs(as.character), Data_Set)
