@@ -214,9 +214,9 @@ BenNear <- merge(BenNear,OyC_GOA,all.x=T)         # BLOY breeding adults abundan
 BenNear <- merge(BenNear,REG,all.x=T)             # Sea Otter energy recovery (kcal/min)
 BenNear <- merge(BenNear,WaterTmp_WAnom,all.x=T)  # Water Temp Anomoly Winter Mean
 BenNear <- merge(BenNear,WaterTmp_SAnom,all.x=T)  # Water Temp Anomoly Spring Mean
-BenNear <- merge(BenNear,Fresh_H2O_Spr,all.x=T)   # Freshwater Discharge Spring Mean
-BenNear <- merge(BenNear,Fresh_H2O_Fal,all.x=T)   # Freshwater Discharge Fall Mean
-BenNear <- merge(BenNear,Fresh_H2O_Yr,all.x=T)    # Freshwater Discharge Annual Mean
+BenNear <- merge(BenNear,FWDisc_Spring,all.x=T)   # Freshwater Discharge Spring Mean
+BenNear <- merge(BenNear,FWDisc_Fall,all.x=T)     # Freshwater Discharge Fall Mean
+BenNear <- merge(BenNear,FWDisc_Yearly,all.x=T)   # Freshwater Discharge Annual Mean
 
 
 BenNear <- arrange(BenNear,Region,Site_Name,Year,Quadrat)
