@@ -84,61 +84,61 @@ FWDisc_a1 <- bind_rows(FWDisc_df_list) # bind the list of dataframes output by l
 
 # add in the site and region columns
 FWDisc_all <- FWDisc_a1 %>%
-              mutate(Site = ifelse(File_Code == "A/", "Amalik Bay",
-                            ifelse(File_Code == "B/", "Kaflia Bay",
-                            ifelse(File_Code %in% c("C1","C2","C3"), "Kinak Bay",
-                            ifelse(File_Code %in% c("D1", "D2"), "Kukak Bay",
-                            ifelse(File_Code == "E/", "Takli Island",
-                            ifelse(File_Code == "F/", "Aialik Bay",
-                            ifelse(File_Code == "G/", "Harris Bay",
-                            ifelse(File_Code == "H/", "McCarty Fjord",
-                            ifelse(File_Code == "I/", "Nuka Bay",
-                            ifelse(File_Code == "J/", "Nuka Passage", 
-                            ifelse(File_Code == "K/", "Herring Bay",
-                            ifelse(File_Code == "L/", "Hogan Bay",
-                            ifelse(File_Code == "M/", "Iktua Bay",
-                            ifelse(File_Code == "N/", "Johnson Bay",
-                            ifelse(File_Code %in% c("O1", "O2"), "Whale Bay", 
-                                   ""))))))))))))))),
-                     Region = ifelse(Site %in% c("Amalik Bay","Kaflia Bay","Kinak Bay",
-                                                 "Kukak Bay","Takli Island"), "KATM",
-                              ifelse(Site %in% c("Aialik Bay","Harris Bay","McCarty Fjord",
-                                                 "Nuka Bay","Nuka Passage"), "KEFJ",
-                              ifelse(Site %in% c("Herring Bay","Hogan Bay","Iktua Bay",
-                                                 "Johnson Bay","Whale Bay"), "WPWS", "")))) %>%
-              arrange(Region, Site, Year, Month, Day)
+              mutate(Site_Name = ifelse(File_Code == "A/", "Amalik Bay",
+                                 ifelse(File_Code == "B/", "Kaflia Bay",
+                                 ifelse(File_Code %in% c("C1","C2","C3"), "Kinak Bay",
+                                 ifelse(File_Code %in% c("D1", "D2"), "Kukak Bay",
+                                 ifelse(File_Code == "E/", "Takli Island",
+                                 ifelse(File_Code == "F/", "Aialik Bay",
+                                 ifelse(File_Code == "G/", "Harris Bay",
+                                 ifelse(File_Code == "H/", "McCarty Fjord",
+                                 ifelse(File_Code == "I/", "Nuka Bay",
+                                 ifelse(File_Code == "J/", "Nuka Passage", 
+                                 ifelse(File_Code == "K/", "Herring Bay",
+                                 ifelse(File_Code == "L/", "Hogan Bay",
+                                 ifelse(File_Code == "M/", "Iktua Bay",
+                                 ifelse(File_Code == "N/", "Johnson Bay",
+                                 ifelse(File_Code %in% c("O1", "O2"), "Whale Bay", 
+                                        ""))))))))))))))),
+                     Region = ifelse(Site_Name %in% c("Amalik Bay","Kaflia Bay","Kinak Bay",
+                                                      "Kukak Bay","Takli Island"), "KATM",
+                              ifelse(Site_Name %in% c("Aialik Bay","Harris Bay","McCarty Fjord",
+                                                      "Nuka Bay","Nuka Passage"), "KEFJ",
+                              ifelse(Site_Name %in% c("Herring Bay","Hogan Bay","Iktua Bay",
+                                                      "Johnson Bay","Whale Bay"), "WPWS", "")))) %>%
+              arrange(Region, Site_Name, Year, Month, Day)
               
 
 # FWDisc_Monthly <- FWDisc_all %>%
 #                   select(-date_time) %>%
-#                   group_by(Region, Site, Latitude, Longitude, File_Code, Year, Month) %>%
+#                   group_by(Region, Site_Name, Latitude, Longitude, File_Code, Year, Month) %>%
 #                   summarize(FWDisc_MeanMonthly_ft3s1 = mean(FW_Discharge_ft3_s1)) %>%
 #                   ungroup()
 
 FWDisc_Spring <- FWDisc_all %>%
                  select(-date_time) %>%
                  filter(Month %in% c("03", "04", "05")) %>%
-                 group_by(Region, Site, Latitude, Longitude, File_Code, Year) %>%
+                 group_by(Region, Site_Name, Latitude, Longitude, File_Code, Year) %>%
                  summarize(FWDisc_MeanSpring_ft3s1 = mean(FW_Discharge_ft3_s1)) %>%
                  ungroup() %>% 
-                 select(Region, Site, Year, FWDisc_MeanSpring_ft3s1)
+                 select(Region, Site_Name, Year, FWDisc_MeanSpring_ft3s1)
 
 
 FWDisc_Fall <- FWDisc_all %>%
                select(-date_time) %>%
                filter(Month %in% c("03", "10", "11")) %>%
-               group_by(Region, Site, Latitude, Longitude, File_Code, Year) %>%
+               group_by(Region, Site_Name, Latitude, Longitude, File_Code, Year) %>%
                summarize(FWDisc_MeanFall_ft3s1 = mean(FW_Discharge_ft3_s1)) %>%
                ungroup() %>% 
-               select(Region, Site, Year, FWDisc_MeanFall_ft3s1)
+               select(Region, Site_Name, Year, FWDisc_MeanFall_ft3s1)
 
 
 FWDisc_Yearly <- FWDisc_all %>%
                  select(-date_time) %>%
-                 group_by(Region, Site, Latitude, Longitude, File_Code, Year) %>%
+                 group_by(Region, Site_Name, Latitude, Longitude, File_Code, Year) %>%
                  summarize(FWDisc_MeanYearly_ft3s1 = mean(FW_Discharge_ft3_s1)) %>%
                  ungroup() %>% 
-                 select(Region, Site, Year, FWDisc_MeanYearly_ft3s1)
+                 select(Region, Site_Name, Year, FWDisc_MeanYearly_ft3s1)
 
 
   
