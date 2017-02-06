@@ -38,6 +38,13 @@ head(Chl_df) ; str(Chl_df)
 
 ##
 # Function to format the date stored as character into the date format
+
+#' Date Formatter Function
+#' @param df 
+#' @param date_column 
+#' @return
+#' @export
+#' @examples
 date_formatter <- function(df, date_column="Date") {
                   df_tmp <- df
                   # check if there is a date column
@@ -60,6 +67,12 @@ date_formatter <- function(df, date_column="Date") {
 ##
 
 # Get more years of data 2011 - 2015
+
+#' Load Recent Data Function
+#' @param path 
+#' @return
+#' @export
+#' @examples
 load_my_data <- function(path) { 
                 # read the other csv
                 files <- dir(path, pattern = '\\.csv', full.names = TRUE)

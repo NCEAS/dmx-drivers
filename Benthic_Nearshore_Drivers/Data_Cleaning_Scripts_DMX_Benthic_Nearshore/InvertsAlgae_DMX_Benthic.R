@@ -28,7 +28,7 @@ IA <- read.csv(file=textConnection(IA1))
 head(IA)
 
 # 2015 data
-URL_IA15 <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-uRFppOVdDUDdqM1U"
+URL_IA15 <- "https://workspace.aoos.org/published/file/35280912-c6f9-479b-85b1-c016bd17d1f2/BenthicNearshoreSystemsInGOA_SOP04_RockyCover_2015_Data_20150914.csv"
 IAGet15 <- GET(URL_IA15)
 IA115 <- content(IAGet15, as='text')
 IA15 <- read.csv(file=textConnection(IA115))
@@ -140,6 +140,13 @@ head(IA_GOA) ; IA_GOA[45:90,]
 ##### 
 ##### 
 # FUNCTION for getting Percent Cover for all intertidal inverts and algae
+
+#' Percent Cover Calculation Function
+#' @param df 
+#' @param new_column_name 
+#' @return df1
+#' @export
+#' @examples
 PerCovCalc <- function(df, new_column_name) { 
               # calculate the total number of points used in each quadrat
               x <- IA_GOA %>% 
@@ -167,6 +174,12 @@ PerCovCalc <- function(df, new_column_name) {
 # FUNCTION for adding zeros for samples where species were not observed
 # Adapted From http://stackoverflow.com/questions/10438969/fastest-way-to-add-rows-for-missing-values-in-a-data-frame
 
+#' Add Zeros for non-observed data Function
+#' @param df 
+#' @param new_column_name 
+#' @return u
+#' @export
+#' @examples
 AddZeros <- function(df, new_column_name){
             # run function PerCovCalc here and make the output (df1) available to the pipe below
             df1 <- PerCovCalc(df, new_column_name)  

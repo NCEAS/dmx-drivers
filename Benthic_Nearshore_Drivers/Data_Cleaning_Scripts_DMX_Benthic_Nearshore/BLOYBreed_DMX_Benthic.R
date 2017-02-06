@@ -37,6 +37,12 @@ BLOYzip_nest <- BLOYzip[grep("nest", BLOYzip)]   # subsets the nest data files
 #               z <- unzip(BLOYzipd, file_list)
 #               rbind.fill(lapply(z, read.csv))  
 #               }
+
+#' Unzip and Read Files Function
+#' @param file_list 
+#' @return
+#' @export
+#' @examples
 unzip_read <- function(file_list){
               # for every .csv file in zipped file list, unzip it & read it, bind all together
               zz <- lapply(file_list, FUN = function(x) read.csv(x, stringsAsFactors = FALSE))

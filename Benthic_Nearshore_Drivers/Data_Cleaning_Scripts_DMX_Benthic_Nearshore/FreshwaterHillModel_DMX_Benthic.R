@@ -53,6 +53,12 @@ FW_file_codes <- read.csv("./Freshwater_11-20-2016/sites_latlong.csv")
 
 # function that will add a column to each file with the site name, and
 # subset the years to ones that we are using (2005:2015)
+
+#' Data Cleaning Function
+#' @param df_location 
+#' @return FWA1
+#' @export
+#' @examples
 FW_Model_Data <- function(df_location){
                  # read in the df
                  FWA <- read.csv(df_location, stringsAsFactors = FALSE)
@@ -68,6 +74,7 @@ FW_Model_Data <- function(df_location){
                                 Month = str_sub(FWA$date_time, 6,7),
                                 Day = str_sub(FWA$date_time, 9,10)) %>%
                          filter(Year %in% c(2005:2015))
+                 return(FWA1)
                  }
 
 

@@ -32,6 +32,12 @@ library(stringr)
 #############
 if(!exists("BuoyData")|!exists("Buoys_all")) {
 # Function to read in all these annual bouy data text files, and make data frames of them.
+  
+#' Buoy Data Download Function
+#' @param data_url 
+#' @return df
+#' @export
+#' @examples
 BuoyData <- function(data_url){
             dataGet <- GET(data_url)
             data1 <- content(dataGet, as='text')
