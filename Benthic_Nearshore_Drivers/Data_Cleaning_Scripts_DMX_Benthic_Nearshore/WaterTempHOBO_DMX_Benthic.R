@@ -54,32 +54,32 @@ Hobo_WTmp_ann <- HoboWTmp %>%
                  select(-X_TYPE_, -X_FREQ_, -std_w_temp) %>%
                  group_by(Region, Site_Name, Year) %>%
                  summarise(Hobo_WaterTemp_AnnMn=mean(mean_w_temp),
-                           Hobo_WaterTemp_AnnMin=mean(min_w_temp),
-                           Hobo_WaterTemp_AnnMax=mean(max_w_temp)) %>%
+                           Hobo_WaterTemp_AnnMin=min(min_w_temp),
+                           Hobo_WaterTemp_AnnMax=max(max_w_temp)) %>%
                  ungroup() %>%
                  arrange(Site_Name, Year)
 
 
-# Examine data for holes in the data
-melt_WTmp <- reshape::melt.data.frame(as.data.frame(Hobo_WTmp_ann), id.vars=c("Year","Region","Site_Name"),      
-                      variable_name="WTmp_type")
-melt_WTmp <- arrange(melt_WTmp, Site_Name, Year)
+# # Examine data for holes in the data
+# melt_WTmp <- reshape::melt.data.frame(as.data.frame(Hobo_WTmp_ann), id.vars=c("Year","Region","Site_Name"),      
+#                       variable_name="WTmp_type")
+# melt_WTmp <- arrange(melt_WTmp, Site_Name, Year)
+# 
+# # 15 sites, 3 data types, 10 years = 450 rows that the full dataframe should have
+# 
+# all_yrs <- data.frame(Year = rep(c(2006,2006,2006,2007,2007,2007,2008,2008,2008,2009,2009,2009,
+#                                    2010,2010,2010,2011,2011,2011,2012,2012,2012,2013,2013,2013,
+#                                    2014,2014,2014,2015,2015,2015), 15),
+#                       Region = rep(c("WPWS","KEFJ","KATM"), 15))
+# 
+# all_info <- all_yrs[rep(seq_len(nrow(all_yrs)), each=5),]
 
-# 15 sites, 3 data types, 10 years = 450 rows that the full dataframe should have
 
-all_yrs <- data.frame(Year = rep(c(2006,2006,2006,2007,2007,2007,2008,2008,2008,2009,2009,2009,
-                                   2010,2010,2010,2011,2011,2011,2012,2012,2012,2013,2013,2013,
-                                   2014,2014,2014,2015,2015,2015), 15),
-                      Region = rep(c("WPWS","KEFJ","KATM"), 15))
-
-all_info <- all_yrs[rep(seq_len(nrow(all_yrs)), each=5),]
-
-
-WTmp_mn_ann_hobo <- all_info %>%
-                    full_join(Hobo_WTmp_ann) %>%
-                    select(-Hobo_WaterTemp_AnnMin, -Hobo_WaterTemp_AnnMax) %>%
+WTmp_mn_ann_hobo <- Hobo_WTmp_ann %>% #all_info %>%
+                   # full_join(Hobo_WTmp_ann) %>%
+                    select(-Hobo_WaterTemp_AnnMin, -Hobo_WaterTemp_AnnMax)# %>%
                     # remove any row with a NA in it, since in this case it means it wasn't sampled
-                    filter(complete.cases(.))
+                   # filter(complete.cases(.))
 
 
 
