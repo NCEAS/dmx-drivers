@@ -202,44 +202,25 @@ data_list <- list(ENSO_ann,           # ENSO anomaly annual
 )
 
 ## Function that merges all the dataframes 
-#' Merge Dataframe Function
+#' Dataframe Merging Function
 #' @param empty_df 
 #' @param param_list 
 #' @return
 #' @export
 #' @examples
 merge_dfs <- function(empty_df, param_list){
-                     # list_dfs <- merge(empty_df, y, all.x=T)
-                      full_df <- lapply(param_list, FUN=merge(all.x=T), empty_df)
+                      full_df <- empty_df
+                      for (i in 1:length(param_list)) {
+                           full_df <- merge(full_df, data_list[[i]], all.x=T)
+                      }
                       return(full_df)
              }
-
-
-# merge_dfs <- function(empty_df, param_list){
-#                      # list_dfs <- merge(empty_df, y, all.x=T)
-#                       full_df <- lapply(param_list, FUN=merge(all.x=T), empty_df)
-#                       return(full_df)
-#              }
-
-full_df <- data.frame(1,1)
-for (i in 1:length(data_list)) {
-     full_df <- merge(BenNear, data_list[i], all.x=T)
-     }
-test <- as.data.frame(full_df)    
-           
-               
+              
 ## Apply the function to all the entire list of parameter dataframes
-BenNear_test <- lapply(data_list, FUN=merge_dfs, empty_df=BenNear)
+BenNear <- merge_dfs(BenNear, data_list)
 
-BenNear_test1 <- merge_dfs(BenNear, data_list)
-
-
-#BenNear_test2 <- Reduce(function(BenNear,y) merge(BenNear,y, all.x=T), data_list)
-
-###########################
-
-
-BenNear <- arrange(BenNear,Region,Site_Name,Year,Quadrat)
+## Arrange the data frame
+BenNear <- arrange(BenNear, Region,Site_Name,Year,Quadrat)
 ## --------
 
 ## Optional: Write data frame to a CSV
