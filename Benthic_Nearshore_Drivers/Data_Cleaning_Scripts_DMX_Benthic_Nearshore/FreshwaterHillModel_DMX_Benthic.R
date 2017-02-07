@@ -116,26 +116,26 @@ FWDisc_all <- FWDisc_a1 %>%
 #                   ungroup()
 
 FWDisc_Spring <- FWDisc_all %>%
-                 select(-date_time) %>%
+                 select(-date_time, -Latitude, -Longitude, -File_Code) %>%
                  filter(Month %in% c("03", "04", "05")) %>%
-                 group_by(Region, Site_Name, Latitude, Longitude, File_Code, Year) %>%
+                 group_by(Region, Site_Name,  Year) %>%
                  summarize(FWDisc_MeanSpring_ft3s1 = mean(FW_Discharge_ft3_s1)) %>%
                  ungroup() %>% 
                  select(Region, Site_Name, Year, FWDisc_MeanSpring_ft3s1)
 
 
 FWDisc_Fall <- FWDisc_all %>%
-               select(-date_time) %>%
+               select(-date_time, -Latitude, -Longitude, -File_Code) %>%
                filter(Month %in% c("03", "10", "11")) %>%
-               group_by(Region, Site_Name, Latitude, Longitude, File_Code, Year) %>%
+               group_by(Region, Site_Name, Year) %>%
                summarize(FWDisc_MeanFall_ft3s1 = mean(FW_Discharge_ft3_s1)) %>%
                ungroup() %>% 
                select(Region, Site_Name, Year, FWDisc_MeanFall_ft3s1)
 
 
 FWDisc_Yearly <- FWDisc_all %>%
-                 select(-date_time) %>%
-                 group_by(Region, Site_Name, Latitude, Longitude, File_Code, Year) %>%
+                 select(-date_time, -Latitude, -Longitude, -File_Code) %>%
+                 group_by(Region, Site_Name, Year) %>%
                  summarize(FWDisc_MeanYearly_ft3s1 = mean(FW_Discharge_ft3_s1)) %>%
                  ungroup() %>% 
                  select(Region, Site_Name, Year, FWDisc_MeanYearly_ft3s1)
