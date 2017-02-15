@@ -171,6 +171,7 @@ data_sub_model_run <- function(orig_df, select_cols){
   
 }
   
+
 ```
 
 
@@ -1392,197 +1393,184 @@ Sce_14_t
 
 ##### Scenario 15 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l15 <- BenNear_tran_cpa %>%  
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_FlMn, SOtt_AnnMnEngRec, 
-                                   BLOYAdult_breed_n, Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov, Whelk_Sum_n_m2, 
-                                   barnacle_Per_Cov)
 
-al_glm_l15_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l15, family=gaussian)
-summary(al_glm_l15_t)
+BenNear_tran_cpa_sub2l15 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_AnnMnEngRec",
+                              "BLOYAdult_breed_n", "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov",
+                              "Whelk_Sum_n_m2", "barnacle_Per_Cov"
+                              )
+
+Sce_15_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l15)
+Sce_15_t
+
 ```
 
 ##### Scenario 16 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l16 <- BenNear_tran_cpa %>%  
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_FlMn, SOtt_AnnMnEngRec, 
-                                   Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov, Whelk_Sum_n_m2, 
-                                   barnacle_Per_Cov)
 
-al_glm_l16_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l16, family=gaussian)
-summary(al_glm_l16_t)
+BenNear_tran_cpa_sub2l16 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_AnnMnEngRec", 
+                              "Bare_Sub_Per_Cov",  "Brwn_alg_ann_Per_Cov", "Whelk_Sum_n_m2", 
+                              "barnacle_Per_Cov"
+                              )
+
+Sce_16_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l16)
+Sce_16_t
+
 ```
 
 ##### Scenario 17 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l17 <- BenNear_tran_cpa %>% 
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_FlMn, 
-                                   FWDisc_MeanYearly_ft3s1, SOtt_AnnMnEngRec, NPGO_anul_mn,
-                                   BLOYAdult_breed_n, Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov, Green_alg_ann_Per_Cov
-                                   )
-                                  
- 
-al_glm_l17_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l17, family=gaussian)
-summary(al_glm_l17_t)
+
+BenNear_tran_cpa_sub2l17 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_MeanYearly_ft3s1", 
+                              "SOtt_AnnMnEngRec", "NPGO_anul_mn", "BLOYAdult_breed_n",
+                              "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov", "Green_alg_ann_Per_Cov"
+                              )
+
+Sce_17_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l17)
+Sce_17_t
+
 ```
 
 ##### Scenario 18 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l18 <- BenNear_tran_cpa %>% 
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_FlMn, 
-                                   Hobo_WaterTemp_AnnMn, SOtt_AnnMnEngRec, NPGO_anul_mn,
-                                   BLOYAdult_breed_n, Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov, Green_alg_ann_Per_Cov
-                                   )
-                                  
- 
-al_glm_l18_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l18, family=gaussian)
-summary(al_glm_l18_t)
+
+BenNear_tran_cpa_sub2l18 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "Hobo_WaterTemp_AnnMn", 
+                              "SOtt_AnnMnEngRec", "NPGO_anul_mn", "BLOYAdult_breed_n", 
+                              "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov", "Green_alg_ann_Per_Cov"
+                              )
+
+Sce_18_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l18)
+Sce_18_t
+
 ```
 
 ##### Scenario 19 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l19 <- BenNear_tran_cpa %>%  
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_FlMn, SOtt_AnnMnEngRec, 
-                                   FWDisc_MeanYearly_ft3s1, Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov, Whelk_Sum_n_m2, 
-                                   barnacle_Per_Cov)
 
-al_glm_l19_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l19, family=gaussian)
-summary(al_glm_l19_t)
+BenNear_tran_cpa_sub2l19 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_AnnMnEngRec", 
+                              "FWDisc_MeanYearly_ft3s1", "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov", 
+                              "Whelk_Sum_n_m2", "barnacle_Per_Cov"
+                              )
+
+Sce_19_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l19)
+Sce_19_t
+
 ```
 
 ##### Scenario 20 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l20 <- BenNear_tran_cpa %>%  
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_FlMn, SOtt_AnnMnEngRec, 
-                                   FWDisc_MeanYearly_ft3s1, Bare_Sub_Per_Cov, NPGO_anul_mn,
-                                   Brwn_alg_ann_Per_Cov, Whelk_Sum_n_m2, 
-                                   barnacle_Per_Cov)
 
-al_glm_l20_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l20, family=gaussian)
-summary(al_glm_l20_t)
+BenNear_tran_cpa_sub2l20 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_AnnMnEngRec",
+                              "FWDisc_MeanYearly_ft3s1", "Bare_Sub_Per_Cov", "NPGO_anul_mn",
+                              "Brwn_alg_ann_Per_Cov", "Whelk_Sum_n_m2", "barnacle_Per_Cov"
+                              )
+
+Sce_20_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l20)
+Sce_20_t
+
 ```
 
 ##### Scenario 21 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l21 <- BenNear_tran_cpa %>%  
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_FlMn, SOtt_AnnMnEngRec, 
-                                   FWDisc_MeanYearly_ft3s1, Bare_Sub_Per_Cov, UpWelAnom_anul_mn,
-                                   Brwn_alg_ann_Per_Cov, Whelk_Sum_n_m2, 
-                                   barnacle_Per_Cov)
 
-al_glm_l21_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l21, family=gaussian)
-summary(al_glm_l21_t)
+BenNear_tran_cpa_sub2l21 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_AnnMnEngRec", 
+                              "FWDisc_MeanYearly_ft3s1", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn",
+                              "Brwn_alg_ann_Per_Cov", "Whelk_Sum_n_m2", "barnacle_Per_Cov"
+                              )
+
+Sce_21_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l21)
+Sce_21_t
+
 ```
 
 ##### Scenario 22 - Transect      Co-Winner!!
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l22 <- BenNear_tran_cpa %>% 
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_FlMn, 
-                                   FWDisc_MeanYearly_ft3s1, NPGO_anul_mn,
-                                   Hobo_WaterTemp_AnnMn,  BLOYAdult_breed_n, Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov
-                                   )
-                                  
- 
-al_glm_l22_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l22, family=gaussian)
-summary(al_glm_l22_t)
+
+BenNear_tran_cpa_sub2l22 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_MeanYearly_ft3s1",
+                              "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "BLOYAdult_breed_n",
+                              "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov"
+                              )
+
+Sce_22_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l22)
+Sce_22_t
+
 ```
 
 ##### Scenario 23 - Transect 
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l23 <- BenNear_tran_cpa %>% 
-                            select(mussel_Anom,
-                                   LAG_log_TotChlA_micgL_FlMn, 
-                                   FWDisc_MeanYearly_ft3s1, NPGO_anul_mn,
-                                   Hobo_WaterTemp_AnnMn,  BLOYAdult_breed_n, Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov
-                                   )
-                                  
- 
-al_glm_l23_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l23, family=gaussian)
-summary(al_glm_l23_t)
+
+BenNear_tran_cpa_sub2l23 <- c("mussel_Anom", "LAG_log_TotChlA_micgL_FlMn", "FWDisc_MeanYearly_ft3s1",
+                              "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "BLOYAdult_breed_n",
+                              "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov"
+                              )
+
+Sce_23_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l23)
+Sce_23_t
+
 ```
 
 ##### Scenario 24 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l24 <- BenNear_tran_cpa %>% 
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_AnnMn, 
-                                   FWDisc_MeanYearly_ft3s1, NPGO_anul_mn,
-                                   Hobo_WaterTemp_AnnMn,  BLOYAdult_breed_n, Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov
-                                   )
-                                  
- 
-al_glm_l24_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l24, family=gaussian)
-summary(al_glm_l24_t)
+
+BenNear_tran_cpa_sub2l24 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                              "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "BLOYAdult_breed_n", 
+                              "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov"
+                              )
+
+Sce_24_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l24)
+Sce_24_t
+
 ```
 
 ##### Scenario 25 - Transect
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub2l25 <- BenNear_tran_cpa %>% 
-                            select(mussel_Anom,
-                                   log_TotChlA_micgL_AnnMn, 
-                                   FWDisc_MeanYearly_ft3s1, SOtt_AnnMnEngRec, NPGO_anul_mn,
-                                   Hobo_WaterTemp_AnnMn,  BLOYAdult_breed_n, Bare_Sub_Per_Cov,
-                                   Brwn_alg_ann_Per_Cov, Green_alg_ann_Per_Cov
-                                   )
-                                  
- 
-al_glm_l25_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l25, family=gaussian)
-summary(al_glm_l25_t)
+
+BenNear_tran_cpa_sub2l25 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1", 
+                              "SOtt_AnnMnEngRec", "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", 
+                              "BLOYAdult_breed_n", "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov", 
+                              "Green_alg_ann_Per_Cov"
+                              )
+
+Sce_25_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l25)
+Sce_25_t
 
 ```
 
 ##### Scenario 13 - Transect     Winner from Region-level analysis above
 ```{r, echo=FALSE}
 
-BenNear_reg_cpa_sub2f_t <- BenNear_tran_cpa %>% 
-                           select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                  NPGO_anul_mn, Hobo_WaterTemp_AnnMn,
-                                  Red_alg_per_Per_Cov, 
-                                  Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                  )
- 
-al_glm3f_t <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2f_t, family=gaussian)
-summary(al_glm3f_t)
+BenNear_reg_cpa_sub2f_t <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Red_alg_per_Per_Cov", 
+                             "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                             )
+
+Sce_13_t_r <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_reg_cpa_sub2f_t)
+Sce_13_t_r
+
 ```
 
 ##### Scenario 15 - Transect      Winner from Site-level analysis above
 ```{r, echo=FALSE}
-BenNear_site_cpa_sub215_t <- BenNear_tran_cpa %>% 
-                             select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                    NPGO_anul_mn,  
-                                    Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                    )
- 
-site_glm315_t <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub215_t, family=gaussian)
-summary(site_glm315_t)
+
+BenNear_site_cpa_sub215_t <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                               "NPGO_anul_mn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                               )
+
+Sce_15_t_s <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_site_cpa_sub215_t)
+Sce_15_t_s
+
 ```
 
 ##### Scenario 22 (15 plus preds) - Transect     Co-winner from Site-level analysis above
 ```{r, echo=FALSE}
-BenNear_tran_cpa_sub222_t <- BenNear_tran_cpa %>% 
-                             select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                    NPGO_anul_mn,  
-                                    Bare_Sub_Per_Cov, UpWelAnom_anul_mn,
-                                    BLOYAdult_breed_n
-                                    )
- 
-site_glm322_t <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub222_t, family=gaussian)
-summary(site_glm322_t)
+
+BenNear_tran_cpa_sub222_t <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                               "NPGO_anul_mn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn",
+                               "BLOYAdult_breed_n"
+                               )
+
+Sce_22_t_s <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub222_t)
+Sce_22_t_s
+
 ```
 
 
