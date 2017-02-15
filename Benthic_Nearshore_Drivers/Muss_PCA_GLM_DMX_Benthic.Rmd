@@ -430,6 +430,17 @@ Sce_16
 
 ```
 
+##### AIC values for all Regional models
+```{r, echo=FALSE}
+Reg_mod_list <- list(Sce_1, Sce_2, Sce_3, Sce_4, Sce_5, Sce_6, Sce_7, Sce_8, 
+                     Sce_9, Sce_10, Sce_11, Sce_12, Sce_13, Sce_14, Sce_15, Sce_16)
+
+for (i in 1:length(Reg_mod_list)) {
+     print(Reg_mod_list[[i]][[1]])
+     }
+
+```
+
 ##### NOTE: If other scales come up with other "best" models, test it all all scale levels.   
 ##### Also, test scenario 13 at other scales. 
 ##### Test model performance of the "best" model at each level on all levels.  
@@ -442,8 +453,8 @@ BenNear_site_cpa_sub215_r <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc
                                "NPGO_anul_mn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                                )
 
-Sce_15_Site <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_site_cpa_sub215_r)
-Sce_15_Site
+Sce_15s <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_site_cpa_sub215_r)
+Sce_15s
 
 ```
 
@@ -456,8 +467,8 @@ BenNear_tran_cpa_sub2l12_r <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc
                                 "Green_alg_ann_Per_Cov"
                                 )
 
-Sce_12_Trans <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_tran_cpa_sub2l12_r)
-Sce_12_Trans
+Sce_12t <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_tran_cpa_sub2l12_r)
+Sce_12t
 
 ```
 
@@ -674,306 +685,341 @@ pca_site_all
 ```
 
 
+##### Scenario 1 - Site
+```{r, echo=FALSE}
+##########################
+# PCA-informed model
 
+BenNear_site_cpa_sub <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "LAG_FWDisc_MeanYearly_ft3s1", 
+                          "FWDisc_MeanYearly_ft3s1", "UpWelAnom_anul_mn", "ENSO_anul_mn",
+                          "NPGO_anul_mn", "PDO_anul_mn", "Hobo_WaterTemp_AnnMn", "SOtt_AnnMnEngRec",
+                          "Fuc_dist_Per_Cov", "Brwn_alg_ann_Per_Cov", "Green_alg_ann_Per_Cov",
+                          "Red_alg_ann_Per_Cov", "Neo_Odon_sp_Per_Cov", "Whelk_Sum_n_m2",
+                          "barnacle_Per_Cov", "BLOYAdult_breed_n", "Bare_Sub_Per_Cov")
+
+Sce_1_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub)
+Sce_1_s
+
+```
+
+##### Scenario 2 - Site - kitchen sink
 ```{r, echo=FALSE}
 
+BenNear_site_cpa_sub2 <- c("-Year", "-Region", "-Site_Name", "-log_mussel_Per_Cov", "-UpWelAnom_fal_mn",
+                           "-UpWelAnom_spr_mn", "-TotChlA_micgL_FlMn", "-log_TotChlA_micgL_FlMn",
+                           "-ENSO_spr_mn", "-ENSO_fal_mn", "-PDO_spring_mn", "-PDO_winter_mn",
+                           "-WaterTmp_C_Winter", "-WaterTmp_WinterAnom", "-Red_alg_ann_Per_Cov", 
+                           "-PDO_anul_mn", "-LAG_log_TotChlA_micgL_AnnMn"
+                           )
 
-##########################
-# Scenario 1 - PCA-informed model
-BenNear_site_cpa_sub <- BenNear_site_cpa %>%
-                        select(mussel_Anom,
-                               log_TotChlA_micgL_AnnMn, LAG_FWDisc_MeanYearly_ft3s1, 
-                               FWDisc_MeanYearly_ft3s1,
-                               UpWelAnom_anul_mn, ENSO_anul_mn, NPGO_anul_mn, PDO_anul_mn, 
-                               Hobo_WaterTemp_AnnMn, SOtt_AnnMnEngRec, 
-                               Fuc_dist_Per_Cov, Brwn_alg_ann_Per_Cov, Green_alg_ann_Per_Cov, 
-                               Red_alg_ann_Per_Cov, Neo_Odon_sp_Per_Cov, Whelk_Sum_n_m2,
-                               barnacle_Per_Cov, BLOYAdult_breed_n, Bare_Sub_Per_Cov)
-                       
+Sce_2_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2)
+Sce_2_s
 
-ev_glm_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub, family=gaussian)
-summary(ev_glm_s)
+```
 
+#### Scenario 3 - Site
+```{r, echo=FALSE}
 
+BenNear_site_cpa_sub2l <- c("-Year", "-Region", "-Site_Name", "-log_mussel_Per_Cov", "-UpWelAnom_fal_mn",
+                            "-UpWelAnom_spr_mn", "-TotChlA_micgL_FlMn", "-log_TotChlA_micgL_FlMn",
+                            "-ENSO_spr_mn", "-ENSO_fal_mn", "-PDO_spring_mn", "-PDO_winter_mn",
+                            "-WaterTmp_C_Winter", "-WaterTmp_WinterAnom", "-Red_alg_ann_Per_Cov", 
+                            "-PDO_anul_mn", "-log_TotChlA_micgL_AnnMn"
+                            )
 
+Sce_3_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2l)
+Sce_3_s
 
-## Scenario 2 - kitchen sink
-BenNear_site_cpa_sub2 <- BenNear_site_cpa %>% 
-                        select(-Year, -Region, -Site_Name, -log_mussel_Per_Cov, 
-                               -UpWelAnom_fal_mn, -UpWelAnom_spr_mn,
-                               -TotChlA_micgL_FlMn,  
-                               -log_TotChlA_micgL_FlMn, 
-                               -ENSO_spr_mn, -ENSO_fal_mn, -PDO_spring_mn, -PDO_winter_mn,
-                               -WaterTmp_C_Winter, -WaterTmp_WinterAnom, 
-                               -Red_alg_ann_Per_Cov, 
-                               -PDO_anul_mn, -LAG_log_TotChlA_micgL_AnnMn
-                               )
- 
-al_glm_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2, family=gaussian)
-summary(al_glm_s)
+```
 
-## Scenario 3 
-BenNear_site_cpa_sub2l <- BenNear_site_cpa %>% 
-                          select(-Year, -Region, -Site_Name, -log_mussel_Per_Cov, 
-                                 -UpWelAnom_fal_mn, -UpWelAnom_spr_mn,
-                                 -TotChlA_micgL_FlMn, -log_TotChlA_micgL_FlMn, 
-                                 -ENSO_spr_mn, -ENSO_fal_mn, -PDO_spring_mn, -PDO_winter_mn,
-                                 -WaterTmp_C_Winter, -WaterTmp_WinterAnom, 
-                                 -Red_alg_ann_Per_Cov, 
-                                 -PDO_anul_mn, -log_TotChlA_micgL_AnnMn
-                                 )
- 
-al_glm_l_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2l, family=gaussian)
-summary(al_glm_l_s)
+##### Scenario 4 - Site
+```{r, echo=FALSE}
 
+BenNear_site_cpa_sub2pl <- c("-Year", "-Region",  "-Site_Name", "-log_mussel_Per_Cov", "-UpWelAnom_fal_mn",
+                             "-UpWelAnom_spr_mn", "-TotChlA_micgL_FlMn", "-log_TotChlA_micgL_FlMn",
+                             "-ENSO_spr_mn", "-ENSO_fal_mn", "-PDO_spring_mn", "-PDO_winter_mn",
+                             "-Red_alg_ann_Per_Cov", "-WaterTmp_WinterAnom", "-PDO_anul_mn",
+                             "-LAG_log_TotChlA_micgL_AnnMn"
+                             )
 
+Sce_4_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2pl)
+Sce_4_s
 
-##### Scenario 4
-BenNear_site_cpa_sub2pl <- BenNear_site_cpa %>% 
-                           select(-Year, -Region,  -Site_Name, -log_mussel_Per_Cov, 
-                                  -UpWelAnom_fal_mn, -UpWelAnom_spr_mn,
-                                  -TotChlA_micgL_FlMn, -log_TotChlA_micgL_FlMn, 
-                                  -ENSO_spr_mn, -ENSO_fal_mn, -PDO_spring_mn, -PDO_winter_mn, 
-                                  -Red_alg_ann_Per_Cov, -WaterTmp_WinterAnom,
-                                  -PDO_anul_mn, -LAG_log_TotChlA_micgL_AnnMn
-                                  )
- 
-al_glm_pl_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2pl, family=gaussian)
-summary(al_glm_pl_s)
+```
 
+##### Scenario 5 - Site
+```{r, echo=FALSE}
 
-##### Scenario 5
-BenNear_site_cpa_sub2a <- BenNear_site_cpa %>%
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                Bare_Sub_Per_Cov, NPGO_anul_mn, Fuc_dist_Per_Cov, 
-                                barnacle_Per_Cov
-                                )
+BenNear_site_cpa_sub2a <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                            "Bare_Sub_Per_Cov", "NPGO_anul_mn", "Fuc_dist_Per_Cov", 
+                            "barnacle_Per_Cov"
+                            )
 
-al_glm2_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2a, family=gaussian)
-summary(al_glm2_s)
+Sce_5_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2a)
+Sce_5_s
 
+```
 
-##### Scenario 6
-BenNear_site_cpa_sub2al <- BenNear_site_cpa %>%
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, LAG_FWDisc_MeanYearly_ft3s1,
-                                Bare_Sub_Per_Cov, NPGO_anul_mn, Fuc_dist_Per_Cov
-                                )
+##### Scenario 6 - Site
+```{r, echo=FALSE}
 
-al_glm2_l_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2al, family=gaussian)
-summary(al_glm2_l_s)
+BenNear_site_cpa_sub2al <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "LAG_FWDisc_MeanYearly_ft3s1",
+                             "Bare_Sub_Per_Cov", "NPGO_anul_mn", "Fuc_dist_Per_Cov"
+                             )
 
+Sce_6_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2al)
+Sce_6_s
 
-##### Scenario 7
-BenNear_site_cpa_sub2b <- BenNear_site_cpa %>% 
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                Bare_Sub_Per_Cov, Fuc_dist_Per_Cov,  Hobo_WaterTemp_AnnMn, 
-                                SOtt_AnnMnEngRec, BLOYAdult_breed_n, ENSO_anul_mn,
-                                UpWelAnom_anul_mn, NPGO_anul_mn
-                                )
- 
-al_glm3_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2b, family=gaussian)
-summary(al_glm3_s)
+```
 
-##### Scenario 8
-BenNear_site_cpa_sub2bb <- BenNear_site_cpa %>% 
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                NPGO_anul_mn, Hobo_WaterTemp_AnnMn, ENSO_anul_mn, 
-                                Fuc_dist_Per_Cov, Red_alg_per_Per_Cov, 
-                                Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                )
- 
-al_glm3b_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2bb, family=gaussian)
-summary(al_glm3b_s)
+##### Scenario 7 - Site
+```{r, echo=FALSE}
 
+BenNear_site_cpa_sub2b <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                            "Bare_Sub_Per_Cov", "Fuc_dist_Per_Cov",  "Hobo_WaterTemp_AnnMn", 
+                            "SOtt_AnnMnEngRec", "BLOYAdult_breed_n", "ENSO_anul_mn",
+                            "UpWelAnom_anul_mn", "NPGO_anul_mn"
+                            )
 
-##### Scenario 9 
-BenNear_site_cpa_sub2bt <- BenNear_site_cpa %>% 
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                Bare_Sub_Per_Cov, NPGO_anul_mn, 
-                                Fuc_dist_Per_Cov, Red_alg_per_Per_Cov, 
-                                UpWelAnom_anul_mn
-                                )
- 
-al_glm3bt_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2bt, family=gaussian)
-summary(al_glm3bt_s)
+Sce_7_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2b)
+Sce_7_s
 
+```
 
-##### Scenario 10
-BenNear_site_cpa_sub2bw <- BenNear_site_cpa %>% 
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                Bare_Sub_Per_Cov, NPGO_anul_mn, UpWelAnom_anul_mn, 
-                                Fuc_dist_Per_Cov, Red_alg_per_Per_Cov, 
-                                Whelk_Sum_n_m2, barnacle_Per_Cov
-                                )
- 
-al_glm3bw_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2bw, family=gaussian)
-summary(al_glm3bw_s)
+##### Scenario 8 - Site
+```{r, echo=FALSE}
 
-##### Scenario 11 
-BenNear_site_cpa_sub2e <- BenNear_site_cpa %>% 
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                NPGO_anul_mn, Hobo_WaterTemp_AnnMn,
-                                Fuc_dist_Per_Cov, Red_alg_per_Per_Cov, 
-                                Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                )
- 
-al_glm3e_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2e, family=gaussian)
-summary(al_glm3e_s)
+BenNear_site_cpa_sub2bb <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "ENSO_anul_mn", 
+                             "Fuc_dist_Per_Cov", "Red_alg_per_Per_Cov", "Bare_Sub_Per_Cov", 
+                             "UpWelAnom_anul_mn"
+                             )
 
-##### Scenario 12
-BenNear_site_cpa_sub2wt <- BenNear_site_cpa %>% 
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                NPGO_anul_mn, 
-                                Fuc_dist_Per_Cov, Red_alg_per_Per_Cov, 
-                                Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                )
- 
-al_glm3wt_s <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2wt, family=gaussian)
-summary(al_glm3wt_s)
+Sce_8_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2bb)
+Sce_8_s
 
+```
+
+##### Scenario 9 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2bt <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "Bare_Sub_Per_Cov", "NPGO_anul_mn", "Fuc_dist_Per_Cov", 
+                             "Red_alg_per_Per_Cov", "UpWelAnom_anul_mn"
+                             )
+
+Sce_9_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2bt)
+Sce_9_s
+
+```
+
+##### Scenario 10 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2bw <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "Bare_Sub_Per_Cov", "NPGO_anul_mn", "UpWelAnom_anul_mn", 
+                             "Fuc_dist_Per_Cov", "Red_alg_per_Per_Cov", "Whelk_Sum_n_m2",
+                             "barnacle_Per_Cov"
+                             )
+
+Sce_10_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2bw)
+Sce_10_s
+
+```
+
+##### Scenario 11 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2e <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                            "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Fuc_dist_Per_Cov", 
+                            "Red_alg_per_Per_Cov", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                            )
+
+Sce_11_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2e)
+Sce_11_s
+
+```
+
+##### Scenario 12 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2wt <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "NPGO_anul_mn", "Fuc_dist_Per_Cov", "Red_alg_per_Per_Cov", 
+                             "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                             )
+
+Sce_12_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2wt)
+Sce_12_s
+
+```
 
 ##### Scenario 13 (from above) ### WINNER at Regional level
-BenNear_site_cpa_sub2f <- BenNear_site_cpa %>% 
-                         select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                NPGO_anul_mn, Hobo_WaterTemp_AnnMn,
-                                Red_alg_per_Per_Cov, 
-                                Bare_Sub_Per_Cov, UpWelAnom_anul_mn
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2f <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                            "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Red_alg_per_Per_Cov", 
+                            "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                            )
+
+Sce_13_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f)
+Sce_13_s
+
+```
+
+##### Scenario 14 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2fg <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Red_alg_TOT_Per_Cov", 
+                             "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                             )
+
+Sce_14_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2fg)
+Sce_14_s
+
+```
+
+##### Scenario 15 - Site    WINNER!!!
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2fh <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "NPGO_anul_mn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                             )
+
+Sce_15_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2fh)
+Sce_15_s
+
+```
+
+##### Scenario 16 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2f16 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                              "NPGO_anul_mn",  "Red_alg_TOT_Per_Cov", "Bare_Sub_Per_Cov", 
+                              "UpWelAnom_anul_mn"
+                              )
+
+Sce_16_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f16)
+Sce_16_s
+
+```
+
+##### Scenario 17 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2f17 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                              "NPGO_anul_mn",  "Fuc_dist_Per_Cov", "Bare_Sub_Per_Cov", 
+                              "UpWelAnom_anul_mn"
+                              )
+
+Sce_17_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f17)
+Sce_17_s
+
+```
+
+##### Scenario 18 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2f18 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                              "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                              )
+
+Sce_18_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f18)
+Sce_18_s
+
+```
+
+##### Scenario 19 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2f19 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                              "Bare_Sub_Per_Cov", "SOtt_AnnMnEngRec", "BLOYAdult_breed_n", 
+                              "Whelk_Sum_n_m2", "barnacle_Per_Cov"
+                              )
+
+Sce_19_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f19)
+Sce_19_s
+
+```
+
+##### Scenario 20 - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub2f20 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                              "Bare_Sub_Per_Cov", "SOtt_AnnMnEngRec", "BLOYAdult_breed_n", 
+                              "Whelk_Sum_n_m2"
+                              )
+
+Sce_20_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f20)
+Sce_20_s
+
+```
+
+##### Scenario 21 (15 plus preds) - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub221 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "NPGO_anul_mn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn",
+                             "SOtt_AnnMnEngRec"
+                             )
+
+Sce_21_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub221)
+Sce_21_s
+
+```
+
+##### Scenario 22 (15 plus preds) - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub222 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "NPGO_anul_mn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn",
+                             "BLOYAdult_breed_n"
+                             )
+
+Sce_22_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub222)
+Sce_22_s
+
+```
+
+##### Scenario 23 (15 plus preds) - Site
+```{r, echo=FALSE}
+
+BenNear_site_cpa_sub223 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                             "NPGO_anul_mn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn",
+                             "Whelk_Sum_n_m2"
+                             )
+
+Sce_23_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub223)
+Sce_23_s
+
+```
+
+
+##### Scenario 12 - Transect   WINNER from the Transect-level analysis
+```{r, echo=FALSE}
+
+BenNear_tran_cpa_sub2l12_s <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_MeanYearly_ft3s1", 
+                                "SOtt_AnnMnEngRec", "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", 
+                                "BLOYAdult_breed_n", "Bare_Sub_Per_Cov", "Brwn_alg_ann_Per_Cov",
+                                "Green_alg_ann_Per_Cov"
                                 )
- 
-site_glm3f <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f, family=gaussian)
-summary(site_glm3f)
 
-##### Scenario 14 
-BenNear_site_cpa_sub2fg <- BenNear_site_cpa %>% 
-                           select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                  NPGO_anul_mn, Hobo_WaterTemp_AnnMn,
-                                  Red_alg_TOT_Per_Cov, 
-                                  Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                  )
- 
-site_glm3fg <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2fg, family=gaussian)
-summary(site_glm3fg)
+Sce_12t_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_tran_cpa_sub2l12_s)
+Sce_12t_s
 
-##### Scenario 15  # WINNER!!!
-BenNear_site_cpa_sub2fh <- BenNear_site_cpa %>% 
-                           select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                  NPGO_anul_mn,  
-                                  Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                  )
- 
-site_glm3fh <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2fh, family=gaussian)
-summary(site_glm3fh)
+```
 
-##### Scenario 16
-BenNear_site_cpa_sub2f16 <- BenNear_site_cpa %>% 
-                            select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                   NPGO_anul_mn,  Red_alg_TOT_Per_Cov,
-                                   Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                   )
- 
-site_glm3f16 <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f16, family=gaussian)
-summary(site_glm3f16)
+##### AIC values for all Site models
+```{r, echo=FALSE}
+Site_mod_list <- list(Sce_1_s, Sce_2_s, Sce_3_s, Sce_4_s, Sce_5_s, Sce_6_s, Sce_7_s, Sce_8_s, 
+                      Sce_9_s, Sce_10_s, Sce_11_s, Sce_12_s, Sce_13_s, Sce_14_s, Sce_15_s, Sce_16_s,
+                      Sce_17_s, Sce_18_s, Sce_19_s, Sce_20_s, Sce_21_s, Sce_22_s, Sce_23_s,
+                      Sce_12t_s
+                      )
 
-##### Scenario 17
-BenNear_site_cpa_sub2f17 <- BenNear_site_cpa %>% 
-                            select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                   NPGO_anul_mn,  Fuc_dist_Per_Cov,
-                                   Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                   )
- 
-site_glm3f17 <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f17, family=gaussian)
-summary(site_glm3f17)
-
-
-##### Scenario 18
-BenNear_site_cpa_sub2f18 <- BenNear_site_cpa %>% 
-                            select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                   Hobo_WaterTemp_AnnMn,  
-                                   Bare_Sub_Per_Cov, UpWelAnom_anul_mn
-                                   )
- 
-site_glm3f18 <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f18, family=gaussian)
-summary(site_glm3f18)
-
-##### Scenario 19
-BenNear_site_cpa_sub2f19 <- BenNear_site_cpa %>% 
-                            select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                   Bare_Sub_Per_Cov,    
-                                   SOtt_AnnMnEngRec, BLOYAdult_breed_n, 
-                                   Whelk_Sum_n_m2, barnacle_Per_Cov
-                                   )
- 
-site_glm3f19 <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f19, family=gaussian)
-summary(site_glm3f19)
-
-##### Scenario 20
-BenNear_site_cpa_sub2f20 <- BenNear_site_cpa %>% 
-                            select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                   Bare_Sub_Per_Cov,    
-                                   SOtt_AnnMnEngRec, BLOYAdult_breed_n, 
-                                   Whelk_Sum_n_m2
-                                   )
- 
-site_glm3f20 <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f20, family=gaussian)
-summary(site_glm3f20)
-
-
-##### Scenario 21 (15 plus preds)
-BenNear_site_cpa_sub221 <- BenNear_site_cpa %>% 
-                           select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                  NPGO_anul_mn,  
-                                  Bare_Sub_Per_Cov, UpWelAnom_anul_mn,
-                                  SOtt_AnnMnEngRec
-                                  )
- 
-site_glm321 <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub221, family=gaussian)
-summary(site_glm321)
-
-##### Scenario 22 (15 plus preds)
-BenNear_site_cpa_sub222 <- BenNear_site_cpa %>% 
-                           select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                  NPGO_anul_mn,  
-                                  Bare_Sub_Per_Cov, UpWelAnom_anul_mn,
-                                  BLOYAdult_breed_n
-                                  )
- 
-site_glm322 <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub222, family=gaussian)
-summary(site_glm322)
-
-##### Scenario 23 (15 plus preds)
-BenNear_site_cpa_sub223 <- BenNear_site_cpa %>% 
-                           select(mussel_Anom, log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1,
-                                  NPGO_anul_mn,  
-                                  Bare_Sub_Per_Cov, UpWelAnom_anul_mn,
-                                  Whelk_Sum_n_m2
-                                  )
- 
-site_glm323 <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub223, family=gaussian)
-summary(site_glm323)
-
-##############
-## Scenario 12   # WINNER from the Transect-level analysis
-BenNear_tran_cpa_sub2l12_s <- BenNear_site_cpa %>% 
-                              select(mussel_Anom,
-                                     log_TotChlA_micgL_FlMn, 
-                                     FWDisc_MeanYearly_ft3s1, SOtt_AnnMnEngRec, NPGO_anul_mn,
-                                     Hobo_WaterTemp_AnnMn,  BLOYAdult_breed_n, Bare_Sub_Per_Cov,
-                                     Brwn_alg_ann_Per_Cov, Green_alg_ann_Per_Cov
-                                     )
-                                  
- 
-al_glm_l12_s <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l12_s, family=gaussian)
-summary(al_glm_l12_s)
-
-
-
-############################
-AIC(ev_glm_s)
-
-AIC(al_glm_s, al_glm_l_s, al_glm_pl_s, al_glm2_s, al_glm2_l_s, al_glm3_s, al_glm3b_s, 
-    al_glm3bt_s, al_glm3bw_s, al_glm3e_s, al_glm3wt_s, 
-    site_glm3f, site_glm3fg, site_glm3fh, site_glm3f16, site_glm3f17, site_glm3f18,  
-    site_glm3f19, site_glm3f20, site_glm321, site_glm322, site_glm323, al_glm_l12_s)
+for (i in 1:length(Site_mod_list)) {
+     print(Site_mod_list[[i]][[1]])
+     }
 
 ```
 
@@ -992,7 +1038,6 @@ df334 <- cbind(BenNear_site_cpa[,c(1,2,3,40)], prob4)
 
 qplot(data=df334, prob4, mussel_Anom, color=Region, size=3)
 cor(prob4, BenNear_site_cpa[40])
-
 
 
 # Hand calculate things   # CURRENTLY NOT THE WINNING MODEL 13!  NEEDS TO BE REVISED. 
@@ -1026,7 +1071,6 @@ par(mfrow=c(2,2))
 plot(site_glm322)
 
 
-
 ```
 
 ```{r, echo=FALSE}
@@ -1043,8 +1087,7 @@ fig15 <- ggplot() +
          theme_bw() + geom_hline(yintercept = 0, show.legend = FALSE)
   #       scale_x_discrete(breaks = c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
    #                                  "2013", "2014", "2015"))
-        
-       
+
 fig15
 
 
@@ -1058,7 +1101,6 @@ fig22 <- ggplot() +
   #       scale_x_discrete(breaks = c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
    #                                  "2013", "2014", "2015"))
         
-       
 fig22
 
 
@@ -1074,7 +1116,6 @@ fig15a <- ggplot() +
   #        scale_x_discrete(breaks = c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
    #                                   "2013", "2014", "2015"))
         
-       
 fig15a
 
 ```
