@@ -472,7 +472,7 @@ Sce_12t
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 #
 prob2 <- predict(al_glm3f, BenNear_reg_cpa_sub2f)
 df33 <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2)
@@ -501,7 +501,7 @@ plot(al_glm3f)
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 # Figure
 # BenNear_reg_l # has data through 2015
 # df33$prob2 # predicted mussel data
@@ -1023,7 +1023,7 @@ for (i in 1:length(Site_mod_list)) {
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 # For Scenario 15
 prob3 <- predict(site_glm3fh, BenNear_site_cpa_sub2fh)
 df333 <- cbind(BenNear_site_cpa[,c(1,2,3,40)], prob3)
@@ -1056,7 +1056,7 @@ cor(prob4, BenNear_site_cpa[40])
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 # Plotting Residuals to check model fit
 
 resid_site_15 <- site_glm3fh$residuals
@@ -1073,7 +1073,7 @@ plot(site_glm322)
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 # Figure
 # BenNear_site_l # has data through 2015
 # df333$prob3 # predicted mussel data for Scenario 15
@@ -1102,9 +1102,9 @@ fig22 <- ggplot() +
    #                                  "2013", "2014", "2015"))
         
 fig22
+```
 
-
-
+```{r, echo=FALSE}
 
 fig15a <- ggplot() + 
           geom_point(data=BenNear_site_l, aes(x=as.factor(Year), y=mussel_Anom, color=Site_Name, 
