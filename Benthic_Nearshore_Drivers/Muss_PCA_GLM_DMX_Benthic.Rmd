@@ -112,7 +112,7 @@ BenNear_reg_cpa <- BenNear_reg_l %>%  #filter(Year %in% c("2007","2010","2012","
 
 ```{r, echo=FALSE}
 # Run the PCA
-pca_cpa <- prcomp(~., data=BenNear_reg_cpa[,-c(1,2,15,16,40)], na.action=na.omit, scale=TRUE)
+pca_cpa <- prcomp(~., data=BenNear_reg_cpa[,-c(1,2,15,16,38)], na.action=na.omit, scale=TRUE)
 #print(pca_cpa) # shows SDs and weightings
 summary(pca_cpa)
 #pca_cpa$x # this is the PCA scores for each row of data.
@@ -139,16 +139,13 @@ par(mfrow=c(1,2))
 plot(pca_cpa, main="everything")
 plot(pca_cpa, type="lines", main="everything")
 
-
-
 # Re-run PCA with smaller number of variables?  Use cut-off of <90% explained variance
-
 
 ```
 
 ```{r, echo=FALSE}
 # Plotting
-pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,-c(1,2,15,16,40)], scale=TRUE),
+pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,-c(1,2,15,16,38)], scale=TRUE),
                         data=BenNear_reg_cpa,  colour='Region', loadings=TRUE,
                         loadings.colour='blue', loadings.label=TRUE,
                         loadings.label.size=4)
@@ -165,9 +162,10 @@ data_sub_model_run <- function(orig_df, select_cols){
                                
                                glm_results <- glm(mussel_Anom ~ ., data=BN_reg_sub_df, family=gaussian)
                                glm_sum <- summary(glm_results)
-                               small_summary <- list(glm_sum$aic, glm_sum$coefficients)
+                               #small_summary <- list(glm_sum$aic, glm_sum$coefficients)
                                
-                               return(small_summary)
+                               #return(small_summary)
+                               return(glm_sum)
   
 }
   
@@ -180,6 +178,7 @@ data_sub_model_run <- function(orig_df, select_cols){
 # GLM, comprehensive 
 # subset the data based on above PCA
 
+##########
 # BenNear_reg_cpa_sub <- BenNear_reg_cpa %>%
 #                        select(mussel_Anom,
 #                               log_TotChlA_micgL_AnnMn, FWDisc_MeanYearly_ft3s1, Hobo_WaterTemp_AnnMn,
@@ -191,15 +190,15 @@ data_sub_model_run <- function(orig_df, select_cols){
 # sum_ev_glm <- summary(ev_glm)
 # sum_ev_glm$aic
 # sum_ev_glm$coefficients
-
 ##########
+
 BenNear_reg_cpa_sub <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                         "Hobo_WaterTemp_AnnMn","UpWelAnom_anul_mn", "ENSO_anul_mn", "NPGO_anul_mn", 
+                         "WaterTmp_C_AnnMn","UpWelAnom_anul_mn", "ENSO_anul_mn", "NPGO_anul_mn", 
                          "PDO_anul_mn", "WaterTmp_C_AnnMn", "SOtt_AnnMnEngRec", "Fuc_dist_Per_Cov",
                          "Brwn_alg_ann_Per_Cov", "Green_alg_ann_Per_Cov", "Red_alg_per_Per_Cov")
 
 Sce_1 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub)
-Sce_1
+#Sce_1
 
 ```
 
@@ -219,7 +218,7 @@ BenNear_reg_cpa_sub2 <- c("-Year", "-Region", "-log_mussel_Per_Cov", "-UpWelAnom
                           )
 
 Sce_2 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2)
-Sce_2
+#Sce_2
 
 ```
 
@@ -237,7 +236,7 @@ BenNear_reg_cpa_sub2l <- c("-Year", "-Region", "-log_mussel_Per_Cov", "-UpWelAno
                            )
 
 Sce_3 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2l)
-Sce_3
+#Sce_3
 
 ```
 
@@ -255,7 +254,7 @@ BenNear_reg_cpa_sub2pl <- c("-Year", "-Region", "-log_mussel_Per_Cov", "-UpWelAn
                             )
 
 Sce_4 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2pl)
-Sce_4
+#Sce_4
 
 ```
 
@@ -266,7 +265,7 @@ BenNear_reg_cpa_sub2a <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_Mea
                            "Bare_Sub_Per_Cov", "NPGO_anul_mn", "Fuc_dist_Per_Cov")
 
 Sce_5 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2a)
-Sce_5
+#Sce_5
 
 ```
 
@@ -278,7 +277,7 @@ BenNear_reg_cpa_sub2al <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "LAG_FWDis
                             )
 
 Sce_6 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2al)
-Sce_6
+#Sce_6
 
 ```
 
@@ -286,13 +285,13 @@ Sce_6
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub2b <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "Bare_Sub_Per_Cov", "Fuc_dist_Per_Cov",  "Hobo_WaterTemp_AnnMn",
+                           "Bare_Sub_Per_Cov", "Fuc_dist_Per_Cov",  "WaterTmp_C_AnnMn",
                            "SOtt_AnnMnEngRec", "BLOYAdult_breed_n", "ENSO_anul_mn",
                            "UpWelAnom_anul_mn", "NPGO_anul_mn"
                            )
 
 Sce_7 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2b)
-Sce_7
+#Sce_7
 
 ```
 
@@ -300,12 +299,12 @@ Sce_7
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub2bb <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                            "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "ENSO_anul_mn", "Fuc_dist_Per_Cov",
+                            "NPGO_anul_mn", "WaterTmp_C_AnnMn", "ENSO_anul_mn", "Fuc_dist_Per_Cov",
                             "Red_alg_per_Per_Cov", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                             )
 
 Sce_8 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2bb)
-Sce_8
+#Sce_8
 
 ```
 
@@ -318,7 +317,7 @@ BenNear_reg_cpa_sub2bt <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_Me
                             )
 
 Sce_9 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2bt)
-Sce_9
+#Sce_9
 
 ```
 
@@ -332,7 +331,7 @@ BenNear_reg_cpa_sub2bw <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_Me
                             )
 
 Sce_10 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2bw)
-Sce_10
+#Sce_10
 
 ```
 
@@ -340,12 +339,12 @@ Sce_10
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub2e <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Fuc_dist_Per_Cov",
+                           "NPGO_anul_mn", "WaterTmp_C_AnnMn", "Fuc_dist_Per_Cov",
                            "Red_alg_per_Per_Cov", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                            )
 
 Sce_11 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2e)
-Sce_11
+#Sce_11
 
 ```
 
@@ -358,20 +357,20 @@ BenNear_reg_cpa_sub2wt <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_Me
                             )
 
 Sce_12 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2wt)
-Sce_12
+#Sce_12
 
 ```
 
-##### Scenario 13 - Region    WINNER!!!
+##### Scenario 13 - Region 
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub2f <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Red_alg_per_Per_Cov", 
+                           "NPGO_anul_mn", "WaterTmp_C_AnnMn", "Red_alg_per_Per_Cov", 
                            "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                            )
 
 Sce_13 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2f)
-Sce_13
+#Sce_13
 
 ```
 
@@ -379,12 +378,12 @@ Sce_13
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub14 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "NPGO_anul_mn", 
-                           "Hobo_WaterTemp_AnnMn", "Red_alg_per_Per_Cov",
+                           "WaterTmp_C_AnnMn", "Red_alg_per_Per_Cov",
                            "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                            )
 
 Sce_14 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub14)
-Sce_14
+#Sce_14
 
 ```
 
@@ -392,25 +391,25 @@ Sce_14
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub15 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", 
+                           "NPGO_anul_mn", "WaterTmp_C_AnnMn", "Bare_Sub_Per_Cov", 
                            "UpWelAnom_anul_mn"
                            )
 
 Sce_15 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub14)
-Sce_15
+#Sce_15
 
 ```
 
-##### Scenario 16  
+##### Scenario 16 - Region
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub16 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Red_alg_TOT_Per_Cov",
+                           "NPGO_anul_mn", "WaterTmp_C_AnnMn", "Red_alg_TOT_Per_Cov",
                            "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                            )
 
 Sce_16 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub16)
-Sce_16
+#Sce_16
 
 ```
 
@@ -419,11 +418,21 @@ Sce_16
 Reg_mod_list <- list(Sce_1, Sce_2, Sce_3, Sce_4, Sce_5, Sce_6, Sce_7, Sce_8, 
                      Sce_9, Sce_10, Sce_11, Sce_12, Sce_13, Sce_14, Sce_15, Sce_16)
 
-for (i in 1:length(Reg_mod_list)) {
-     print(Reg_mod_list[[i]][[1]])
-     }
+Reg_list_names <- c("Sce_1", "Sce_2", "Sce_3", "Sce_4", "Sce_5", "Sce_6", "Sce_7", "Sce_8", 
+                    "Sce_9", "Sce_10", "Sce_11", "Sce_12", "Sce_13", "Sce_14", "Sce_15", "Sce_16")
+
+r <- sapply(Reg_mod_list, FUN = function(x) x$aic)
+AIC_List_r <- data.frame(Model = Reg_list_names, AIC = r)
+arrange(AIC_List_r, AIC)
 
 ```
+
+##### Coefficients for model(s) with lowest AIC scores
+```{r, echo=FALSE}
+Sce_2
+Sce_4
+```
+
 
 ##### NOTE: If other scales come up with other "best" models, test it all all scale levels.   
 ##### Also, test scenario 13 at other scales. 
@@ -438,7 +447,7 @@ BenNear_site_cpa_sub215_r <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc
                                )
 
 Sce_15s <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_site_cpa_sub215_r)
-Sce_15s
+#Sce_15s
 
 ```
 
@@ -452,7 +461,7 @@ BenNear_tran_cpa_sub2l12_r <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc
                                 )
 
 Sce_12t <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_tran_cpa_sub2l12_r)
-Sce_12t
+#Sce_12t
 
 ```
 
@@ -682,7 +691,7 @@ BenNear_site_cpa_sub <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "LAG_FWDisc_
                           "barnacle_Per_Cov", "BLOYAdult_breed_n", "Bare_Sub_Per_Cov")
 
 Sce_1_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub)
-Sce_1_s
+#Sce_1_s
 
 ```
 
@@ -697,11 +706,11 @@ BenNear_site_cpa_sub2 <- c("-Year", "-Region", "-Site_Name", "-log_mussel_Per_Co
                            )
 
 Sce_2_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2)
-Sce_2_s
+#Sce_2_s
 
 ```
 
-#### Scenario 3 - Site
+##### Scenario 3 - Site
 ```{r, echo=FALSE}
 
 BenNear_site_cpa_sub2l <- c("-Year", "-Region", "-Site_Name", "-log_mussel_Per_Cov", "-UpWelAnom_fal_mn",
@@ -712,7 +721,7 @@ BenNear_site_cpa_sub2l <- c("-Year", "-Region", "-Site_Name", "-log_mussel_Per_C
                             )
 
 Sce_3_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2l)
-Sce_3_s
+#Sce_3_s
 
 ```
 
@@ -727,7 +736,7 @@ BenNear_site_cpa_sub2pl <- c("-Year", "-Region",  "-Site_Name", "-log_mussel_Per
                              )
 
 Sce_4_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2pl)
-Sce_4_s
+#Sce_4_s
 
 ```
 
@@ -740,7 +749,7 @@ BenNear_site_cpa_sub2a <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_Me
                             )
 
 Sce_5_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2a)
-Sce_5_s
+#Sce_5_s
 
 ```
 
@@ -752,7 +761,7 @@ BenNear_site_cpa_sub2al <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "LAG_FWDi
                              )
 
 Sce_6_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2al)
-Sce_6_s
+#Sce_6_s
 
 ```
 
@@ -766,7 +775,7 @@ BenNear_site_cpa_sub2b <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_Me
                             )
 
 Sce_7_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2b)
-Sce_7_s
+#Sce_7_s
 
 ```
 
@@ -780,7 +789,7 @@ BenNear_site_cpa_sub2bb <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_8_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2bb)
-Sce_8_s
+#Sce_8_s
 
 ```
 
@@ -793,7 +802,7 @@ BenNear_site_cpa_sub2bt <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_9_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2bt)
-Sce_9_s
+#Sce_9_s
 
 ```
 
@@ -807,7 +816,7 @@ BenNear_site_cpa_sub2bw <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_10_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2bw)
-Sce_10_s
+#Sce_10_s
 
 ```
 
@@ -820,7 +829,7 @@ BenNear_site_cpa_sub2e <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_Me
                             )
 
 Sce_11_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2e)
-Sce_11_s
+#Sce_11_s
 
 ```
 
@@ -833,7 +842,7 @@ BenNear_site_cpa_sub2wt <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_12_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2wt)
-Sce_12_s
+#Sce_12_s
 
 ```
 
@@ -846,7 +855,7 @@ BenNear_site_cpa_sub2f <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_Me
                             )
 
 Sce_13_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f)
-Sce_13_s
+#Sce_13_s
 
 ```
 
@@ -859,11 +868,11 @@ BenNear_site_cpa_sub2fg <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_14_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2fg)
-Sce_14_s
+#Sce_14_s
 
 ```
 
-##### Scenario 15 - Site    WINNER!!!
+##### Scenario 15 - Site
 ```{r, echo=FALSE}
 
 BenNear_site_cpa_sub2fh <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
@@ -871,7 +880,7 @@ BenNear_site_cpa_sub2fh <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_15_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2fh)
-Sce_15_s
+#Sce_15_s
 
 ```
 
@@ -884,7 +893,7 @@ BenNear_site_cpa_sub2f16 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_
                               )
 
 Sce_16_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f16)
-Sce_16_s
+#Sce_16_s
 
 ```
 
@@ -897,7 +906,7 @@ BenNear_site_cpa_sub2f17 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_
                               )
 
 Sce_17_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f17)
-Sce_17_s
+#Sce_17_s
 
 ```
 
@@ -909,7 +918,7 @@ BenNear_site_cpa_sub2f18 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_
                               )
 
 Sce_18_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f18)
-Sce_18_s
+#Sce_18_s
 
 ```
 
@@ -922,7 +931,7 @@ BenNear_site_cpa_sub2f19 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_
                               )
 
 Sce_19_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f19)
-Sce_19_s
+#Sce_19_s
 
 ```
 
@@ -935,7 +944,7 @@ BenNear_site_cpa_sub2f20 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_
                               )
 
 Sce_20_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f20)
-Sce_20_s
+#Sce_20_s
 
 ```
 
@@ -948,7 +957,7 @@ BenNear_site_cpa_sub221 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_21_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub221)
-Sce_21_s
+#Sce_21_s
 
 ```
 
@@ -961,7 +970,7 @@ BenNear_site_cpa_sub222 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_22_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub222)
-Sce_22_s
+#Sce_22_s
 
 ```
 
@@ -974,7 +983,7 @@ BenNear_site_cpa_sub223 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_23_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub223)
-Sce_23_s
+#Sce_23_s
 
 ```
 
@@ -989,7 +998,7 @@ BenNear_tran_cpa_sub2l12_s <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc
                                 )
 
 Sce_12t_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_tran_cpa_sub2l12_s)
-Sce_12t_s
+#Sce_12t_s
 
 ```
 
@@ -1000,11 +1009,21 @@ Site_mod_list <- list(Sce_1_s, Sce_2_s, Sce_3_s, Sce_4_s, Sce_5_s, Sce_6_s, Sce_
                       Sce_17_s, Sce_18_s, Sce_19_s, Sce_20_s, Sce_21_s, Sce_22_s, Sce_23_s,
                       Sce_12t_s
                       )
+Site_list_names <- c("Sce_1_s", "Sce_2_s", "Sce_3_s", "Sce_4_s", "Sce_5_s", "Sce_6_s", "Sce_7_s",
+                     "Sce_8_s", "Sce_9_s", "Sce_10_s", "Sce_11_s", "Sce_12_s", "Sce_13_s", "Sce_14_s",
+                     "Sce_15_s", "Sce_16_s", "Sce_17_s", "Sce_18_s", "Sce_19_s", "Sce_20_s", 
+                     "Sce_21_s", "Sce_22_s", "Sce_23_s", "Sce_12t_s")
 
-for (i in 1:length(Site_mod_list)) {
-     print(Site_mod_list[[i]][[1]])
-     }
+s <- sapply(Site_mod_list, FUN = function(x) x$aic)
+AIC_List_s <- data.frame(Model = Site_list_names, AIC = s)
+arrange(AIC_List_s, AIC)
 
+```
+
+##### Coefficients for model(s) with lowest AIC scores
+```{r, echo=FALSE}
+Sce_18_s
+#Sce_15_s ; Sce_13_s ; Sce_21_s
 ```
 
 ```{r, echo=FALSE, eval=FALSE}
@@ -1203,7 +1222,7 @@ BenNear_tran_cpa_sub <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn",  "PDO_anul_m
                           )
 
 Sce_1_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub)
-Sce_1_t
+#Sce_1_t
 
 ```
 
@@ -1219,7 +1238,7 @@ BenNear_tran_cpa_sub2 <- c("-Year", "-Region", "-Site_Name", "-Quadrat", "-log_m
                            )
 
 Sce_2_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2)
-Sce_2_t
+#Sce_2_t
 
 ```
 
@@ -1236,7 +1255,7 @@ BenNear_tran_cpa_sub2l <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn",  "PDO_anul
                             )
 
 Sce_3_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l)
-Sce_3_t
+#Sce_3_t
 
 ```
 
@@ -1252,7 +1271,7 @@ BenNear_tran_cpa_sub2l4 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "log_TotC
                              )
 
 Sce_4_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l4)
-Sce_4_t
+#Sce_4_t
 
 ```
 
@@ -1265,7 +1284,7 @@ BenNear_tran_cpa_sub2l5 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_Me
                              )
 
 Sce_5_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l5)
-Sce_5_t
+#Sce_5_t
 
 ```
 
@@ -1278,7 +1297,7 @@ BenNear_tran_cpa_sub2l6 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_Me
                              )
 
 Sce_6_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l6)
-Sce_6_t
+#Sce_6_t
 
 ```
 
@@ -1291,7 +1310,7 @@ BenNear_tran_cpa_sub2l7 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_Me
                              )
 
 Sce_7_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l7)
-Sce_7_t
+#Sce_7_t
 
 ```
 
@@ -1304,7 +1323,7 @@ BenNear_tran_cpa_sub2l8 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_Me
                              )
 
 Sce_8_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l8)
-Sce_8_t
+#Sce_8_t
 
 ```
 
@@ -1317,7 +1336,7 @@ BenNear_tran_cpa_sub2l9 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_9_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l9)
-Sce_9_t
+#Sce_9_t
 
 ```
 
@@ -1330,7 +1349,7 @@ BenNear_tran_cpa_sub2l10 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_M
                               )
 
 Sce_10_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l10)
-Sce_10_t
+#Sce_10_t
 
 ```
 
@@ -1345,11 +1364,11 @@ BenNear_tran_cpa_sub2l11 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "UpWelAno
                               )
 
 Sce_11_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l11)
-Sce_11_t
+#Sce_11_t
 
 ```
 
-##### Scenario 12 - Transect     WINNER
+##### Scenario 12 - Transect
 ```{r, echo=FALSE}
 
 BenNear_tran_cpa_sub2l12 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_MeanYearly_ft3s1",
@@ -1359,7 +1378,7 @@ BenNear_tran_cpa_sub2l12 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_M
                               )
 
 Sce_12_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l12)
-Sce_12_t
+#Sce_12_t
 
 ```
 
@@ -1372,7 +1391,7 @@ BenNear_tran_cpa_sub2l13 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_M
                               )
 
 Sce_13_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l13)
-Sce_13_t
+#Sce_13_t
 
 ```
 
@@ -1387,7 +1406,7 @@ BenNear_tran_cpa_sub2l14 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_Ann
                               )
 
 Sce_14_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l14)
-Sce_14_t
+#Sce_14_t
 
 ```
 
@@ -1400,7 +1419,7 @@ BenNear_tran_cpa_sub2l15 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_Ann
                               )
 
 Sce_15_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l15)
-Sce_15_t
+#Sce_15_t
 
 ```
 
@@ -1413,7 +1432,7 @@ BenNear_tran_cpa_sub2l16 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_Ann
                               )
 
 Sce_16_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l16)
-Sce_16_t
+#Sce_16_t
 
 ```
 
@@ -1426,7 +1445,7 @@ BenNear_tran_cpa_sub2l17 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_M
                               )
 
 Sce_17_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l17)
-Sce_17_t
+#Sce_17_t
 
 ```
 
@@ -1439,7 +1458,7 @@ BenNear_tran_cpa_sub2l18 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "Hobo_Wat
                               )
 
 Sce_18_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l18)
-Sce_18_t
+#Sce_18_t
 
 ```
 
@@ -1452,7 +1471,7 @@ BenNear_tran_cpa_sub2l19 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_Ann
                               )
 
 Sce_19_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l19)
-Sce_19_t
+#Sce_19_t
 
 ```
 
@@ -1465,7 +1484,7 @@ BenNear_tran_cpa_sub2l20 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_Ann
                               )
 
 Sce_20_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l20)
-Sce_20_t
+#Sce_20_t
 
 ```
 
@@ -1478,11 +1497,11 @@ BenNear_tran_cpa_sub2l21 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "SOtt_Ann
                               )
 
 Sce_21_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l21)
-Sce_21_t
+#Sce_21_t
 
 ```
 
-##### Scenario 22 - Transect      Co-Winner!!
+##### Scenario 22 - Transect
 ```{r, echo=FALSE}
 
 BenNear_tran_cpa_sub2l22 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_MeanYearly_ft3s1",
@@ -1491,7 +1510,7 @@ BenNear_tran_cpa_sub2l22 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_M
                               )
 
 Sce_22_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l22)
-Sce_22_t
+#Sce_22_t
 
 ```
 
@@ -1504,7 +1523,7 @@ BenNear_tran_cpa_sub2l23 <- c("mussel_Anom", "LAG_log_TotChlA_micgL_FlMn", "FWDi
                               )
 
 Sce_23_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l23)
-Sce_23_t
+#Sce_23_t
 
 ```
 
@@ -1517,7 +1536,7 @@ BenNear_tran_cpa_sub2l24 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_
                               )
 
 Sce_24_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l24)
-Sce_24_t
+#Sce_24_t
 
 ```
 
@@ -1531,8 +1550,31 @@ BenNear_tran_cpa_sub2l25 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_
                               )
 
 Sce_25_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l25)
-Sce_25_t
+#Sce_25_t
 
+```
+
+```{r, echo=FALSE}
+Tran_mod_list <- list(Sce_1_t, Sce_2_t, Sce_3_t, Sce_4_t, Sce_5_t, Sce_6_t, Sce_7_t, Sce_8_t, 
+                      Sce_9_t, Sce_10_t, Sce_11_t, Sce_12_t, Sce_13_t, Sce_14_t, Sce_15_t, Sce_16_t,
+                      Sce_17_t, Sce_18_t, Sce_19_t, Sce_20_t, Sce_21_t, Sce_22_t, Sce_23_t,
+                      Sce_24_t, Sce_25_t
+                      )
+Tran_list_names <- c("Sce_1_t", "Sce_2_t", "Sce_3_t", "Sce_4_t", "Sce_5_t", "Sce_6_t", "Sce_7_t", 
+                     "Sce_8_t", "Sce_9_t", "Sce_10_t", "Sce_11_t", "Sce_12_t", "Sce_13_t", "Sce_14_t",
+                     "Sce_15_t", "Sce_16_t", "Sce_17_t", "Sce_18_t", "Sce_19_t", "Sce_20_t", "Sce_21_t", 
+                     "Sce_22_t", "Sce_23_t", "Sce_24_t", "Sce_25_t")
+
+t <- sapply(Tran_mod_list, FUN = function(x) x$aic)
+AIC_List_t <- data.frame(Model = Tran_list_names, AIC = t)
+arrange(AIC_List_t, AIC)
+
+```
+
+##### Coefficients for model(s) with lowest AIC scores
+```{r, echo=FALSE}
+Sce_4_t
+#Sce_2_t ; Sce_3_t
 ```
 
 ##### Scenario 13 - Transect     Winner from Region-level analysis above
@@ -1544,7 +1586,7 @@ BenNear_reg_cpa_sub2f_t <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_M
                              )
 
 Sce_13_t_r <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_reg_cpa_sub2f_t)
-Sce_13_t_r
+#Sce_13_t_r
 
 ```
 
@@ -1556,7 +1598,7 @@ BenNear_site_cpa_sub215_t <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc
                                )
 
 Sce_15_t_s <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_site_cpa_sub215_t)
-Sce_15_t_s
+#Sce_15_t_s
 
 ```
 
@@ -1569,7 +1611,7 @@ BenNear_tran_cpa_sub222_t <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc
                                )
 
 Sce_22_t_s <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub222_t)
-Sce_22_t_s
+#Sce_22_t_s
 
 ```
 
