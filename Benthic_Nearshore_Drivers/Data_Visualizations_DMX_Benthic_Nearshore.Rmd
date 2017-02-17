@@ -39,7 +39,7 @@ BenNear <- BenNearxx
 ```{r, echo=FALSE, include=FALSE}
 BenNear2 <- BenNear %>%
             select(-Quadrat, -Lat,-Long) %>%
-            mutate_each(funs(as.numeric), Otter_Abun_est) %>%
+          #  mutate_each(funs(as.numeric), Otter_Abun_est) %>%
             group_by(Year, Region, Site_Name) %>%
             summarize_each(funs(sum)) %>%
             ungroup()  
@@ -268,18 +268,31 @@ p16
 
 
 ###Correlation pair plots of raw data: 
-```{r, eval=FALSE, include=FALSE, echo=FALSE, fig.height=14, fig.width=14}
+```{r, echo=FALSE, fig.height=14, fig.width=14}
 
 library(psych)
 BenNear2 <- as.data.frame(BenNear2)
 
-pairs.panels(BenNear2[,c(4:10,13,17)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) #
-#pairs.panels(BenNear2[,c(20,27,42,45,48)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
-pairs.panels(BenNear2[,c(42,45,48,50,52,54,56,58,60,61)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
-pairs.panels(BenNear2[,c(8,20,28:34)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
-pairs.panels(BenNear2[,c(19,13,25,26)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
+# ENSO, NPGO, Upwelling, Hobo water temp, buoy water temp, winter water temp anomaly
+pairs.panels(BenNear2[,c(4,10,11,14,15,17)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
 
-pairs.panels(BenNear2[,c(6,9,29,11)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+# chla, barnacles, mussels, hobo water temp
+pairs.panels(BenNear2[,c(21,24,25,14)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+
+# mussels, fucus, total red algae, brown algae, green algae, hobo water temp
+pairs.panels(BenNear2[,c(25,26,33,29,30,14)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+
+# hobo water temp, mussels, bloy adults, sea otter energy rec., freshwater discharge
+pairs.panels(BenNear2[,c(14,25,34,35,38)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
+
+# upwelling, sea otter energy rec., freshwater discharge, hobo water temp, buoy water temp, chla
+pairs.panels(BenNear2[,c(11,35,36,14,15,21)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T) 
+
+# ENSO, PDO, mussels, NPGO, Upwelling
+pairs.panels(BenNear2[,c(4,7,25,10,11)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
+
+# upwelling, hobo water temp, buoy water temp, fw discharge
+pairs.panels(BenNear2[,c(11,14,15,38)],smooth=F,density=T,ellipses=F,lm=T,digits=3,scale=T)
 
 ```
 
@@ -291,22 +304,20 @@ BenNear_mus <- BenNear %>%
                filter(Year %in% c(2006:2015),
                       Region %in% c("WPWS","KATM","KEFJ"), 
                       !(Site_Name %in% c("Northwest Bay", "Herring Bay-Southwest", "Herring Bay-Bear Cove",
-                                       "Ninagiak Island", "Disk Island"))) %>%
-               select("ENSO_anul_mn","PDO_anul_mn","NPGO_anul_mn","UpWelAnom_anul_mn",
-                                    "WaterTmp_C_AnnMn","TotChlA_micgL_AnnMn","Whelk_Sum_n_m2",
-                                    "BLOYAdult_breed_n","SOtt_AnnMnEngRec","WaterTmp_WinterAnom",
-                                    "SC_Mn_FWDisc_AnMn") %>%
-               arrange(Region_Site, Year)
+                                         "Ninagiak Island", "Disk Island"))) %>%
+                select(Year, Region, ENSO_anul_mn, PDO_anul_mn, NPGO_anul_mn, UpWelAnom_anul_mn,
+                       WaterTmp_C_AnnMn, TotChlA_micgL_AnnMn, Whelk_Sum_n_m2,
+                       BLOYAdult_breed_n, SOtt_AnnMnEngRec, WaterTmp_WinterAnom,
+                       Hobo_WaterTemp_AnnMn, FWDisc_MeanYearly_ft3s1) %>%
+               arrange(Region, Year) %>%
               # na.omit() %>%
                filter(!is.na(WaterTmp_C_AnnMn)) %>%
-               select(-Quadrat, -Lat,-Long,-Site_Name) %>%
-               mutate_each(funs(as.numeric), Otter_Abun_est) %>%
-               #mutate_each(funs(as.character), Year) %>%
                group_by(Year, Region) %>%
                summarize_each(funs(mean)) %>%
                ungroup()  
             
 ```
+
 
 ```{r, echo=FALSE}
 #Plot_Vars <- function(datafr, Resp){
@@ -317,16 +328,18 @@ BenNear_mus <- BenNear %>%
 
 
 
-ggplot(data=BenNear_sub, aes(x=Year, y=WaterTmp_C_AnnMn)) + 
+ggplot(data=BenNear_mus, aes(x=Year, y=WaterTmp_C_AnnMn)) + 
                geom_line(size=2) + facet_wrap(~Region) + 
-               theme(axis.text.x = element_text(angle=90, vjust=1, hjust=1, 
-                                               color="black", size=11),
-                    axis.text.y = element_text(color="black", size=15),
-                    axis.title  = element_text(face="bold", size=20))
+               theme(axis.text.x = element_text(angle=90, vjust=0.5, hjust=1, 
+                                                color="black", size=11),
+                     axis.text.y = element_text(color="black", size=15),
+                     axis.title  = element_text(face="bold", size=20))
 
 ```
 
-```{r, echo=FALSE}
+
+
+```{r, echo=FALSE, eval=FALSE}
 BenNear_sub2 <- BenNear %>%
                 filter(Region %in% c("WPWS","KATM","KEFJ")) %>%
                # na.omit() %>%
@@ -339,7 +352,7 @@ BenNear_sub2 <- BenNear %>%
             
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 
 ggplot(data=BenNear12, aes(x=Year, y=mussel_Per_Cov)) + 
                geom_line(size=2) + facet_wrap(~Site_Name) + 
@@ -356,17 +369,16 @@ BenNearMUSS <- read.csv("BenthicNearshore_MusselQuestData.csv")
 
 BenNearMUSS2 <- BenNearMUSS %>%
                 select(-Quadrat, -Lat,-Long) %>%
-                mutate_each(funs(as.numeric), Otter_Abun_est) %>%
                 group_by(Year, Region, Site_Name) %>%
                 summarize_each(funs(sum)) %>%
-                ungroup() %>%
-                select(-BLOY_MnDensity_km2) 
+                ungroup()
+
 
 ```
 
 ```{r, eval=FALSE, echo=FALSE}
 # make Yes/No for sample presence
-melt_BenNearMUSS2 <- melt(as.data.frame(BenNearMUSS2), id.vars=c("Year","Region","Site_Name"),                           variable_name="Data_Set")
+melt_BenNearMUSS2 <- melt(as.data.frame(BenNearMUSS2), id.vars=c("Year","Region","Site_Name"),                                       variable_name="Data_Set")
 
 BenNearMUSS3 <- melt_BenNearMUSS2 %>%
                 mutate(Bin_Value = ifelse((is.na(value)),'0',
