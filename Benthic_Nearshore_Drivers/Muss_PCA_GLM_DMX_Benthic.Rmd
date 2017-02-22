@@ -111,8 +111,14 @@ BenNear_reg_cpa <- BenNear_reg_l %>%  #filter(Year %in% c("2007","2010","2012","
 ```
 
 ```{r, echo=FALSE}
+# subset data for PCA
+BenNear_reg_cpa_PCA <- BenNear_reg_cpa %>%
+                       select(-Year, -Region, -WaterTmp_C_Winter, -WaterTmp_WinterAnom,
+                              -mussel_Anom, -TotChlA_micgL_SpMn, -TotChlA_micgL_FlMn,
+                              -log_mussel_Per_Cov)
+
 # Run the PCA
-pca_cpa <- prcomp(~., data=BenNear_reg_cpa[,-c(1,2,15,16,38)], na.action=na.omit, scale=TRUE)
+pca_cpa <- prcomp(~., data=BenNear_reg_cpa_PCA, na.action=na.omit, scale=TRUE)
 #print(pca_cpa) # shows SDs and weightings
 summary(pca_cpa)
 #pca_cpa$x # this is the PCA scores for each row of data.
@@ -133,6 +139,8 @@ evi_per_imp6 <- data.frame(evi_per) %>% select(PC6) %>% tibble::rownames_to_colu
                arrange(-PC6)
 evi_per_imp7 <- data.frame(evi_per) %>% select(PC7) %>% tibble::rownames_to_column() %>%
                arrange(-PC7)
+evi_per_imp8 <- data.frame(evi_per) %>% select(PC8) %>% tibble::rownames_to_column() %>%
+               arrange(-PC8)
 #evi_per_imp ; evi_per_imp2 ; evi_per_imp3
 
 par(mfrow=c(1,2))
@@ -145,7 +153,7 @@ plot(pca_cpa, type="lines", main="everything")
 
 ```{r, echo=FALSE}
 # Plotting
-pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa[,-c(1,2,15,16,38)], scale=TRUE),
+pca_reg_all <- autoplot(prcomp(BenNear_reg_cpa_PCA, scale=TRUE),
                         data=BenNear_reg_cpa,  colour='Region', loadings=TRUE,
                         loadings.colour='blue', loadings.label=TRUE,
                         loadings.label.size=4)
@@ -174,9 +182,25 @@ data_sub_model_run <- function(orig_df, select_cols){
 
 
 ##### Scenario 1 - Region
+*NOTE: chose to retain Spring Freshwater over LAG Annual Freshwater
+       chose to retain PDO over ENSO
+       chose to retain log Chla spring over PDO Winter
+       chose to retain Freshwater Yearly over Neo-Odon algae
+       chose to retain Upwelling Annual over Water Temp (buoys)
+       chose to retain Fucus over BLOY Adults, Upwelling spring, Red algae perennial, and Red algae TOTAL
+Then had to reduce to 17 variables, since we have only 17 observations at the Region level.
 ```{r, echo=FALSE}
 # GLM, comprehensive 
 # subset the data based on above PCA
+
+# Correlated variables (based on PCA plot):
+#     PDO Winter / log Chla Spring
+#     PDO Spring / ENSO Spring
+#     Freshwater Spring / LAG Freshwater Yearly
+#     Freshwater Yearly / Neo-Odon
+#     BLOY Adults / Upwelling spring / Red algae perennial / Fucus / Red algae TOTAL
+#     Water Temp Annual / Upwelling Annual
+
 
 ##########
 # BenNear_reg_cpa_sub <- BenNear_reg_cpa %>%
@@ -192,10 +216,12 @@ data_sub_model_run <- function(orig_df, select_cols){
 # sum_ev_glm$coefficients
 ##########
 
-BenNear_reg_cpa_sub <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                         "WaterTmp_C_AnnMn","UpWelAnom_anul_mn", "ENSO_anul_mn", "NPGO_anul_mn", 
-                         "PDO_anul_mn", "WaterTmp_C_AnnMn", "SOtt_AnnMnEngRec", "Fuc_dist_Per_Cov",
-                         "Brwn_alg_ann_Per_Cov", "Green_alg_ann_Per_Cov", "Red_alg_per_Per_Cov")
+BenNear_reg_cpa_sub <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", 
+                         "FWDisc_MeanYearly_ft3s1", "Hobo_WaterTemp_AnnMn", "NPGO_anul_mn",   
+                         "UpWelAnom_anul_mn", "PDO_anul_mn", "Bare_Sub_Per_Cov",
+                         "SOtt_AnnMnEngRec", "barnacle_Per_Cov", "Whelk_Sum_n_m2",
+                         "Fuc_dist_Per_Cov", "Brwn_alg_ann_Per_Cov",
+                         "Green_alg_ann_Per_Cov", "Red_alg_ann_Per_Cov")
 
 Sce_1 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub)
 #Sce_1
@@ -207,14 +233,12 @@ Sce_1 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa
 # GLM, comprehensive 
 # trying to get as many predictor variables in here as possible
 
-BenNear_reg_cpa_sub2 <- c("-Year", "-Region", "-log_mussel_Per_Cov", "-UpWelAnom_fal_mn",    
-                          "-UpWelAnom_spr_mn", "-TotChlA_micgL_FlMn", "-log_TotChlA_micgL_FlMn",
-                          "-TotChlA_micgL_SpMn", "-LAG_FWDisc_MeanYearly_ft3s1", "-ENSO_spr_mn",
-                          "-ENSO_fal_mn", "-PDO_spring_mn", "-PDO_winter_mn", "-WaterTmp_C_Winter",
-                          "-WaterTmp_WinterAnom", "-Red_alg_ann_Per_Cov", "-PDO_anul_mn",
-                          "-LAG_log_TotChlA_micgL_AnnMn", "-FWDisc_MeanFall_ft3s1", 
-                          "-WaterTmp_C_AnnMn", " -Red_alg_per_Per_Cov", "-Neo_Odon_sp_Per_Cov",
-                          "-FWDisc_MeanSpring_ft3s1", "-log_TotChlA_micgL_SpMn"
+BenNear_reg_cpa_sub2 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", 
+                          "FWDisc_MeanYearly_ft3s1", "Hobo_WaterTemp_AnnMn", "NPGO_anul_mn",   
+                          "UpWelAnom_anul_mn", "PDO_anul_mn", "Bare_Sub_Per_Cov",
+                          "SOtt_AnnMnEngRec", "barnacle_Per_Cov", "Whelk_Sum_n_m2",
+                          "Fuc_dist_Per_Cov", "Brwn_alg_ann_Per_Cov",
+                          "Green_alg_ann_Per_Cov", "Red_alg_ann_Per_Cov", "Red_alg_TOT_Per_Cov"
                           )
 
 Sce_2 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2)
@@ -224,33 +248,37 @@ Sce_2 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa
 
 ##### Scenario 3 - Region
 ```{r, echo=FALSE}
-
-BenNear_reg_cpa_sub2l <- c("-Year", "-Region", "-log_mussel_Per_Cov", "-UpWelAnom_fal_mn",
-                           "-UpWelAnom_spr_mn", "-TotChlA_micgL_FlMn", "-log_TotChlA_micgL_FlMn",
-                           "-TotChlA_micgL_SpMn", "-log_TotChlA_micgL_SpMn",
-                           "-ENSO_spr_mn", "-ENSO_fal_mn", "-PDO_spring_mn", "-PDO_winter_mn",
-                           "-WaterTmp_C_Winter", "-WaterTmp_WinterAnom", "-Red_alg_ann_Per_Cov",
-                           "-Red_alg_per_Per_Cov", "-PDO_anul_mn", "-log_TotChlA_micgL_AnnMn",
-                           "-WaterTmp_C_AnnMn", "-Neo_Odon_sp_Per_Cov", "-FWDisc_MeanSpring_ft3s1",
-                           "-FWDisc_MeanFall_ft3s1", "-FWDisc_MeanYearly_ft3s1"
+# with lagged annual chla and lagged freshwater discharge
+BenNear_reg_cpa_sub2l <- c("mussel_Anom", "LAG_log_TotChlA_micgL_AnnMn", "Hobo_WaterTemp_AnnMn",
+                           "LAG_FWDisc_MeanYearly_ft3s1", "ENSO_anul_mn", "NPGO_anul_mn",
+                           "UpWelAnom_anul_mn", "Whelk_Sum_n_m2", "Bare_Sub_Per_Cov",     
+                           "SOtt_AnnMnEngRec", "BLOYAdult_breed_n", "barnacle_Per_Cov",
+                           "Brwn_alg_ann_Per_Cov", "Green_alg_ann_Per_Cov" 
                            )
 
 Sce_3 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2l)
 #Sce_3
+
+
+# Correlated variables (based on PCA plot):
+#     PDO Winter / log Chla Spring
+#     PDO Spring / ENSO Spring
+#     Freshwater Spring / LAG Freshwater Yearly
+#     Freshwater Yearly / Neo-Odon
+#     BLOY Adults / Upwelling spring / Red algae perennial / Fucus / Red algae TOTAL
+#     Water Temp Annual / Upwelling Annual
+
 
 ```
 
 ##### Scenario 4 - Region
 ```{r, echo=FALSE}
 
-BenNear_reg_cpa_sub2pl <- c("-Year", "-Region", "-log_mussel_Per_Cov", "-UpWelAnom_fal_mn", 
-                            "-UpWelAnom_spr_mn", "-TotChlA_micgL_FlMn", "-log_TotChlA_micgL_FlMn", 
-                            "-TotChlA_micgL_SpMn", "-log_TotChlA_micgL_SpMn", "-ENSO_spr_mn", 
-                            "-ENSO_fal_mn", "-PDO_spring_mn", "-PDO_winter_mn", "-WaterTmp_C_Winter",
-                            "-WaterTmp_WinterAnom", "-Red_alg_ann_Per_Cov", "-Red_alg_per_Per_Cov",
-                            "-PDO_anul_mn", "-LAG_log_TotChlA_micgL_AnnMn",  
-                            "-LAG_FWDisc_MeanYearly_ft3s1", "-FWDisc_MeanSpring_ft3s1",   
-                            "-FWDisc_MeanFall_ft3s1", "-WaterTmp_C_AnnMn", "-Neo_Odon_sp_Per_Cov"
+BenNear_reg_cpa_sub2pl <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                            "ENSO_anul_mn", "NPGO_anul_mn", "UpWelAnom_anul_mn",
+                            "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "Whelk_Sum_n_m2",
+                            "SOtt_AnnMnEngRec", "barnacle_Per_Cov", 
+                            "Fuc_dist_Per_Cov", "Brwn_alg_ann_Per_Cov", "Green_alg_ann_Per_Cov"
                             )
 
 Sce_4 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2pl)
