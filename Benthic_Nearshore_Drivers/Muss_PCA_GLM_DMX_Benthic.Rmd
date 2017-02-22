@@ -237,8 +237,8 @@ BenNear_reg_cpa_sub2 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn",
                           "FWDisc_MeanYearly_ft3s1", "Hobo_WaterTemp_AnnMn", "NPGO_anul_mn",   
                           "UpWelAnom_anul_mn", "PDO_anul_mn", "Bare_Sub_Per_Cov",
                           "SOtt_AnnMnEngRec", "barnacle_Per_Cov", "Whelk_Sum_n_m2",
-                          "Fuc_dist_Per_Cov", "Brwn_alg_ann_Per_Cov",
-                          "Green_alg_ann_Per_Cov", "Red_alg_ann_Per_Cov", "Red_alg_TOT_Per_Cov"
+                          "Brwn_alg_ann_Per_Cov","Green_alg_ann_Per_Cov", 
+                          "Red_alg_ann_Per_Cov", "Red_alg_TOT_Per_Cov"
                           )
 
 Sce_2 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2)
@@ -315,7 +315,7 @@ Sce_6 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa
 BenNear_reg_cpa_sub2b <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
                            "Bare_Sub_Per_Cov", "Fuc_dist_Per_Cov",  "WaterTmp_C_AnnMn",
                            "SOtt_AnnMnEngRec", "BLOYAdult_breed_n", "ENSO_anul_mn",
-                           "UpWelAnom_anul_mn", "NPGO_anul_mn"
+                           "NPGO_anul_mn"
                            )
 
 Sce_7 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2b)
@@ -327,7 +327,7 @@ Sce_7 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub2bb <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                            "NPGO_anul_mn", "WaterTmp_C_AnnMn", "ENSO_anul_mn", "Fuc_dist_Per_Cov",
+                            "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "ENSO_anul_mn", 
                             "Red_alg_per_Per_Cov", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                             )
 
@@ -341,11 +341,20 @@ Sce_8 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa
 
 BenNear_reg_cpa_sub2bt <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
                             "Bare_Sub_Per_Cov", "NPGO_anul_mn", "Fuc_dist_Per_Cov", 
-                            "Red_alg_per_Per_Cov", "UpWelAnom_anul_mn"
+                            "UpWelAnom_anul_mn"
                             )
 
 Sce_9 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2bt)
 #Sce_9
+
+# Correlated variables (based on PCA plot):
+#     PDO Winter / log Chla Spring
+#     PDO Spring / ENSO Spring
+#     Freshwater Spring / LAG Freshwater Yearly
+#     Freshwater Yearly / Neo-Odon
+#     BLOY Adults / Upwelling spring / Red algae perennial / Fucus / Red algae TOTAL
+#     Water Temp Annual / Upwelling Annual
+
 
 ```
 
@@ -354,7 +363,7 @@ Sce_9 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa
 
 BenNear_reg_cpa_sub2bw <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
                             "Bare_Sub_Per_Cov", "NPGO_anul_mn", "UpWelAnom_anul_mn", 
-                            "Fuc_dist_Per_Cov", "Red_alg_per_Per_Cov", "Whelk_Sum_n_m2", 
+                            "Fuc_dist_Per_Cov", "Whelk_Sum_n_m2", 
                             "barnacle_Per_Cov"
                             )
 
@@ -367,8 +376,8 @@ Sce_10 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cp
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub2e <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "NPGO_anul_mn", "WaterTmp_C_AnnMn", "Fuc_dist_Per_Cov",
-                           "Red_alg_per_Per_Cov", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                           "NPGO_anul_mn", "Red_alg_per_Per_Cov", "Bare_Sub_Per_Cov", 
+                           "UpWelAnom_anul_mn"
                            )
 
 Sce_11 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub2e)
@@ -380,7 +389,7 @@ Sce_11 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cp
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub2wt <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                            "NPGO_anul_mn", "Fuc_dist_Per_Cov", "Red_alg_per_Per_Cov", 
+                            "NPGO_anul_mn", "Fuc_dist_Per_Cov", 
                             "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                             )
 
@@ -393,7 +402,7 @@ Sce_12 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cp
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub2f <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "NPGO_anul_mn", "WaterTmp_C_AnnMn", "Red_alg_per_Per_Cov", 
+                           "NPGO_anul_mn", "Red_alg_per_Per_Cov", 
                            "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                            )
 
@@ -407,11 +416,19 @@ Sce_13 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cp
 
 BenNear_reg_cpa_sub14 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "NPGO_anul_mn", 
                            "WaterTmp_C_AnnMn", "Red_alg_per_Per_Cov",
-                           "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                           "Bare_Sub_Per_Cov"
                            )
 
 Sce_14 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub14)
 #Sce_14
+
+# Correlated variables (based on PCA plot):
+#     PDO Winter / log Chla Spring
+#     PDO Spring / ENSO Spring
+#     Freshwater Spring / LAG Freshwater Yearly
+#     Freshwater Yearly / Neo-Odon
+#     BLOY Adults / Upwelling spring / Red algae perennial / Fucus / Red algae TOTAL
+#     Water Temp Annual / Upwelling Annual
 
 ```
 
@@ -419,7 +436,7 @@ Sce_14 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cp
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub15 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "NPGO_anul_mn", "WaterTmp_C_AnnMn", "Bare_Sub_Per_Cov", 
+                           "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", 
                            "UpWelAnom_anul_mn"
                            )
 
@@ -432,7 +449,7 @@ Sce_15 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cp
 ```{r, echo=FALSE}
 
 BenNear_reg_cpa_sub16 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                           "NPGO_anul_mn", "WaterTmp_C_AnnMn", "Red_alg_TOT_Per_Cov",
+                           "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Red_alg_TOT_Per_Cov",
                            "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                            )
 
@@ -457,7 +474,6 @@ arrange(AIC_List_r, AIC)
 
 ##### Coefficients for model(s) with lowest AIC scores
 ```{r, echo=FALSE}
-Sce_2
 Sce_4
 ```
 
@@ -493,9 +509,12 @@ Sce_12t <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_tran_
 
 ```
 
-```{r, echo=FALSE, eval=FALSE}
-#
-prob2 <- predict(al_glm3f, BenNear_reg_cpa_sub2f)
+```{r, echo=FALSE}
+# copy the best model outside the function so can do correlation comparison
+BenNear_reg_cpa_sub2pl2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_reg_cpa_sub2pl)
+Sce_4a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl2, family=gaussian)
+
+prob2 <- predict(Sce_4a, BenNear_reg_cpa_sub2pl2)
 df33 <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2)
 
 qplot(data=df33, prob2, mussel_Anom, color=Region, size=3)
@@ -518,11 +537,11 @@ cor(prob2, BenNear_reg_cpa[,38])
 
 # Plot residuals from Scenario 13
 par(mfrow=c(2,2))
-plot(al_glm3f)
+plot(Sce_4a)
 
 ```
 
-```{r, echo=FALSE, eval=FALSE}
+```{r, echo=FALSE}
 # Figure
 # BenNear_reg_l # has data through 2015
 # df33$prob2 # predicted mussel data
