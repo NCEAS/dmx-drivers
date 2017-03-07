@@ -494,13 +494,13 @@ Sce_4
 ##### Scenario WINNER of the Site-level analysis
 ```{r, echo=FALSE}
 
-BenNear_site_cpa_sub2f18 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+BenNear_site_cpa_sub2f24 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", 
                               "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
                               )
 
-Sce_18_s_r <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_site_cpa_sub2f18)
-#Sce_18_s
-Sce_18_s_r$aic
+Sce_24_s_r <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_site_cpa_sub2f24)
+#Sce_24_s_r
+Sce_24_s_r$aic
 
 ```
 
@@ -527,7 +527,7 @@ Sce_4a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl2, family=gaussian)
 prob2 <- predict(Sce_4a, BenNear_reg_cpa_sub2pl2)
 df33 <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2)
 
-qplot(data=df33, prob2, mussel_Anom, color=Region, size=3)
+ggplot(data=df33, aes(prob2, mussel_Anom, color=Region)) + geom_point(size=4)
 cor(prob2, BenNear_reg_cpa[,38])
 #cor(BenNear_reg_cpa_sub2a[,1], BenNear_reg_cpa_sub2a[,3])
 
@@ -558,7 +558,8 @@ plot(Sce_4a)
 
 fig1 <- ggplot() + 
         geom_point(data=BenNear_reg_l, aes(x=as.factor(Year), y=mussel_Anom, color=Region), size=4) +
-        geom_point(data=df33, aes(x=as.factor(Year), y=prob2, color=Region), shape=17, size=4) + 
+        geom_point(data=df33, aes(x=as.factor(Year), y=prob2, color=Region), shape=17, size=4,
+                   position=position_jitter(w=0.2, h=0)) + 
         xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
                "2013", "2014", "2015")) + xlab("Year") + ylab("Mussel Percent Cover") +
         theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) 
@@ -622,7 +623,8 @@ fig2a <- ggplot(data=line_dat_algae, aes(x=as.factor(Year), y=value, color=Varia
                                        "  Annual Green Algae")) + 
          theme(legend.text.align = 0,
                axis.text.x=element_blank(),
-               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'))
+               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
+               panel.border = element_rect(fill = NA, colour = "black", size = 1))
 #  
 line_dat_mus <- filter(line_dat, Variable %in% c("mussel_Anom_mn"))
 
@@ -635,7 +637,8 @@ fig2b <- ggplot(data=line_dat_mus, aes(x=as.factor(Year), y=value, color=Variabl
                             values=c("blue")) +
          theme(legend.position="right",
                axis.text.x=element_blank(),
-               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'))
+               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
+               panel.border = element_rect(fill = NA, colour = "black", size = 1))
 #
 line_dat_chl <- filter(line_dat, Variable %in% c("log_TotChlA_micgL_AnnMn"))
 
@@ -648,7 +651,8 @@ fig2c <- ggplot(data=line_dat_chl, aes(x=as.factor(Year), y=value, color=Variabl
                             values=c("pink")) +
          theme(legend.text.align = 0,
                axis.text.x=element_blank(),
-               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'))
+               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
+               panel.border = element_rect(fill = NA, colour = "black", size = 1))
 #
 line_dat_upw <- filter(line_dat, Variable %in% c("UpWelAnom_anul_mn"))
 
@@ -661,7 +665,8 @@ fig2d <- ggplot(data=line_dat_upw, aes(x=as.factor(Year), y=value, color=Variabl
                             values=c("yellow")) +
          theme(legend.text.align = 0,
                axis.text.x=element_blank(),
-               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'))
+               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
+               panel.border = element_rect(fill = NA, colour = "black", size = 1))
 #
 line_dat_ens <- filter(line_dat, Variable %in% c("ENSO_anul_mn"))
 
@@ -672,7 +677,8 @@ fig2e <- ggplot(data=line_dat_ens, aes(x=as.factor(Year), y=value, color=Variabl
          scale_color_discrete(breaks=c("ENSO_anul_mn"),
                               labels=c("  El Nino Southern \n  Oscillation Index")) +
          theme(legend.text.align = 0,
-               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'))
+               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
+               panel.border = element_rect(fill = NA, colour = "black", size = 1))
 #
 line_dat_fwd <- filter(line_dat, Variable %in% c("FWDisc_Yr_mn"))
 
@@ -685,7 +691,8 @@ fig2f <- ggplot(data=line_dat_fwd, aes(x=as.factor(Year), y=value, color=Variabl
                             values=c("green")) +
          theme(legend.text.align = 0,
                axis.text.x=element_blank(),
-               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'))
+               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
+               panel.border = element_rect(fill = NA, colour = "black", size = 1))
 
 #
 line_dat_wtm <- filter(line_dat, Variable %in% c("HOBO_WaterTemp_mn"))
@@ -698,7 +705,8 @@ fig2g <- ggplot(data=line_dat_wtm, aes(x=as.factor(Year), y=value, color=Variabl
                             labels=c("  Water Temperature"),
                             values=c("orange")) +
          theme(legend.text.align = 0,
-               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'))
+               axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
+               panel.border = element_rect(fill = NA, colour = "black", size = 1))
 
 #
 
@@ -1187,16 +1195,82 @@ Sce_23_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_sit
 
 ```
 
+##### Scenario 24 - Site
+```{r, echo=FALSE}
+# without FWD
+BenNear_site_cpa_sub2f24 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", 
+                              "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                              )
+
+Sce_24_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f24)
+#Sce_24_s
+
+```
+
+##### Scenario 25 - Site
+```{r, echo=FALSE}
+# with sea otter energy recovery
+BenNear_site_cpa_sub2f25 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                              "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn",
+                              "SOtt_AnnMnEngRec"
+                              ) 
+
+Sce_25_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f25)
+#Sce_25_s
+
+```
+
+##### Scenario 26 - Site
+```{r, echo=FALSE}
+# with fucus
+BenNear_site_cpa_sub2f26 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                              "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn", 
+                              "Fuc_dist_Per_Cov"
+                              )
+
+Sce_26_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f26)
+#Sce_26_s
+
+```
+
+##### Scenario 27 - Site
+```{r, echo=FALSE}
+# without FWD
+BenNear_site_cpa_sub2f27 <- c("mussel_Anom", "Hobo_WaterTemp_AnnMn",  
+                              "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn", 
+                              "Red_alg_TOT_Per_Cov", "Brwn_alg_ann_Per_Cov", "Green_alg_ann_Per_Cov"
+                              )
+
+Sce_27_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f27)
+#Sce_27_s
+
+```
+
+##### Scenario 28 - Site
+```{r, echo=FALSE}
+BenNear_site_cpa_sub2f28 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", 
+                              "WaterTmp_C_AnnMn", 
+                              "SOtt_AnnMnEngRec", "Brwn_alg_ann_Per_Cov"
+                              )
+
+Sce_28_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_site_cpa_sub2f28)
+#Sce_28_s
+
+```
+
+
 ##### AIC values for all Site models
 ```{r, echo=FALSE}
 Site_mod_list <- list(Sce_1_s, Sce_2_s, Sce_3_s, Sce_4_s, Sce_5_s, Sce_6_s, Sce_7_s, Sce_8_s, 
                       Sce_9_s, Sce_10_s, Sce_11_s, Sce_12_s, Sce_13_s, Sce_14_s, Sce_15_s, Sce_16_s,
-                      Sce_17_s, Sce_18_s, Sce_19_s, Sce_20_s, Sce_21_s, Sce_22_s, Sce_23_s
+                      Sce_17_s, Sce_18_s, Sce_19_s, Sce_20_s, Sce_21_s, Sce_22_s, Sce_23_s, Sce_24_s,
+                      Sce_25_s, Sce_26_s, Sce_27_s, Sce_28_s
                       )
 Site_list_names <- c("Sce_1_s", "Sce_2_s", "Sce_3_s", "Sce_4_s", "Sce_5_s", "Sce_6_s", "Sce_7_s",
                      "Sce_8_s", "Sce_9_s", "Sce_10_s", "Sce_11_s", "Sce_12_s", "Sce_13_s", "Sce_14_s",
                      "Sce_15_s", "Sce_16_s", "Sce_17_s", "Sce_18_s", "Sce_19_s", "Sce_20_s", 
-                     "Sce_21_s", "Sce_22_s", "Sce_23_s")
+                     "Sce_21_s", "Sce_22_s", "Sce_23_s", "Sce_24_s", "Sce_25_s", "Sce_26_s", "Sce_27_s", 
+                     "Sce_28_s")
 
 s <- sapply(Site_mod_list, FUN = function(x) x$aic)
 AIC_List_s <- data.frame(Model = Site_list_names, AIC = s)
@@ -1206,7 +1280,7 @@ arrange(AIC_List_s, AIC)
 
 ##### Coefficients for model(s) with lowest AIC scores
 ```{r, echo=FALSE}
-Sce_18_s
+Sce_28_s
 
 ```
 
@@ -1243,14 +1317,14 @@ Sce_22_t_s$aic
 
 ```{r, echo=FALSE}
 # copy the best model outside the function so can do correlation comparison
-BenNear_site_cpa_sub2f182 <- BenNear_site_cpa %>% select_(.dots=BenNear_site_cpa_sub2f18)
-Sce_18_sa <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f182, family=gaussian)
+BenNear_site_cpa_sub2f282 <- BenNear_site_cpa %>% select_(.dots=BenNear_site_cpa_sub2f28)
+Sce_28_sa <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f282, family=gaussian)
 
 # For Scenario Winner
-prob3 <- predict(Sce_18_sa, BenNear_site_cpa_sub2f182)
+prob3 <- predict(Sce_28_sa, BenNear_site_cpa_sub2f282)
 df333 <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3)
 
-qplot(data=df333, prob3, mussel_Anom, color=Region, size=3)
+ggplot(data=df333, aes(prob3, mussel_Anom, color=Region)) + geom_point(size=4)
 cor(prob3, BenNear_site_cpa[,38])
 #cor(BenNear_reg_cpa_sub2a[,1], BenNear_reg_cpa_sub2a[,3])
 
@@ -1271,7 +1345,7 @@ cor(prob3, BenNear_site_cpa[,38])
 
 # Plot residuals from Scenario 
 par(mfrow=c(2,2))
-plot(Sce_18_sa)
+plot(Sce_28_sa)
 
 
 ```
@@ -1287,11 +1361,11 @@ fig15 <- ggplot() +
          geom_point(data=df333, aes(x=as.factor(Year), y=prob3, color=Site_Name), shape=17, size=4) + 
          xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
                                      "2013", "2014", "2015")) +
-         theme_bw() + geom_hline(yintercept = 0, show.legend = FALSE)
+         theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE)
   #       scale_x_discrete(breaks = c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
    #                                  "2013", "2014", "2015"))
 
-fig15
+#fig15
 
 
 ```
@@ -1299,12 +1373,15 @@ fig15
 ```{r, echo=FALSE}
 
 fig15a <- ggplot() + 
-          geom_point(data=BenNear_site_l, aes(x=as.factor(Year), y=mussel_Anom, color=Site_Name, 
-                                              shape=Region), size=4) +
-          geom_point(data=df333, aes(x=as.factor(Year), y=prob3, color=Site_Name), shape=17, size=4) + 
+          geom_point(data=BenNear_site_l, 
+                     aes(x=as.factor(Year), y=mussel_Anom, color=Site_Name, shape=Region), size=4,
+                     position=position_jitter(w=0.2, h=0)) +
+          geom_point(data=df333, aes(x=as.factor(Year), y=prob3, color=Site_Name), size=4,
+                     position=position_jitter(w=0.2, h=0)) + 
           xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
                                         "2013", "2014", "2015")) +
-          theme_bw() + geom_hline(yintercept = 0, show.legend = FALSE)
+          xlab("Year") + ylab("Anomoly of Mussel Cover") + 
+          theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE)
   #        scale_x_discrete(breaks = c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
    #                                   "2013", "2014", "2015"))
         
@@ -1768,16 +1845,69 @@ Sce_25_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tra
 
 ```
 
+##### Scenario 26 - Transect
+```{r, echo=FALSE}
+# without FWD
+BenNear_tran_cpa_sub2l26 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn",
+                              "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", 
+                              "BLOYAdult_breed_n", "Brwn_alg_ann_Per_Cov"
+                              )
+
+Sce_26_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l26)
+#Sce_26_t
+
+```
+
+##### Scenario 27 - Transect
+```{r, echo=FALSE}
+# Without BLOY
+BenNear_tran_cpa_sub2l27 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", "FWDisc_MeanYearly_ft3s1",
+                              "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", 
+                              "Brwn_alg_ann_Per_Cov"
+                              )
+
+Sce_27_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l27)
+#Sce_27_t
+
+```
+
+##### Scenario 28 - Transect
+```{r, echo=FALSE}
+# Without FWD and BLOY
+BenNear_tran_cpa_sub2l28 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", 
+                              "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", 
+                              "Brwn_alg_ann_Per_Cov"
+                              )
+
+Sce_28_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l28)
+#Sce_28_t
+
+```
+
+##### Scenario 29 - Transect
+```{r, echo=FALSE}
+# Without FWD and BLOY but with Sea Otter energy recovery
+BenNear_tran_cpa_sub2l29 <- c("mussel_Anom", "log_TotChlA_micgL_FlMn", 
+                              "NPGO_anul_mn", "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", 
+                              "SOtt_AnnMnEngRec", "Brwn_alg_ann_Per_Cov"
+                              )
+
+Sce_29_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_tran_cpa_sub2l29)
+#Sce_29_t
+
+```
+
 ```{r, echo=FALSE}
 Tran_mod_list <- list(Sce_1_t, Sce_2_t, Sce_3_t, Sce_4_t, Sce_5_t, Sce_6_t, Sce_7_t, Sce_8_t, 
                       Sce_9_t, Sce_10_t, Sce_11_t, Sce_12_t, Sce_13_t, Sce_14_t, Sce_15_t, Sce_16_t,
                       Sce_17_t, Sce_18_t, Sce_19_t, Sce_20_t, Sce_21_t, Sce_22_t, Sce_23_t,
-                      Sce_24_t, Sce_25_t
+                      Sce_24_t, Sce_25_t, Sce_26_t, Sce_27_t, Sce_28_t, Sce_29_t
                       )
 Tran_list_names <- c("Sce_1_t", "Sce_2_t", "Sce_3_t", "Sce_4_t", "Sce_5_t", "Sce_6_t", "Sce_7_t", 
                      "Sce_8_t", "Sce_9_t", "Sce_10_t", "Sce_11_t", "Sce_12_t", "Sce_13_t", "Sce_14_t",
                      "Sce_15_t", "Sce_16_t", "Sce_17_t", "Sce_18_t", "Sce_19_t", "Sce_20_t", "Sce_21_t", 
-                     "Sce_22_t", "Sce_23_t", "Sce_24_t", "Sce_25_t")
+                     "Sce_22_t", "Sce_23_t", "Sce_24_t", "Sce_25_t", "Sce_26_t", "Sce_27_t", "Sce_28_t",
+                     "Sce_29_t")
 
 t <- sapply(Tran_mod_list, FUN = function(x) x$aic)
 AIC_List_t <- data.frame(Model = Tran_list_names, AIC = t)
@@ -1810,13 +1940,13 @@ Sce_4_t_r$aic
 ##### Scenario Winner from Site-level analysis above
 ```{r, echo=FALSE}
 
-BenNear_site_cpa_sub2f18_t <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
-                                "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
-                                )
+BenNear_site_cpa_sub2f24 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", 
+                              "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+                              )
 
-Sce_18_t_s <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_site_cpa_sub2f18_t)
-#Sce_18_t_s
-Sce_18_t_s$aic
+Sce_24_s_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_site_cpa_sub2f24)
+#Sce_24_s_t
+Sce_24_s_t$aic
 
 ```
 
@@ -1830,7 +1960,7 @@ Sce_22_ta <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l222, family=gaussia
 prob5 <- predict(Sce_22_ta, BenNear_tran_cpa_sub2l222)
 df335 <- cbind(BenNear_tran_cpa[,c(1,2,3,37)], prob5)
 
-qplot(data=df335, prob5, mussel_Anom, color=Site_Name, size=3)
+ggplot(data=df335, aes(prob5, mussel_Anom, color=Site_Name)) + geom_point(size=3)
 cor(prob5, BenNear_tran_cpa[,37])
 #cor(BenNear_reg_cpa_sub2a[,1], BenNear_reg_cpa_sub2a[,3])
 
@@ -1866,11 +1996,14 @@ plot(Sce_22_ta)
 # df335$prob5 # predicted mussel data for Scenario 12
 
 fig22 <- ggplot() + 
-         geom_point(data=BenNear_tran_l, aes(x=as.factor(Year), y=mussel_Anom, color=Site_Name), size=4) +
-         geom_point(data=df335, aes(x=as.factor(Year), y=prob5, color=Site_Name), shape=17, size=4) + 
+         geom_point(data=BenNear_tran_l, aes(x=as.factor(Year), y=mussel_Anom, color=Site_Name), size=4,
+                    position=position_jitter(w=0.2, h=0)) +
+         geom_point(data=df335, aes(x=as.factor(Year), y=prob5, color=Site_Name), shape=17, size=4,
+                    position=position_jitter(w=0.2, h=0)) + 
          xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
                                      "2013", "2014", "2015")) +
-         theme_bw() + geom_hline(yintercept = 0, show.legend = FALSE)
+         xlab("Year") + ylab("Anomoly of Mussel Cover") + 
+         theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE)
   #       scale_x_discrete(breaks = c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
    #                                  "2013", "2014", "2015"))
         
