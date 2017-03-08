@@ -3,8 +3,8 @@ title: "Muss_PCA_GLM_DMX_Benthic"
 author: "Rachael Blake"
 date: "September 16, 2016"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 
