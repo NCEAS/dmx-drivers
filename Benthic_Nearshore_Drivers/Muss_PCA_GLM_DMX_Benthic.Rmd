@@ -3,8 +3,8 @@ title: "Muss_PCA_GLM_DMX_Benthic"
 author: "Rachael Blake"
 date: "September 16, 2016"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 
@@ -610,7 +610,7 @@ fig2 <- ggplot(data=line_dat, aes(x=as.factor(Year), y=value, color=Variable, gr
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
 ```
 
-```{r, echo=FALSE, fig.width=10, fid.width=6}
+```{r, echo=FALSE, fig.height=10, fid.width=10}
 line_dat_algae <- filter(line_dat, Variable %in% c("Fucus_dist_mn", "Brown_Algae_mn", "Green_Algae_mn"))
 
 fig2a <- ggplot(data=line_dat_algae, aes(x=as.factor(Year), y=value, color=Variable, 
@@ -677,6 +677,7 @@ fig2e <- ggplot(data=line_dat_ens, aes(x=as.factor(Year), y=value, color=Variabl
          scale_color_discrete(breaks=c("ENSO_anul_mn"),
                               labels=c("  El Nino Southern \n  Oscillation Index")) +
          theme(legend.text.align = 0,
+               axis.text.x=element_blank(),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
 #
@@ -713,10 +714,14 @@ fig2g <- ggplot(data=line_dat_wtm, aes(x=as.factor(Year), y=value, color=Variabl
 
 #gridExtra::grid.arrange(fig2b, fig2c, fig2a, fig2d, fig2e, ncol=1)
 
-grid.newpage()
-egg::ggarrange(plots=list(fig2d, fig2f, fig2g), ncol=1)
-grid.newpage()
-egg::ggarrange(plots=list(fig2c, fig2a, fig2b, fig2e), ncol=1)
+
+# egg::ggarrange(plots=list(fig2b, fig2a), ncol=1, width = unit(2,"cm"), height = unit(1, "in"))
+# egg::ggarrange(plots=list(fig2c, fig2e), ncol=1, width = unit(2,"cm"), height = unit(1, "in"))
+# egg::ggarrange(plots=list(fig2d), ncol=1, width = unit(2,"cm"), height = unit(1, "in"))
+# egg::ggarrange(plots=list(fig2f, fig2g), ncol=1, width = unit(2,"cm"), height = unit(1, "in"))
+
+egg::ggarrange(plots=list(fig2b, fig2a, fig2c, fig2e, fig2d, fig2f, fig2g), 
+               ncol=1, width = unit(3,"cm"), height = unit(2, "in"))
 
 ```
 
