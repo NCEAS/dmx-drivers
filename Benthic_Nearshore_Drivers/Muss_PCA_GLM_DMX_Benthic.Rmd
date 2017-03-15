@@ -467,13 +467,35 @@ Sce_16 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cp
 
 ```
 
+##### Scenario 17 - Region
+```{r, echo=FALSE}
+
+BenNear_reg_cpa_sub17 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", "FWDisc_MeanYearly_ft3s1",
+                           #"ENSO_anul_mn", 
+                           #"NPGO_anul_mn", 
+                           "UpWelAnom_anul_mn",
+                           "Hobo_WaterTemp_AnnMn", 
+                           "Bare_Sub_Per_Cov", 
+                          # "Whelk_Sum_n_m2",
+                          # "SOtt_AnnMnEngRec", 
+                          # "barnacle_Per_Cov", 
+                          # "Fuc_dist_Per_Cov", 
+                           "Brwn_alg_ann_Per_Cov"#, 
+                          #"Green_alg_ann_Per_Cov"
+                            )
+
+Sce_17 <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_reg_cpa_sub17)
+#Sce_17
+#Sce_4
+```
+
 ##### AIC values for all Regional models
 ```{r, echo=FALSE}
-Reg_mod_list <- list(Sce_1, Sce_2, Sce_3, Sce_4, Sce_5, Sce_6, Sce_7, Sce_8, 
-                     Sce_9, Sce_10, Sce_11, Sce_12, Sce_13, Sce_14, Sce_15, Sce_16)
+Reg_mod_list <- list(Sce_1, Sce_2, Sce_3, Sce_4, Sce_5, Sce_6, Sce_7, Sce_8, Sce_9, Sce_10,
+                      Sce_11, Sce_12, Sce_13, Sce_14, Sce_15, Sce_16, Sce_17)
 
-Reg_list_names <- c("Sce_1", "Sce_2", "Sce_3", "Sce_4", "Sce_5", "Sce_6", "Sce_7", "Sce_8", 
-                    "Sce_9", "Sce_10", "Sce_11", "Sce_12", "Sce_13", "Sce_14", "Sce_15", "Sce_16")
+Reg_list_names <- c("Sce_1", "Sce_2", "Sce_3", "Sce_4", "Sce_5", "Sce_6", "Sce_7", "Sce_8", "Sce_9", 
+                    "Sce_10", "Sce_11", "Sce_12", "Sce_13", "Sce_14", "Sce_15", "Sce_16", "Sce_17")
 
 r <- sapply(Reg_mod_list, FUN = function(x) x$aic)
 AIC_List_r <- data.frame(Model = Reg_list_names, AIC = r)
@@ -531,7 +553,7 @@ ggplot(data=df33, aes(prob2, mussel_Anom, color=Region)) + geom_point(size=4)
 cor(prob2, BenNear_reg_cpa[,38])
 #cor(BenNear_reg_cpa_sub2a[,1], BenNear_reg_cpa_sub2a[,3])
 
-# Hand calculate things   # CURRENTLY NOT THE WINNING MODEL 13!  NEEDS TO BE REVISED. 
+# Hand calculate things   # CURRENTLY NOT THE WINNING MODEL!  NEEDS TO BE REVISED. 
 #al_glm2$coefficients
 # mod2 <- al_glm2$model %>%
 #         mutate(chl = log_TotChlA_micgL_AnnMn * 0.8582371582,
@@ -548,6 +570,28 @@ cor(prob2, BenNear_reg_cpa[,38])
 # Plot residuals from Scenario 
 par(mfrow=c(2,2))
 plot(Sce_4a)
+
+#
+BenNear_reg_cpa_sub2e2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_reg_cpa_sub2e)
+Sce_11a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2e2, family=gaussian)
+
+prob2b <- predict(Sce_11a, BenNear_reg_cpa_sub2e2)
+df33b <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2b)
+
+ggplot(data=df33b, aes(prob2b, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob2b, BenNear_reg_cpa[,38])
+
+#
+BenNear_reg_cpa_sub2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_reg_cpa_sub)
+Sce_1a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2, family=gaussian)
+
+prob2c <- predict(Sce_1a, BenNear_reg_cpa_sub2)
+df33c <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2c)
+
+ggplot(data=df33c, aes(prob2c, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob2c, BenNear_reg_cpa[,38])
+
+
 
 ```
 
