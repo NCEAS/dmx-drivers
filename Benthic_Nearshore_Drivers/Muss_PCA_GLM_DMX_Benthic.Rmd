@@ -571,7 +571,7 @@ cor(prob2, BenNear_reg_cpa[,38])
 par(mfrow=c(2,2))
 plot(Sce_4a)
 
-#
+# Scenario 11
 BenNear_reg_cpa_sub2e2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_reg_cpa_sub2e)
 Sce_11a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2e2, family=gaussian)
 
@@ -581,7 +581,7 @@ df33b <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2b)
 ggplot(data=df33b, aes(prob2b, mussel_Anom, color=Region)) + geom_point(size=4)
 cor(prob2b, BenNear_reg_cpa[,38])
 
-#
+# Scenario 1
 BenNear_reg_cpa_sub2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_reg_cpa_sub)
 Sce_1a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2, family=gaussian)
 
@@ -591,7 +591,25 @@ df33c <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2c)
 ggplot(data=df33c, aes(prob2c, mussel_Anom, color=Region)) + geom_point(size=4)
 cor(prob2c, BenNear_reg_cpa[,38])
 
+# Site winner
+BenNear_site_cpa_sub2f242 <- BenNear_reg_cpa %>% select_(.dots=BenNear_site_cpa_sub2f24)
+Sce_24_s_ra <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f242, family=gaussian)
 
+prob2d <- predict(Sce_24_s_ra, BenNear_site_cpa_sub2f242)
+df33d <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2d)
+
+ggplot(data=df33d, aes(prob2d, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob2d, BenNear_reg_cpa[,38])
+
+# Transect winner
+BenNear_tran_cpa_sub2l22_r2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_tran_cpa_sub2l22_r)
+Sce_Sce_22_t_ra <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l22_r2, family=gaussian)
+
+prob2e <- predict(Sce_Sce_22_t_ra, BenNear_tran_cpa_sub2l22_r2)
+df33e <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2e)
+
+ggplot(data=df33e, aes(prob2e, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob2e, BenNear_reg_cpa[,38])
 
 ```
 
@@ -1396,6 +1414,25 @@ cor(prob3, BenNear_site_cpa[,38])
 par(mfrow=c(2,2))
 plot(Sce_28_sa)
 
+# Region Winner
+BenNear_reg_cpa_sub2pl2 <- BenNear_site_cpa %>% select_(.dots=BenNear_reg_cpa_sub2pl)
+Sce_4_ra <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl2, family=gaussian)
+
+prob3a <- predict(Sce_4_ra, BenNear_reg_cpa_sub2pl2)
+df333a <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3a)
+
+ggplot(data=df333, aes(prob3, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob3, BenNear_site_cpa[,38])
+
+# Transect Winner
+BenNear_site_cpa_sub2f282 <- BenNear_site_cpa %>% select_(.dots=BenNear_site_cpa_sub2f28)
+Sce_28_sa <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f282, family=gaussian)
+
+prob3 <- predict(Sce_28_sa, BenNear_site_cpa_sub2f282)
+df333 <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3)
+
+ggplot(data=df333, aes(prob3, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob3, BenNear_site_cpa[,38])
 
 ```
 
