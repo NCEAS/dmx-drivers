@@ -1421,18 +1421,28 @@ Sce_4_ra <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl2, family=gaussian)
 prob3a <- predict(Sce_4_ra, BenNear_reg_cpa_sub2pl2)
 df333a <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3a)
 
-ggplot(data=df333, aes(prob3, mussel_Anom, color=Region)) + geom_point(size=4)
-cor(prob3, BenNear_site_cpa[,38])
+ggplot(data=df333a, aes(prob3a, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob3a, BenNear_site_cpa[,38])
 
 # Transect Winner
-BenNear_site_cpa_sub2f282 <- BenNear_site_cpa %>% select_(.dots=BenNear_site_cpa_sub2f28)
-Sce_28_sa <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f282, family=gaussian)
+BenNear_tran_cpa_sub2l22_s2 <- BenNear_site_cpa %>% select_(.dots=BenNear_tran_cpa_sub2l22_s)
+Sce_22_t_sb <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l22_s2, family=gaussian)
 
-prob3 <- predict(Sce_28_sa, BenNear_site_cpa_sub2f282)
-df333 <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3)
+prob3b <- predict(Sce_22_t_sb, BenNear_tran_cpa_sub2l22_s2)
+df333b <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3b)
 
-ggplot(data=df333, aes(prob3, mussel_Anom, color=Region)) + geom_point(size=4)
-cor(prob3, BenNear_site_cpa[,38])
+ggplot(data=df333b, aes(prob3b, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob3b, BenNear_site_cpa[,38])
+
+# Scenario 27
+BenNear_site_cpa_sub2f272 <- BenNear_site_cpa %>% select_(.dots=BenNear_site_cpa_sub2f27)
+Sce_27_sa <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f272, family=gaussian)
+
+prob3c <- predict(Sce_27_sa, BenNear_site_cpa_sub2f272)
+df333c <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3c)
+
+ggplot(data=df333c, aes(prob3c, mussel_Anom, color=Region)) + geom_point(size=4)
+cor(prob3c, BenNear_site_cpa[,38])
 
 ```
 
@@ -2026,13 +2036,14 @@ Sce_4_t_r$aic
 ##### Scenario Winner from Site-level analysis above
 ```{r, echo=FALSE}
 
-BenNear_site_cpa_sub2f24 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", 
-                              "Hobo_WaterTemp_AnnMn", "Bare_Sub_Per_Cov", "UpWelAnom_anul_mn"
+BenNear_site_cpa_sub2f28 <- c("mussel_Anom", "log_TotChlA_micgL_AnnMn", 
+                              "WaterTmp_C_AnnMn", 
+                              "SOtt_AnnMnEngRec", "Brwn_alg_ann_Per_Cov"
                               )
 
-Sce_24_s_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_site_cpa_sub2f24)
-#Sce_24_s_t
-Sce_24_s_t$aic
+Sce_28_s_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_site_cpa_sub2f28)
+#Sce_28_s_t
+Sce_28_s_t$aic
 
 ```
 
@@ -2040,7 +2051,6 @@ Sce_24_s_t$aic
 # copy the best model outside the function so can do correlation comparison
 BenNear_tran_cpa_sub2l222 <- BenNear_tran_cpa %>% select_(.dots=BenNear_tran_cpa_sub2l22)
 Sce_22_ta <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l222, family=gaussian)
-
 
 # For Scenario 22
 prob5 <- predict(Sce_22_ta, BenNear_tran_cpa_sub2l222)
@@ -2063,7 +2073,29 @@ cor(prob5, BenNear_tran_cpa[,37])
 #         select(chl, fresh, bare, NPGO, Fucs, inter) %>%
 #         rowSums() 
 # 
-# cbind(df33, mod2)       
+# cbind(df33, mod2)   
+
+# Region winning scenario
+BenNear_reg_cpa_sub2pl_t2 <- BenNear_tran_cpa %>% select_(.dots=BenNear_reg_cpa_sub2pl_t)
+Sce_4_t_ra <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl_t2, family=gaussian)
+
+prob5a <- predict(Sce_4_t_ra, BenNear_reg_cpa_sub2pl_t2)
+df335a <- cbind(BenNear_tran_cpa[,c(1,2,3,37)], prob5a)
+
+ggplot(data=df335a, aes(prob5a, mussel_Anom, color=Site_Name)) + geom_point(size=3)
+cor(prob5a, BenNear_tran_cpa[,37])
+ 
+# Site winning scenario
+# BenNear_tran_cpa_sub2l222 <- BenNear_tran_cpa %>% select_(.dots=BenNear_tran_cpa_sub2l22)
+# Sce_22_ta <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l222, family=gaussian)
+# 
+# prob5 <- predict(Sce_22_ta, BenNear_tran_cpa_sub2l222)
+# df335 <- cbind(BenNear_tran_cpa[,c(1,2,3,37)], prob5)
+# 
+# ggplot(data=df335, aes(prob5, mussel_Anom, color=Site_Name)) + geom_point(size=3)
+# cor(prob5, BenNear_tran_cpa[,37])
+
+
 
 ```
 
