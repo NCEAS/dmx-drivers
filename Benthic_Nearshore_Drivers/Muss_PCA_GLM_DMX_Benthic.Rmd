@@ -3,8 +3,8 @@ title: "Muss_PCA_GLM_DMX_Benthic"
 author: "Rachael Blake"
 date: "September 16, 2016"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 
@@ -76,7 +76,7 @@ theme_boxplot <- function(base_size = 12){
           legend.key=element_blank(),
           legend.title=element_blank(),
           #legend.position="none",
-          plot.margin=unit(c(0.5,1,0.5,1), "lines"), # respectively: top, right, bottom, left; refers to margin *outside* labels; default is c(1,1,0.5,0.5)
+          plot.margin=unit(c(0.75,1,0,1), "cm"), # respectively: top, right, bottom, left; refers to margin *outside* labels; default is c(1,1,0.5,0.5)
           panel.border=element_blank(),
           panel.spacing=unit(0,"lines"),
           axis.ticks.length=unit(1,"mm"),
@@ -502,7 +502,7 @@ AIC_List_r <- data.frame(Model = Reg_list_names, AIC = r)
 arrange(AIC_List_r, AIC)
 
 ```
-
+\newpage
 ##### Coefficients for model(s) with lowest AIC scores
 ```{r, echo=FALSE}
 Sce_4
@@ -540,7 +540,8 @@ Sce_22_t_r <- data_sub_model_run(orig_df=BenNear_reg_cpa, select_cols=BenNear_tr
 Sce_22_t_r$aic
 
 ```
-
+\newpage
+##### Scenario 4 - Region best model
 ```{r, echo=FALSE}
 # copy the best model outside the function so can do correlation comparison
 BenNear_reg_cpa_sub2pl2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_reg_cpa_sub2pl)
@@ -549,7 +550,7 @@ Sce_4a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl2, family=gaussian)
 prob2 <- predict(Sce_4a, BenNear_reg_cpa_sub2pl2)
 df33 <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2)
 
-ggplot(data=df33, aes(prob2, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df33, aes(prob2, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob2, BenNear_reg_cpa[,38])
 #cor(BenNear_reg_cpa_sub2a[,1], BenNear_reg_cpa_sub2a[,3])
 
@@ -566,53 +567,67 @@ cor(prob2, BenNear_reg_cpa[,38])
 #         rowSums() 
 # 
 # cbind(df33, mod2)       
-
-# Plot residuals from Scenario 
+```
+\newpage
+```{r, echo=FALSE, dev='pdf'}
+# Plot residuals from Scenario winner
 par(mfrow=c(2,2))
 plot(Sce_4a)
 
-# Scenario 11
+```
+\newpage
+##### Scenario 11
+```{r, echo=FALSE, dev='pdf'}
 BenNear_reg_cpa_sub2e2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_reg_cpa_sub2e)
 Sce_11a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2e2, family=gaussian)
 
 prob2b <- predict(Sce_11a, BenNear_reg_cpa_sub2e2)
 df33b <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2b)
 
-ggplot(data=df33b, aes(prob2b, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df33b, aes(prob2b, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob2b, BenNear_reg_cpa[,38])
 
-# Scenario 1
+```
+\newpage
+##### Scenario 1
+```{r, echo=FALSE}
 BenNear_reg_cpa_sub2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_reg_cpa_sub)
 Sce_1a <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2, family=gaussian)
 
 prob2c <- predict(Sce_1a, BenNear_reg_cpa_sub2)
 df33c <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2c)
 
-ggplot(data=df33c, aes(prob2c, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df33c, aes(prob2c, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob2c, BenNear_reg_cpa[,38])
 
-# Site winner
+```
+\newpage
+##### Site winner
+```{r, echo=FALSE}
 BenNear_site_cpa_sub2f242 <- BenNear_reg_cpa %>% select_(.dots=BenNear_site_cpa_sub2f24)
 Sce_24_s_ra <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f242, family=gaussian)
 
 prob2d <- predict(Sce_24_s_ra, BenNear_site_cpa_sub2f242)
 df33d <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2d)
 
-ggplot(data=df33d, aes(prob2d, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df33d, aes(prob2d, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob2d, BenNear_reg_cpa[,38])
 
-# Transect winner
+```
+\newpage
+##### Transect winner
+```{r, echo=FALSE}
 BenNear_tran_cpa_sub2l22_r2 <- BenNear_reg_cpa %>% select_(.dots=BenNear_tran_cpa_sub2l22_r)
 Sce_Sce_22_t_ra <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l22_r2, family=gaussian)
 
 prob2e <- predict(Sce_Sce_22_t_ra, BenNear_tran_cpa_sub2l22_r2)
 df33e <- cbind(BenNear_reg_cpa[,c(1,2,38)], prob2e)
 
-ggplot(data=df33e, aes(prob2e, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df33e, aes(prob2e, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob2e, BenNear_reg_cpa[,38])
 
 ```
-
+\newpage
 ```{r, echo=FALSE}
 # Figure
 # BenNear_reg_l # has data through 2015
@@ -671,13 +686,13 @@ fig2 <- ggplot(data=line_dat, aes(x=as.factor(Year), y=value, color=Variable, gr
                strip.text = element_text(color=NA),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
 ```
-
+\newpage
 ```{r, echo=FALSE, fig.height=10, fid.width=10}
 line_dat_algae <- filter(line_dat, Variable %in% c("Fucus_dist_mn", "Brown_Algae_mn", "Green_Algae_mn"))
-
+fig2a$vp = grid::viewport(height=1.5, width=1.5)
 fig2a <- ggplot(data=line_dat_algae, aes(x=as.factor(Year), y=value, color=Variable, 
                                          group=as.factor(Variable))) +  
-         geom_line(size=1) + theme_boxplot() + xlab("") + 
+         geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
          ylab("Percent Cover") +
          scale_color_discrete(breaks=c("Brown_Algae_mn", "Fucus_dist_mn", "Green_Algae_mn"),
                               labels=c("  Annual Brown Algae", 
@@ -692,8 +707,8 @@ line_dat_mus <- filter(line_dat, Variable %in% c("mussel_Anom_mn"))
 
 fig2b <- ggplot(data=line_dat_mus, aes(x=as.factor(Year), y=value, color=Variable, 
                                        group=as.factor(Variable))) +  
-         geom_line(size=1) + theme_boxplot() + xlab("") + 
-         ylab("Anomoly of \n Percent Cover") + 
+         geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
+         ylab("Anomoly of \n % Cover") + 
          scale_color_manual(breaks=c("mussel_Anom_mn"),
                             labels=c("  Mussels"),
                             values=c("blue")) +
@@ -706,7 +721,7 @@ line_dat_chl <- filter(line_dat, Variable %in% c("log_TotChlA_micgL_AnnMn"))
 
 fig2c <- ggplot(data=line_dat_chl, aes(x=as.factor(Year), y=value, color=Variable, 
                                        group=as.factor(Variable))) +  
-         geom_line(size=1) + theme_boxplot() + xlab("") + 
+         geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
          ylab(expression(paste("log  ",mu,"g ",l^-1,""))) +
          scale_color_manual(breaks=c("log_TotChlA_micgL_AnnMn"),
                             labels=c("  Planktonic Chlorophyll A"),
@@ -720,7 +735,7 @@ line_dat_upw <- filter(line_dat, Variable %in% c("UpWelAnom_anul_mn"))
 
 fig2d <- ggplot(data=line_dat_upw, aes(x=as.factor(Year), y=value, color=Variable, 
                                        group=as.factor(Variable))) +  
-         geom_line(size=1) + theme_boxplot() + xlab("") + 
+         geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
          ylab("Anomoly") +
          scale_color_manual(breaks=c("UpWelAnom_anul_mn"),
                             labels=c("  Upwelling Index"),
@@ -734,7 +749,7 @@ line_dat_ens <- filter(line_dat, Variable %in% c("ENSO_anul_mn"))
 
 fig2e <- ggplot(data=line_dat_ens, aes(x=as.factor(Year), y=value, color=Variable, 
                                        group=as.factor(Variable))) +  
-         geom_line(size=1) + theme_boxplot() + xlab("") + 
+         geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
          ylab("Index") +
          scale_color_discrete(breaks=c("ENSO_anul_mn"),
                               labels=c("  El Nino Southern \n  Oscillation Index")) +
@@ -747,7 +762,7 @@ line_dat_fwd <- filter(line_dat, Variable %in% c("FWDisc_Yr_mn"))
 
 fig2f <- ggplot(data=line_dat_fwd, aes(x=as.factor(Year), y=value, color=Variable, 
                                        group=as.factor(Variable))) +  
-         geom_line(size=1) + theme_boxplot() + xlab("") + 
+         geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
          ylab(expression(paste(Feet^3, s^-1))) +
          scale_color_manual(breaks=c("FWDisc_Yr_mn"),
                             labels=c("  Modeled Freshwater \n  Discharge"),
@@ -782,8 +797,8 @@ fig2g <- ggplot(data=line_dat_wtm, aes(x=as.factor(Year), y=value, color=Variabl
 # egg::ggarrange(plots=list(fig2d), ncol=1, width = unit(2,"cm"), height = unit(1, "in"))
 # egg::ggarrange(plots=list(fig2f, fig2g), ncol=1, width = unit(2,"cm"), height = unit(1, "in"))
 
-egg::ggarrange(plots=list(fig2b, fig2a, fig2c, fig2e, fig2d, fig2f, fig2g), 
-               ncol=1, width = unit(3,"cm"), height = unit(2, "in"))
+grid.draw(egg::ggarrange(plots=list(fig2b, fig2a, fig2c, fig2e, fig2d, fig2f, fig2g), 
+               ncol=1, width = unit(3,"cm"), height = unit(3, "in")))
 
 ```
 
@@ -833,7 +848,7 @@ qplot(data=df34, as.factor(Year), prob3, color=Region, size=3)
 qplot(data=df34, as.factor(Year), mussel_Anom, color=Region, size=3)
 
 ```
-
+\newpage
 ## Site-level Analysis
 
 ```{r, echo=FALSE}
@@ -1344,7 +1359,7 @@ AIC_List_s <- data.frame(Model = Site_list_names, AIC = s)
 arrange(AIC_List_s, AIC)
 
 ```
-
+\newpage
 ##### Coefficients for model(s) with lowest AIC scores
 ```{r, echo=FALSE}
 Sce_28_s
@@ -1380,8 +1395,8 @@ Sce_22_t_s <- data_sub_model_run(orig_df=BenNear_site_cpa, select_cols=BenNear_t
 Sce_22_t_s$aic
 
 ```
-
-
+\newpage
+##### Scenario 28 - Site best model
 ```{r, echo=FALSE}
 # copy the best model outside the function so can do correlation comparison
 BenNear_site_cpa_sub2f282 <- BenNear_site_cpa %>% select_(.dots=BenNear_site_cpa_sub2f28)
@@ -1391,7 +1406,7 @@ Sce_28_sa <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f282, family=gaussia
 prob3 <- predict(Sce_28_sa, BenNear_site_cpa_sub2f282)
 df333 <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3)
 
-ggplot(data=df333, aes(prob3, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df333, aes(prob3, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob3, BenNear_site_cpa[,38])
 #cor(BenNear_reg_cpa_sub2a[,1], BenNear_reg_cpa_sub2a[,3])
 
@@ -1409,39 +1424,51 @@ cor(prob3, BenNear_site_cpa[,38])
 #         rowSums() 
 # 
 # cbind(df33, mod2)       
-
+```
+\newpage
+```{r, echo=FALSE, dev='pdf'}
 # Plot residuals from Scenario 
 par(mfrow=c(2,2))
 plot(Sce_28_sa)
+par(mfrow=c(1,1))
 
-# Region Winner
+```
+\newpage
+##### Region Winner
+```{r, echo=FALSE, dev='pdf'}
 BenNear_reg_cpa_sub2pl2 <- BenNear_site_cpa %>% select_(.dots=BenNear_reg_cpa_sub2pl)
 Sce_4_ra <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl2, family=gaussian)
 
 prob3a <- predict(Sce_4_ra, BenNear_reg_cpa_sub2pl2)
 df333a <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3a)
 
-ggplot(data=df333a, aes(prob3a, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df333a, aes(prob3a, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob3a, BenNear_site_cpa[,38])
 
-# Transect Winner
+```
+\newpage
+##### Transect Winner
+```{r, echo=FALSE}
 BenNear_tran_cpa_sub2l22_s2 <- BenNear_site_cpa %>% select_(.dots=BenNear_tran_cpa_sub2l22_s)
 Sce_22_t_sb <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l22_s2, family=gaussian)
 
 prob3b <- predict(Sce_22_t_sb, BenNear_tran_cpa_sub2l22_s2)
 df333b <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3b)
 
-ggplot(data=df333b, aes(prob3b, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df333b, aes(prob3b, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob3b, BenNear_site_cpa[,38])
 
-# Scenario 27
+```
+\newpage
+##### Scenario 27
+```{r, echo=FALSE}
 BenNear_site_cpa_sub2f272 <- BenNear_site_cpa %>% select_(.dots=BenNear_site_cpa_sub2f27)
 Sce_27_sa <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f272, family=gaussian)
 
 prob3c <- predict(Sce_27_sa, BenNear_site_cpa_sub2f272)
 df333c <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3c)
 
-ggplot(data=df333c, aes(prob3c, mussel_Anom, color=Region)) + geom_point(size=4)
+ggplot(data=df333c, aes(prob3c, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
 cor(prob3c, BenNear_site_cpa[,38])
 
 ```
@@ -1465,7 +1492,7 @@ fig15 <- ggplot() +
 
 
 ```
-
+\newpage
 ```{r, echo=FALSE}
 
 fig15a <- ggplot() + 
@@ -1485,7 +1512,7 @@ fig15a
 
 ```
 
-
+\newpage
 ## Transect-level Analyses (Within-Site)
 
 ```{r, echo=FALSE}
@@ -2010,7 +2037,7 @@ AIC_List_t <- data.frame(Model = Tran_list_names, AIC = t)
 arrange(AIC_List_t, AIC)
 
 ```
-
+\newpage
 ##### Coefficients for model(s) with lowest AIC scores
 ```{r, echo=FALSE}
 Sce_22_t
@@ -2046,7 +2073,8 @@ Sce_28_s_t <- data_sub_model_run(orig_df=BenNear_tran_cpa, select_cols=BenNear_s
 Sce_28_s_t$aic
 
 ```
-
+\newpage  
+##### Scenario 22 - Best Model  
 ```{r, echo=FALSE}
 # copy the best model outside the function so can do correlation comparison
 BenNear_tran_cpa_sub2l222 <- BenNear_tran_cpa %>% select_(.dots=BenNear_tran_cpa_sub2l22)
@@ -2056,7 +2084,7 @@ Sce_22_ta <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l222, family=gaussia
 prob5 <- predict(Sce_22_ta, BenNear_tran_cpa_sub2l222)
 df335 <- cbind(BenNear_tran_cpa[,c(1,2,3,37)], prob5)
 
-ggplot(data=df335, aes(prob5, mussel_Anom, color=Site_Name)) + geom_point(size=3)
+ggplot(data=df335, aes(prob5, mussel_Anom, color=Site_Name)) + geom_point(size=3) + theme_bw()
 cor(prob5, BenNear_tran_cpa[,37])
 #cor(BenNear_reg_cpa_sub2a[,1], BenNear_reg_cpa_sub2a[,3])
 
@@ -2074,32 +2102,9 @@ cor(prob5, BenNear_tran_cpa[,37])
 #         rowSums() 
 # 
 # cbind(df33, mod2)   
-
-# Region winning scenario
-BenNear_reg_cpa_sub2pl_t2 <- BenNear_tran_cpa %>% select_(.dots=BenNear_reg_cpa_sub2pl_t)
-Sce_4_t_ra <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl_t2, family=gaussian)
-
-prob5a <- predict(Sce_4_t_ra, BenNear_reg_cpa_sub2pl_t2)
-df335a <- cbind(BenNear_tran_cpa[,c(1,2,3,37)], prob5a)
-
-ggplot(data=df335a, aes(prob5a, mussel_Anom, color=Site_Name)) + geom_point(size=3)
-cor(prob5a, BenNear_tran_cpa[,37])
- 
-# Site winning scenario
-# BenNear_tran_cpa_sub2l222 <- BenNear_tran_cpa %>% select_(.dots=BenNear_tran_cpa_sub2l22)
-# Sce_22_ta <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l222, family=gaussian)
-# 
-# prob5 <- predict(Sce_22_ta, BenNear_tran_cpa_sub2l222)
-# df335 <- cbind(BenNear_tran_cpa[,c(1,2,3,37)], prob5)
-# 
-# ggplot(data=df335, aes(prob5, mussel_Anom, color=Site_Name)) + geom_point(size=3)
-# cor(prob5, BenNear_tran_cpa[,37])
-
-
-
 ```
-
-```{r, echo=FALSE}
+\newpage  
+```{r, echo=FALSE, dev='pdf'}
 # Plotting Residuals to check model fit
 
 par(mfrow=c(2,2))
@@ -2107,7 +2112,33 @@ plot(Sce_22_ta)
 
 
 ```
+\newpage  
+##### Region winning scenario  
+```{r, echo=FALSE, dev='pdf'}
+BenNear_reg_cpa_sub2pl_t2 <- BenNear_tran_cpa %>% select_(.dots=BenNear_reg_cpa_sub2pl_t)
+Sce_4_t_ra <- glm(mussel_Anom ~ ., data=BenNear_reg_cpa_sub2pl_t2, family=gaussian)
 
+prob5a <- predict(Sce_4_t_ra, BenNear_reg_cpa_sub2pl_t2)
+df335a <- cbind(BenNear_tran_cpa[,c(1,2,3,37)], prob5a)
+
+ggplot(data=df335a, aes(prob5a, mussel_Anom, color=Site_Name)) + geom_point(size=3) + theme_bw()
+cor(prob5a, BenNear_tran_cpa[,37])
+
+```
+\newpage  
+##### Site winning scenario  
+```{r, echo=FALSE}
+BenNear_site_cpa_sub2f282 <- BenNear_tran_cpa %>% select_(.dots=BenNear_site_cpa_sub2f28)
+Sce_28_ta <- glm(mussel_Anom ~ ., data=BenNear_site_cpa_sub2f282, family=gaussian)
+
+prob5b <- predict(Sce_28_ta, BenNear_site_cpa_sub2f282)
+df335b <- cbind(BenNear_tran_cpa[,c(1,2,3,37)], prob5b)
+
+ggplot(data=df335b, aes(prob5b, mussel_Anom, color=Site_Name)) + geom_point(size=3) + theme_bw()
+cor(prob5b, BenNear_tran_cpa[,37])
+
+```
+\newpage  
 ```{r, echo=FALSE}
 # Figure
 # BenNear_tran_l # has data through 2015

@@ -97,14 +97,15 @@ colors <- c("blue3","turquoise2","deepskyblue","royalblue1","violet","thistle1",
         labs(x = "Longitude", y = "Latitude") +
         geom_point(data=BenNear1, aes(x=as.numeric(Long), y=as.numeric(Lat),
                                       colour=Region), size=3, shape=19) + 
-        geom_point(data=GAK1_loc, aes(long, lat), colour="black", fill="#f37735",
+        geom_point(data=GAK1_loc, aes(long, lat), colour="black", fill="yellow",
                    size=4, shape=24) +  # this is GAK1
-        geom_point(data=WOB, aes(long, lat), colour="black", fill="yellow",
-                   size=4, shape=24) + # this is West Orca Bay (PWS)
-        geom_point(data=SS, aes(long, lat), colour="black", fill="yellow", 
-                   size=4, shape=24) + # this is Shelikof Strait (KATM)
-        geom_point(data=CC, aes(long, lat), colour="black", fill="yellow", 
-                   size=4, shape=24) + # this is Cape Cleare (KEFJ)
+        annotate("text", x=-148.8, y=59.8, label="GAK1") +
+        #geom_point(data=WOB, aes(long, lat), colour="black", fill="yellow",
+        #           size=4, shape=24) + # this is West Orca Bay (PWS)
+        #geom_point(data=SS, aes(long, lat), colour="black", fill="yellow", 
+        #           size=4, shape=24) + # this is Shelikof Strait (KATM)
+        #geom_point(data=CC, aes(long, lat), colour="black", fill="yellow", 
+        #           size=4, shape=24) + # this is Cape Cleare (KEFJ)
         theme(axis.line=element_line('black'),
               panel.grid.major=element_blank(),
               panel.grid.minor=element_blank(),
