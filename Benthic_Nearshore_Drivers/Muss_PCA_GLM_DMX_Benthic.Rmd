@@ -775,7 +775,7 @@ line_dat_upw <- filter(line_dat, Variable %in% c("UpWelAnom_anul_mn"))
 fig2d <- ggplot(data=line_dat_upw, aes(x=as.factor(Year), y=value, color=Variable, 
                                        group=as.factor(Variable))) +  
          geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
-         ylab("Anomoly") +
+         ylab("Anomaly") +
          scale_color_manual(breaks=c("UpWelAnom_anul_mn"),
                             labels=c("  Upwelling Index"),
                             values=c("#000080")) +
