@@ -634,15 +634,37 @@ cor(prob2e, BenNear_reg_cpa[,38])
 # df33$prob2 # predicted mussel data
 
 fig1 <- ggplot() + 
-        geom_point(data=BenNear_reg_l, aes(x=as.factor(Year), y=mussel_Anom, color=Region), size=4) +
-        geom_point(data=df33, aes(x=as.factor(Year), y=prob2, color=Region), shape=17, size=4,
-                   position=position_jitter(w=0.2, h=0)) + 
+        geom_point(data=BenNear_reg_l, aes(x=as.factor(Year), y=mussel_Anom, color=Region), size=4,
+                   position=position_jitter(w=0.3, h=0)) +
+        geom_point(data=df33, aes(x=as.factor(Year), y=prob2, color=Region), shape=2, size=4,
+                   position=position_jitter(w=0.3, h=0)) + 
         xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
-               "2013", "2014", "2015")) + xlab("Year") + ylab("Mussel Percent Cover") +
-        theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) 
+               "2013", "2014", "2015")) + xlab("Year") + ylab("Anomoly of Mussel Percent Cover") +
+        theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) + 
+        coord_cartesian(ylim=c(-4,4))
         
 
 fig1
+#######
+
+# BenNear_m_p <- BenNear_reg_l %>%
+#                select(Year, Region,  mussel_Anom) %>%
+#                filter(Year != "2005") %>%
+#                mutate(mussel_Anom = ifelse(is.na(mussel_Anom),20,mussel_Anom)) 
+# 
+#                
+# 
+# fig1a <- ggplot() + 
+#          geom_boxplot(data=BenNear_m_p, aes(x=as.factor(Year), y=mussel_Anom, color=Region)) +
+#          #geom_point(data=df33, aes(x=as.factor(Year), y=prob2, color=Region), shape=17, size=4,
+#          #           position=position_jitter(w=0.2, h=0)) + 
+#          xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
+#                 "2013", "2014", "2015")) + xlab("Year") + ylab("Anomoly of Mussel Percent Cover") +
+#          theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) + 
+#          coord_cartesian(ylim=c(-4,4))
+#         
+# 
+# fig1a
 
 ```
 
@@ -1455,7 +1477,7 @@ Sce_22_t_sb <- glm(mussel_Anom ~ ., data=BenNear_tran_cpa_sub2l22_s2, family=gau
 prob3b <- predict(Sce_22_t_sb, BenNear_tran_cpa_sub2l22_s2)
 df333b <- cbind(BenNear_site_cpa[,c(1,2,3,38)], prob3b)
 
-ggplot(data=df333b, aes(prob3b, mussel_Anom, color=Region)) + geom_point(size=4) + theme_bw()
+ggplot(data=df333b, aes(prob3b, mussel_Anom, color=Year)) + geom_point(size=4) + theme_bw()
 cor(prob3b, BenNear_site_cpa[,38])
 
 ```
@@ -1497,9 +1519,9 @@ fig15 <- ggplot() +
 
 fig15a <- ggplot() + 
           geom_point(data=BenNear_site_l, 
-                     aes(x=as.factor(Year), y=mussel_Anom, color=Site_Name, shape=Region), size=4,
+                     aes(x=as.factor(Year), y=mussel_Anom, color=Site_Name), size=4,
                      position=position_jitter(w=0.2, h=0)) +
-          geom_point(data=df333, aes(x=as.factor(Year), y=prob3, color=Site_Name), size=4,
+          geom_point(data=df333, aes(x=as.factor(Year), y=prob3, color=Site_Name), shape=17, size=4,
                      position=position_jitter(w=0.2, h=0)) + 
           xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
                                         "2013", "2014", "2015")) +
@@ -2159,7 +2181,46 @@ fig22 <- ggplot() +
 fig22
 
 ```
+\newpage  
+```{r, echo=FALSE}
+# Figure
+# BenNear_tran_l # has data through 2015
+# df335$prob5 # predicted mussel data 
 
+df335_p <- df335 %>%
+           arrange(Year, Region, Site_Name, mussel_Anom) %>%
+           full_join(BenNear_tran_l, by=c("Year","Region","Site_Name","mussel_Anom")) %>%
+           select(Year, Region, Site_Name, mussel_Anom, prob5) %>%
+           mutate(prob5 = ifelse(is.na(prob5),20,prob5)) 
+  
+
+BenNear_tran_l_p <- BenNear_tran_l %>%
+                    select(Year, Region, Site_Name, mussel_Anom) %>%
+                    filter(Year != "2005") %>%
+                    mutate(mussel_Anom = ifelse(is.na(mussel_Anom),20,mussel_Anom),
+                           Var_Type = "observ") %>%
+                    arrange(Year, Region, Site_Name, mussel_Anom) %>%
+                    bind_rows(df335_p) %>%
+                    mutate(Var_Type = ifelse(is.na(Var_Type),"prob","observ"),
+                           Var_Val = ifelse(is.na(prob5),mussel_Anom,prob5)) %>%
+                    filter(!(Year %in% c(2006,2010,2012) & Region %in% c("KATM","KEFJ") &
+                             Var_Val == 20))
+
+
+fig23 <- ggplot() + 
+         geom_boxplot(data=BenNear_tran_l_p, aes(x=as.factor(Year), y=Var_Val, 
+                                                 color=Region, fill=Var_Type)) +
+         xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
+                                     "2013", "2014", "2015")) +
+         xlab("Year") + ylab("Anomoly of Mussel Cover") + 
+         theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) + 
+         coord_cartesian(ylim=c(-4,4)) + 
+         scale_color_grey() +
+         scale_fill_manual(values=c("#56B4E9", "#E69F00"))
+        
+fig23
+
+```
 
 
 
