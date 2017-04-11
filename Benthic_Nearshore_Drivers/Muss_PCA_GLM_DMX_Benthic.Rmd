@@ -76,7 +76,7 @@ theme_boxplot <- function(base_size = 12){
           legend.key=element_blank(),
           legend.title=element_blank(),
           #legend.position="none",
-          plot.margin=unit(c(0.75,1,0,1), "cm"), # respectively: top, right, bottom, left; refers to margin *outside* labels; default is c(1,1,0.5,0.5)
+          plot.margin=unit(c(0.75,1,0.75,1), "cm"), # respectively: top, right, bottom, left; refers to margin *outside* labels; default is c(1,1,0.5,0.5)
           panel.border=element_blank(),
           panel.spacing=unit(0,"lines"),
           axis.ticks.length=unit(1,"mm"),
@@ -633,38 +633,50 @@ cor(prob2e, BenNear_reg_cpa[,38])
 # BenNear_reg_l # has data through 2015
 # df33$prob2 # predicted mussel data
 
+all_locs_r_p <- BenNear_reg_l %>%
+                select(Year, Region) %>%
+                distinct()
+
+df33_p <- all_locs_r_p %>%
+          full_join(df33, by=c("Year", "Region")) %>%
+          filter(Year != "2005") %>%
+          arrange(Year, Region, mussel_Anom) %>%
+          mutate(prob2 = ifelse(is.na(prob2),20,prob2)) 
+  
+  
+BenNear_reg_l_p <- BenNear_reg_l%>%
+                   select(Year, Region, mussel_Anom) %>%
+                   filter(Year != "2005") %>%
+                   mutate(mussel_Anom = ifelse(is.na(mussel_Anom),20,mussel_Anom),
+                          Var_Type = "observ") %>%
+                   arrange(Year, Region, mussel_Anom) %>%
+                   bind_rows(df33_p) %>%
+                   mutate(Var_Type = ifelse(is.na(Var_Type),"prob","observ"),
+                          Var_Val = ifelse(is.na(prob2),mussel_Anom,prob2)) 
+  
+
 fig1 <- ggplot() + 
-        geom_point(data=BenNear_reg_l, aes(x=as.factor(Year), y=mussel_Anom, color=Region), size=4,
-                   position=position_jitter(w=0.3, h=0)) +
-        geom_point(data=df33, aes(x=as.factor(Year), y=prob2, color=Region), shape=2, size=4,
-                   position=position_jitter(w=0.3, h=0)) + 
+        geom_point(data=BenNear_reg_l_p, aes(x=as.factor(Year), y=Var_Val, shape=Region, color=Var_Type), 
+                   size=6, stroke=2, position=position_jitter(w=0.3, h=0)) +
         xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
-               "2013", "2014", "2015")) + xlab("Year") + ylab("Anomoly of Mussel Percent Cover") +
+               "2013", "2014", "2015")) + xlab("Year") + ylab("Anomaly of Mussel Percent Cover") +
         theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) + 
-        coord_cartesian(ylim=c(-4,4))
-        
+        coord_cartesian(ylim=c(-4,4)) +
+        scale_color_manual(values=c("#98F5FF", "#FFAEB9"),
+                           breaks=c("observ","prob"),
+                           labels=c("observed","modeled")) +
+        scale_shape_manual(values=c(15,24,8),
+                           breaks=c("KATM","KEFJ","WPWS")) +
+        theme(axis.text=element_text(size=15),
+              legend.text=element_text(size=15),
+              axis.title.x=element_text(size=17),
+              axis.title.y=element_text(size=17))
 
 fig1
+
+
 #######
 
-# BenNear_m_p <- BenNear_reg_l %>%
-#                select(Year, Region,  mussel_Anom) %>%
-#                filter(Year != "2005") %>%
-#                mutate(mussel_Anom = ifelse(is.na(mussel_Anom),20,mussel_Anom)) 
-# 
-#                
-# 
-# fig1a <- ggplot() + 
-#          geom_boxplot(data=BenNear_m_p, aes(x=as.factor(Year), y=mussel_Anom, color=Region)) +
-#          #geom_point(data=df33, aes(x=as.factor(Year), y=prob2, color=Region), shape=17, size=4,
-#          #           position=position_jitter(w=0.2, h=0)) + 
-#          xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
-#                 "2013", "2014", "2015")) + xlab("Year") + ylab("Anomoly of Mussel Percent Cover") +
-#          theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) + 
-#          coord_cartesian(ylim=c(-4,4))
-#         
-# 
-# fig1a
 
 ```
 
@@ -712,15 +724,18 @@ fig2 <- ggplot(data=line_dat, aes(x=as.factor(Year), y=value, color=Variable, gr
 ```{r, echo=FALSE, fig.height=10, fid.width=10}
 line_dat_algae <- filter(line_dat, Variable %in% c("Fucus_dist_mn", "Brown_Algae_mn", "Green_Algae_mn"))
 fig2a$vp = grid::viewport(height=1.5, width=1.5)
+
 fig2a <- ggplot(data=line_dat_algae, aes(x=as.factor(Year), y=value, color=Variable, 
                                          group=as.factor(Variable))) +  
          geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
-         ylab("Percent Cover") +
-         scale_color_discrete(breaks=c("Brown_Algae_mn", "Fucus_dist_mn", "Green_Algae_mn"),
-                              labels=c("  Annual Brown Algae", 
-                                       expression(italic("  Fucus distichus")), 
-                                       "  Annual Green Algae")) + 
+         ylab("% Cover") +
+         scale_color_manual(breaks=c("Brown_Algae_mn", "Fucus_dist_mn", "Green_Algae_mn"),
+                            labels=c("  Annual Brown Algae", 
+                                     expression(italic("  Fucus distichus")), 
+                                     "  Annual Green Algae"),
+                            values=c("#A52A2A","#8E8E38","#00EE76")) + 
          theme(legend.text.align = 0,
+               plot.margin=unit(c(0.5,0.5,0,0.5), "cm"),
                axis.text.x=element_blank(),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
@@ -730,11 +745,12 @@ line_dat_mus <- filter(line_dat, Variable %in% c("mussel_Anom_mn"))
 fig2b <- ggplot(data=line_dat_mus, aes(x=as.factor(Year), y=value, color=Variable, 
                                        group=as.factor(Variable))) +  
          geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
-         ylab("Anomoly of \n % Cover") + 
+         ylab("Anomaly of \n % Cover") + 
          scale_color_manual(breaks=c("mussel_Anom_mn"),
                             labels=c("  Mussels"),
-                            values=c("blue")) +
+                            values=c("#98F5FF")) +
          theme(legend.position="right",
+               plot.margin=unit(c(0.5,0.5,0,0.5), "cm"),
                axis.text.x=element_blank(),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
@@ -747,8 +763,9 @@ fig2c <- ggplot(data=line_dat_chl, aes(x=as.factor(Year), y=value, color=Variabl
          ylab(expression(paste("log  ",mu,"g ",l^-1,""))) +
          scale_color_manual(breaks=c("log_TotChlA_micgL_AnnMn"),
                             labels=c("  Planktonic Chlorophyll A"),
-                            values=c("pink")) +
+                            values=c("#C0FF3E")) +
          theme(legend.text.align = 0,
+               plot.margin=unit(c(0.5,0.5,0,0.5), "cm"),
                axis.text.x=element_blank(),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
@@ -761,8 +778,9 @@ fig2d <- ggplot(data=line_dat_upw, aes(x=as.factor(Year), y=value, color=Variabl
          ylab("Anomoly") +
          scale_color_manual(breaks=c("UpWelAnom_anul_mn"),
                             labels=c("  Upwelling Index"),
-                            values=c("yellow")) +
+                            values=c("#000080")) +
          theme(legend.text.align = 0,
+               plot.margin=unit(c(0.5,0.5,0,0.5), "cm"),
                axis.text.x=element_blank(),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
@@ -773,9 +791,11 @@ fig2e <- ggplot(data=line_dat_ens, aes(x=as.factor(Year), y=value, color=Variabl
                                        group=as.factor(Variable))) +  
          geom_line(size=1) + theme_boxplot() + xlab(NULL) + 
          ylab("Index") +
-         scale_color_discrete(breaks=c("ENSO_anul_mn"),
-                              labels=c("  El Nino Southern \n  Oscillation Index")) +
+         scale_color_manual(breaks=c("ENSO_anul_mn"),
+                            labels=c("  El Nino Southern \n  Oscillation Index"),
+                            values=c("#FF6103")) +
          theme(legend.text.align = 0,
+               plot.margin=unit(c(0.5,0.5,0,0.5), "cm"),
                axis.text.x=element_blank(),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
@@ -788,8 +808,9 @@ fig2f <- ggplot(data=line_dat_fwd, aes(x=as.factor(Year), y=value, color=Variabl
          ylab(expression(paste(Feet^3, s^-1))) +
          scale_color_manual(breaks=c("FWDisc_Yr_mn"),
                             labels=c("  Modeled Freshwater \n  Discharge"),
-                            values=c("green")) +
+                            values=c("#53868B")) +
          theme(legend.text.align = 0,
+               plot.margin=unit(c(0.5,0.5,0,0.5), "cm"),
                axis.text.x=element_blank(),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
@@ -803,8 +824,9 @@ fig2g <- ggplot(data=line_dat_wtm, aes(x=as.factor(Year), y=value, color=Variabl
          ylab(expression(paste(degree*C))) +
          scale_color_manual(breaks=c("HOBO_WaterTemp_mn"),
                             labels=c("  Water Temperature"),
-                            values=c("orange")) +
+                            values=c("#0000EE")) +
          theme(legend.text.align = 0,
+               plot.margin=unit(c(0.5,0.5,0,0.5), "cm"),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
 
@@ -2187,10 +2209,14 @@ fig22
 # BenNear_tran_l # has data through 2015
 # df335$prob5 # predicted mussel data 
 
-df335_p <- df335 %>%
+all_locs_p <- BenNear_tran_l %>%
+              select(Year, Region) %>%
+              distinct()
+              
+df335_p <- all_locs_p %>%
+           full_join(df335, by=c("Year", "Region")) %>%
+           filter(Year != "2005") %>%
            arrange(Year, Region, Site_Name, mussel_Anom) %>%
-           full_join(BenNear_tran_l, by=c("Year","Region","Site_Name","mussel_Anom")) %>%
-           select(Year, Region, Site_Name, mussel_Anom, prob5) %>%
            mutate(prob5 = ifelse(is.na(prob5),20,prob5)) 
   
 
@@ -2202,21 +2228,24 @@ BenNear_tran_l_p <- BenNear_tran_l %>%
                     arrange(Year, Region, Site_Name, mussel_Anom) %>%
                     bind_rows(df335_p) %>%
                     mutate(Var_Type = ifelse(is.na(Var_Type),"prob","observ"),
-                           Var_Val = ifelse(is.na(prob5),mussel_Anom,prob5)) %>%
-                    filter(!(Year %in% c(2006,2010,2012) & Region %in% c("KATM","KEFJ") &
-                             Var_Val == 20))
-
+                           Var_Val = ifelse(is.na(prob5),mussel_Anom,prob5)) 
 
 fig23 <- ggplot() + 
          geom_boxplot(data=BenNear_tran_l_p, aes(x=as.factor(Year), y=Var_Val, 
-                                                 color=Region, fill=Var_Type)) +
+                                                 color=Region, fill=Var_Type), lwd=1) +
          xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
                                      "2013", "2014", "2015")) +
-         xlab("Year") + ylab("Anomoly of Mussel Cover") + 
+         xlab("Year") + ylab("Anomaly of Mussel Percent Cover") + 
          theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) + 
          coord_cartesian(ylim=c(-4,4)) + 
          scale_color_grey() +
-         scale_fill_manual(values=c("#56B4E9", "#E69F00"))
+         scale_fill_manual(values=c("#98F5FF", "#FFAEB9"),
+                           breaks=c("observ","prob"),
+                           labels=c("observed","modeled")) + 
+         theme(axis.text=element_text(size=15),
+               legend.text=element_text(size=15),
+               axis.title.x=element_text(size=17),
+               axis.title.y=element_text(size=17))
         
 fig23
 
