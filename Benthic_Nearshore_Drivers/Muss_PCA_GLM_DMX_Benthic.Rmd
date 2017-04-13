@@ -2243,9 +2243,10 @@ fig23 <- ggplot() +
                            breaks=c("observ","prob"),
                            labels=c("observed","modeled")) + 
          theme(axis.text=element_text(size=15),
-               legend.text=element_text(size=15),
                axis.title.x=element_text(size=17),
-               axis.title.y=element_text(size=17))
+               axis.title.y=element_text(size=17),
+               legend.text=element_text(size=15),
+               legend.key.size=unit(15,"points"))
         
 fig23
 
