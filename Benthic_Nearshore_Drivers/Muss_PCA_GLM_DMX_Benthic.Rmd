@@ -723,7 +723,7 @@ fig2 <- ggplot(data=line_dat, aes(x=as.factor(Year), y=value, color=Variable, gr
 \newpage
 ```{r, echo=FALSE, fig.height=10, fid.width=10}
 line_dat_algae <- filter(line_dat, Variable %in% c("Fucus_dist_mn", "Brown_Algae_mn", "Green_Algae_mn"))
-fig2a$vp = grid::viewport(height=1.5, width=1.5)
+#fig2a$vp = grid::viewport(height=1.5, width=1.5)
 
 fig2a <- ggplot(data=line_dat_algae, aes(x=as.factor(Year), y=value, color=Variable, 
                                          group=as.factor(Variable))) +  

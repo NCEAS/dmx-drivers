@@ -2,7 +2,9 @@
 title: ' Data Visualizations for DMX Benthic Nearshore Drivers'
 author: "Rachael Blake"
 date: "January 28, 2016"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 
