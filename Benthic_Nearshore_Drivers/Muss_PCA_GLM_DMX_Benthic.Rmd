@@ -16,7 +16,10 @@ library(randomForest) ; library(plyr) ; library(dplyr) ; library(psych) ; librar
 library(pROC) ; library(tidyr) ; library(tidyverse) ; library(egg)
 
 # load data 
-BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
+#BenNearMuss <- read.csv("C:/Users/rblake/Documents/NCEAS/GoA Dynamics WG/dmx-drivers/BenthicNearshore_MusselQuestData.csv")
+
+BenNearMuss <- read.csv("./BenthicNearshore_MusselQuestData.csv")
+
 
 # call the data assembly script
 #source("Benthic_Nearshore_Drivers/Benthic_Nearshore_Data_.R")
@@ -109,7 +112,7 @@ theme_boxplot <- function(base_size = 12){
 BenNear_reg_l <- BenNear_m %>% 
                  select(-Site_Name,-Quadrat,-Lat,-Long) %>%
                  group_by(Year, Region) %>%
-                 summarise_each(funs(mean(., na.rm=TRUE))) %>%
+                 summarise_all(funs(mean(., na.rm=TRUE))) %>%
                  ungroup() %>%
                  arrange(Region, Year) %>%
                  group_by(Region) %>%
