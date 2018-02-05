@@ -677,6 +677,26 @@ fig1 <- ggplot() +
 
 fig1
 
+#######
+# 
+# fig1r <- ggplot() + 
+#          geom_point(data=BenNear_reg_l_p, aes(x=as.factor(Year), y=mussel_Anom, shape=Region),
+#                     size=6, stroke=2, position=position_jitter(w=0.3, h=0)) +
+#          xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", 
+#                 "2013", "2014", "2015")) + xlab("Year") + ylab("Anomaly of Mussel Percent Cover") +
+#          theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) + 
+#          coord_cartesian(ylim=c(-4,4)) +
+#          # scale_color_manual(values=c("#98F5FF", "#FFAEB9"),
+#          #                    breaks=c("observ","prob"),
+#          #                    labels=c("observed","modeled")) +
+#          scale_shape_manual(values=c(15,24,8),
+#                             breaks=c("KATM","KEFJ","WPWS")) +
+#          theme(axis.text=element_text(size=15),
+#                legend.text=element_text(size=15),
+#                axis.title.x=element_text(size=17),
+#                axis.title.y=element_text(size=17))
+# 
+# fig1r
 
 #######
 
@@ -757,6 +777,22 @@ fig2b <- ggplot(data=line_dat_mus, aes(x=as.factor(Year), y=value, color=Variabl
                axis.text.x=element_blank(),
                axis.line = element_line(colour = 'black', size=0.5, linetype='solid'),
                panel.border = element_rect(fill = NA, colour = "black", size = 1))
+#
+# Figure of Mussel anom for OSM Portland 2018
+fig2br <- ggplot(data=line_dat_mus, aes(x=as.factor(Year), y=value, color=Variable,
+                                        group=as.factor(Variable))) +
+          geom_line(size=5) + theme_boxplot() + xlab(NULL) +
+          geom_hline(yintercept = 0, show.legend = FALSE, size=1) +
+          ylab("Anomaly of Mussel % Cover  ") +
+          scale_color_manual(breaks=c("mussel_Anom_mn"),
+                             labels=c("  Mussels"),
+                             values=c("#0072B2")) +
+          theme(legend.position="none",
+                axis.text = element_text(size=36),
+                axis.title.y = element_text(size=44),
+                plot.margin=unit(c(0.5,0.5,0.5,0.5), "cm"),
+                panel.border = element_blank(),
+                axis.line = element_line(colour = 'black', size=1, linetype='solid'))
 #
 line_dat_chl <- filter(line_dat, Variable %in% c("log_TotChlA_micgL_AnnMn"))
 
@@ -2252,6 +2288,33 @@ fig23 <- ggplot() +
                legend.key.size=unit(15,"points"))
         
 fig23
+
+########
+
+# BenNear_tran_l_p_r <- BenNear_tran_l %>%
+#                       select(Year, Region, Site_Name, mussel_Anom) %>%
+#                       filter(Year != "2005") 
+#                       
+# 
+# fig23r <- ggplot() +
+#           geom_boxplot(data=BenNear_tran_l_p_r, aes(x=as.factor(Year), y=mussel_Anom), lwd=1) +
+#           xlim(c("2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015")) +
+#           xlab("Year") + ylab("Anomaly of Mussel % Cover") +
+#           theme_boxplot() + geom_hline(yintercept = 0, show.legend = FALSE) +
+#           coord_cartesian(ylim=c(-4,4)) +
+#           scale_color_grey() +
+#           # scale_fill_manual(values=c("#98F5FF", "#FFAEB9"),
+#           #                   breaks=c("observ","prob"),
+#           #                   labels=c("observed","modeled")) +
+#           theme(axis.text=element_text(size=15),
+#                 axis.title.x=element_text(size=17),
+#                 axis.title.y=element_text(size=17),
+#                 legend.text=element_text(size=15),
+#                 legend.key.size=unit(15,"points"))
+# 
+# fig23r
+
+########
 
 ```
 
