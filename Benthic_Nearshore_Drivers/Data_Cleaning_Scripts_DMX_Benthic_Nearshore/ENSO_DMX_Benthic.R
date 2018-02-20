@@ -25,7 +25,7 @@ enso_pre <- xpathSApply(htmlParse(content(GET(URL_enso))),"//html/body/pre", xml
 enso_cols <- scan(textConnection(enso_pre), skip=10, nlines=1, what=character()) # get header row
 enso <- read.csv(file=textConnection(enso_pre), skip=11, stringsAsFactors=F, sep="\t", 
                  header=FALSE, col.names=enso_cols)
-enso_df <- enso[1:67,]  # removes the text at bottom of file
+enso_df <- enso[1:68,]  # removes the text at bottom of file
 
 enso_df1 <- enso_df %>%
             dplyr::rename(Year=YEAR) %>% # rename data columns
