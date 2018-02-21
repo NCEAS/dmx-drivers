@@ -34,9 +34,26 @@ IA115 <- content(IAGet15, as='text')
 IA15 <- read.csv(file=textConnection(IA115))
 head(IA15)
 
-# merge the pre 2015 and 2015 data
+# 2016 data
+URL_IA16 <- "https://drive.google.com/uc?export=download&id=1uIfuU0nKTTbzO2-tLCpU1JGLph6CPKTG"
+IAGet16 <- GET(URL_IA16)
+IA116 <- content(IAGet16, as='text')
+IA16 <- read.csv(file=textConnection(IA116))
+head(IA16)
+
+# 2017 data
+URL_IA17 <- "https://drive.google.com/uc?export=download&id=1yzw48G3ewIqJr7TItasRQ4rP1G7Hduv8"
+IAGet17 <- GET(URL_IA17)
+IA117 <- content(IAGet17, as='text')
+IA17 <- read.csv(file=textConnection(IA117))
+head(IA17)
+
+
+# merge the pre 2015 and post 2015 data
 IA2 <- IA %>%
        bind_rows(IA15) %>%
+       bind_rows(IA16) %>%
+       bind_rows(IA17) %>%
        mutate(Lump_Name = ifelse((Lump_Name == ""), Species_Name, Lump_Name))
 
 
@@ -109,7 +126,7 @@ IA_GOA <- IA2 %>%
                               ifelse((Species_Name %in% tunicate),'tunicate',
                               ifelse((Species_Name %in% worm),'worm',""))))))))))))))))))))
                  )     # add new column with common category
-head(IA_GOA) ; IA_GOA[45:90,]
+head(IA_GOA) ; IA_GOA[45:90,] ; tail(IA_GOA)
 
 # Read in data frame of list of all possible species (regional species pool)
 #Lump <- c("Acrosiphonia sp.","Ahnfeltia fastigiata","Alaria marginata","Analipus japonicus",
