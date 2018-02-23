@@ -111,24 +111,48 @@ colnames(list_csvs[[7]])[7] <- "chlorophyllA"
 
 colnames(list_csvs[[8]])[7] <- "chlorophyllA"
 
-colnames(list_csvs[[9]])[4] <- "chlorophyllA"
-colnames(list_csvs[[9]])[5] <- "phaeophytin"
+colnames(list_csvs[[9]])[1] <- "CTD_Cast"
+colnames(list_csvs[[9]])[4] <- "lat"
+colnames(list_csvs[[9]])[5] <- "lon"
+colnames(list_csvs[[9]])[7] <- "chlorophyllA"
 
-colnames(list_csvs[[10]])[7] <- "chlorophyllA"
+colnames(list_csvs[[10]])[1] <- "Station_Name"
+colnames(list_csvs[[10]])[2] <- "lat"
+colnames(list_csvs[[10]])[3] <- "lon"
+colnames(list_csvs[[10]])[6] <- "Depth_m"
+colnames(list_csvs[[10]])[8] <- "chlorophyllA"
 
-colnames(list_csvs[[11]])[2] <- "CTD_Cast"
-colnames(list_csvs[[11]])[9] <- "lat"
-colnames(list_csvs[[11]])[10] <- "lon"
-colnames(list_csvs[[11]])[11] <- "Depth_m"
-colnames(list_csvs[[11]])[16] <- "chlorophyllA"
-colnames(list_csvs[[11]])[17] <- "phaeophytin"
+colnames(list_csvs[[11]])[4] <- "chlorophyllA" 
+colnames(list_csvs[[11]])[5] <- "phaeophytin" 
 
-colnames(list_csvs[[12]])[1] <- "CTD_Cast"
-colnames(list_csvs[[12]])[2] <- "Station_Name"
-colnames(list_csvs[[12]])[3] <- "lat"
-colnames(list_csvs[[12]])[4] <- "lon"
-colnames(list_csvs[[12]])[7] <- "Depth_m"
-colnames(list_csvs[[12]])[9] <- "chlorophyllA"
+colnames(list_csvs[[12]])[7] <- "chlorophyllA" 
+
+list_csvs[[13]] <- dplyr::select(list_csvs[[13]], -c(Month, Day, Time..hh.mm.ss.AM.PM.,
+                                                     Bot_Depth..m., Pressure..dbars.))
+colnames(list_csvs[[13]])[2] <- "CTD_Cast"
+colnames(list_csvs[[13]])[6] <- "lat"
+colnames(list_csvs[[13]])[7] <- "lon"
+colnames(list_csvs[[13]])[11] <- "chlorophyllA"
+colnames(list_csvs[[13]])[12] <- "phaeophytin"
+
+colnames(list_csvs[[14]])[1] <- "CTD_Cast"
+colnames(list_csvs[[14]])[2] <- "Station_Name"
+colnames(list_csvs[[14]])[3] <- "lat"
+colnames(list_csvs[[14]])[4] <- "lon"
+colnames(list_csvs[[14]])[7] <- "Depth_m"
+colnames(list_csvs[[14]])[9] <- "chlorophyllA"
+
+colnames(list_csvs[[15]])[1] <- "CTD_Cast"
+colnames(list_csvs[[15]])[4] <- "lat"
+colnames(list_csvs[[15]])[5] <- "lon"
+colnames(list_csvs[[15]])[7] <- "chlorophyllA"
+
+colnames(list_csvs[[16]])[1] <- "CTD_Cast"
+colnames(list_csvs[[16]])[2] <- "Station_Name"
+colnames(list_csvs[[16]])[3] <- "lat"
+colnames(list_csvs[[16]])[4] <- "lon"
+colnames(list_csvs[[16]])[7] <- "Depth_m"
+colnames(list_csvs[[16]])[9] <- "chlorophyllA"
 
 # Merge all the other csvs into one dataframe
 one_df1 <- merge_recurse(list_csvs)
@@ -144,8 +168,8 @@ Chl_ALL <- merge(Chl_df, one_df, all=T,
 
 # DF of GAK1 sites
 Chl_GAK1 <- Chl_ALL %>%
-            mutate_each(funs(toupper), Station_Name) %>%  # capitalize station names
-            filter(Station_Name %in% c("GAK 1", "GAK1", "GAK01", " GAK1")) %>%  # select GAK 1 only  #, "GAK01I", "GAK 1I", "GAK1I"
+            mutate_all(funs(toupper), Station_Name) %>%  # capitalize station names
+            dplyr::filter(Station_Name %in% c("GAK 1", "GAK1", "GAK01", " GAK1", "GAK1(2)")) %>%  # select GAK 1 only  #, "GAK01I", "GAK 1I", "GAK1I"
             arrange(Datef) %>%     
             mutate(Year=substring(Datef,1,4),
                    Month=substring(Datef,6,7)) %>% 
