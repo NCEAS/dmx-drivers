@@ -18,14 +18,16 @@ library(stringr)
 ## 2) format to annual estimates (2 column dataframe with cols=Year,spEstimate)
 
 #############
-URL_NK <- "https://drive.google.com/uc?export=download&id=0By1iaulIAI-ud3c2Y2xYOFQtdm8"
-NKGet <- GET(URL_NK)
-WCH1 <- content(NKGet, as='text')
-WCH <- read.csv(file=textConnection(WCH1))
-head(WCH)
+# Nucella 2006 - 2016
+URL_NK3 <- "https://drive.google.com/uc?export=download&id=1OVkOw4yFi_iicGQL2ZWcRz0-eD5w3bD5"
+NK3Get <- GET(URL_NK3)
+WCH33 <- content(NK3Get, as='text')
+WCH3 <- read.csv(file=textConnection(WCH33))
+head(WCH3)
+
 
 # Cleaning, filtering
-Wlk_GOA <- WCH %>%
+Wlk_GOA <- WCH3 %>%
            mutate(Species_Name = revalue(Species_Name, c("Nucella sp."="Nucella sp"))) %>% # remove "." from Nucella
            filter(Species_Name == "Nucella sp") %>% # extract only the Nucella rows
    #        filter(Sample_Year %in% c(2010, 2011, 2012, 2013, 2014, 2015))  %>% # taking out years before 2010
