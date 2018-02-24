@@ -166,9 +166,9 @@ Chl_ALL <- merge(Chl_df, one_df, all=T,
                  by = c("Station_Name", "Datef", "Depth_m", "lat", "lon", 
                         "chlorophyllA", "phaeophytin"))
 
-# DF of GAK1 sites
+# DF of GAK1 sites    
 Chl_GAK1 <- Chl_ALL %>%
-            mutate_all(funs(toupper), Station_Name) %>%  # capitalize station names
+            mutate(Station_Name = toupper(Station_Name)) %>%  # capitalize station names
             dplyr::filter(Station_Name %in% c("GAK 1", "GAK1", "GAK01", " GAK1", "GAK1(2)")) %>%  # select GAK 1 only  #, "GAK01I", "GAK 1I", "GAK1I"
             arrange(Datef) %>%     
             mutate(Year=substring(Datef,1,4),
